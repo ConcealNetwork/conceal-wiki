@@ -1,0 +1,32 @@
+---
+title: Releases & Verification
+description: Verify official Conceal Core and Guardian releases before installation or upgrade.
+---
+
+Status: Current
+
+Last verified: 2026-09-05
+
+Release identifiers are evidence for a point in time, not a standing latest-version claim. The verified migration snapshot is **Core 6.7.5** and **Guardian 0.7.8**. Before installation, open the official releases page yourself and confirm the selected tag, asset, release notes, and published integrity material.
+
+## Verification workflow
+
+1. Navigate directly to the applicable official releases page rather than following an attachment or a link sent in a message.
+2. Match the release tag and asset to the platform and architecture you intend to run.
+3. Obtain the checksum or signature from the same official release record, then verify the downloaded asset with the documented method for your platform.
+4. Stop if the asset, integrity material, signing identity, or release notes do not match what you expected. Resolve the discrepancy from the official repository before running it.
+5. Back up relevant local data before an upgrade and keep the previous working state available until the new version has been checked.
+
+## Guardian releases
+
+Guardian is distributed separately from Core. Verify it as a separate component, including its own version, platform asset, release notes, and checksum. Do not assume that matching version numbers, installation locations, or update schedules imply compatibility.
+
+## Source builds
+
+If you build from source, record the repository commit or tag, build environment, dependency versions, and resulting artifact hash. Review the current [Core build documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs) before treating a local build as equivalent to a published release.
+
+## Primary sources
+
+- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [Conceal Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases)
+- [Conceal Core build documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs)

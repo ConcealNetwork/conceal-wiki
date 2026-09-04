@@ -1,0 +1,37 @@
+---
+title: Run a Node
+description: Install Conceal Core and optionally Guardian with release verification and private operations in mind.
+---
+
+Status: Current
+
+Last verified: 2026-09-05
+
+Run a Conceal node only where you can maintain its host, storage, network policy, and updates. The migration snapshot is **Core 6.7.5** and **Guardian 0.7.8**; these are dated references, not claims about the latest available releases.
+
+## Core installation
+
+1. Start at the official [Core releases page](https://github.com/ConcealNetwork/conceal-core/releases), select the intended release and platform asset, and read its notes.
+2. Verify a published checksum or signature before running an asset. If the release does not provide integrity information you can independently validate, stop and assess that risk before proceeding.
+3. Follow the [Core build and operating documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs) for the exact release and platform. Preserve a backup of any local data before changing versions or storage paths.
+4. Check synchronization and network state through the [live Conceal explorer](https://explorer.conceal.network/) as an independent, time-sensitive reference.
+
+## RPC and host boundaries
+
+Treat daemon and wallet RPC as private administration interfaces. Do not publish an unauthenticated RPC endpoint. If a remote application genuinely needs access, design explicit authentication, network filtering, encryption, logging, and a revocation path before exposing anything; review the Core documentation for the installed version.
+
+Run services with the least privileges practical for the host. Separate administrative access from public-facing services, keep the operating system and node software patched, and review disk use, process logs, and restart behaviour after upgrades.
+
+## Guardian monitoring
+
+[Conceal Guardian](https://github.com/ConcealNetwork/conceal-guardian) is a separate monitor for the `conceald` daemon. Its documented release snapshot is **Guardian 0.7.8**. Use the official [Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases), installation material, and sample configuration for the exact version you choose; do not copy notification destinations, credentials, or public-listing settings from an example into a production host.
+
+Monitoring helps surface conditions to investigate. It does not prove node correctness, availability, or network service level.
+
+## Primary sources
+
+- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [Conceal Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs)
+- [Conceal Guardian repository](https://github.com/ConcealNetwork/conceal-guardian)
+- [Conceal Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases)
+- [Conceal Network block explorer](https://explorer.conceal.network/)

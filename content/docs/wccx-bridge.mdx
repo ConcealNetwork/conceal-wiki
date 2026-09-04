@@ -1,0 +1,28 @@
+---
+title: wCCX Bridge
+description: Verify the intended wCCX token contract by chain and assess bridge operations separately.
+---
+
+Status: Current
+
+Last verified: 2026-09-05
+
+wCCX is a chain-specific token representation documented by the official [wCCX source repository](https://github.com/ConcealNetwork/wCCX). A token contract, a bridge operation, reserves, liquidity, and the native gas needed to transact are separate things. Verifying one does not establish the state or safety of the others.
+
+## Verify token identity for the selected chain
+
+1. Identify the exact destination chain in the wallet or application before approving any transaction.
+2. Open the current network section of the official [wCCX repository](https://github.com/ConcealNetwork/wCCX) directly and compare the entire published contract address with the address shown by the wallet or chain explorer.
+3. Do not reuse an address from another chain, an image, a search result, a copied chat message, or an old guide. Similar token names and symbols are not contract identity.
+4. Recheck the selected chain and contract before every approval, transfer, or swap. A contract address alone does not identify an operational bridge route.
+
+## Bridge operation and risk boundaries
+
+Treat a bridge interface as a time-sensitive service. Confirm its current route, transaction requirements, and any stated limits from first-party material before submitting funds. Keep enough of the selected destination chain's native gas asset to pay for the transaction; gas requirements are chain-specific and can change.
+
+This page makes no representation about bridge availability, custody, reserves, redemption, exit liquidity, market value, or transaction completion. Assess those conditions independently at the time of use, and do not interpret a token contract listing as evidence that a transfer path is currently usable.
+
+## Primary sources
+
+- [Conceal wCCX repository and chain-specific contract listings](https://github.com/ConcealNetwork/wCCX)
+- [Conceal Core repository](https://github.com/ConcealNetwork/conceal-core)

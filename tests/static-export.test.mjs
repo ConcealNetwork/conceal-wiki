@@ -12,6 +12,12 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
+const operatorSafetyPatterns = [
+  /(?:pool|mining)[^.\n]{0,160}(?:fee|hashrate)[^.\n]{0,160}\b\d+(?:\.\d+)?\s*(?:%|[kmgth]?h\/s)/i,
+  /(?:\b(?:we\s+)?recommend(?:ed)?\s+(?:(?:using|an?|the)\s+)?|\bbest\s+)(?:exchange|market|pool)\b/i,
+  /(?:localhost|127\.0\.0\.1)[^.\n]{0,120}(?:rpc|daemon)/i,
+  /(?:bridge|wccx)[^.\n]{0,160}(?:solvent|fully backed|reserves? (?:are|will remain)|guarantee)/i,
+];
 
 async function collectFiles(directory, extension) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -116,6 +122,26 @@ test('exports every Task 2 user guide with its visible status contract', async (
   }
 });
 
+test('exports every Task 3 operator and developer guide with its visible status contract', async () => {
+  const routes = [
+    'docs/mining',
+    'docs/run-a-node',
+    'docs/developer-and-api',
+    'docs/releases-and-verification',
+    'docs/wccx-bridge',
+  ];
+
+  for (const route of routes) {
+    const pagePath = path.join(outputDirectory, route, 'index.html');
+    const exists = await stat(pagePath).then(() => true, () => false);
+    assert.equal(exists, true, `${route}: expected exported route`);
+    if (!exists) continue;
+    const page = await readFile(pagePath, 'utf8');
+    assert.match(page, /Status: Current/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
+});
+
 test('exports project-prefixed public social image URLs', async () => {
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';
@@ -196,6 +222,17 @@ test('does not export unsafe wallet recovery or platform claims', async () => {
     ...(await collectReachableJavaScript()),
   ].join('\n');
   for (const prohibitedContent of walletSafetyPatterns) {
+    assert.doesNotMatch(exportedText, prohibitedContent);
+  }
+});
+
+test('does not export stale or unsafe operator guidance', async () => {
+  const exportFiles = await collectHtml(outputDirectory);
+  const exportedText = [
+    ...(await Promise.all(exportFiles.map((file) => readFile(file, 'utf8')))),
+    ...(await collectReachableJavaScript()),
+  ].join('\n');
+  for (const prohibitedContent of operatorSafetyPatterns) {
     assert.doesNotMatch(exportedText, prohibitedContent);
   }
 });

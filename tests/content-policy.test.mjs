@@ -34,6 +34,13 @@ const taskTwoSources = [
   'content/docs/messaging.mdx',
   'content/docs/support.mdx',
 ];
+const taskThreeSources = [
+  'content/docs/mining.mdx',
+  'content/docs/run-a-node.mdx',
+  'content/docs/developer-and-api.mdx',
+  'content/docs/releases-and-verification.mdx',
+  'content/docs/wccx-bridge.mdx',
+];
 const walletSafetyPatterns = [
   /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
   /private(?:[\s-]+[a-z]+){0,2}[\s-]+key\s*(?:example|:|\[)/i,
@@ -42,6 +49,18 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
+const operatorSafetyPatterns = [
+  /(?:pool|mining)[^.\n]{0,160}(?:fee|hashrate)[^.\n]{0,160}\b\d+(?:\.\d+)?\s*(?:%|[kmgth]?h\/s)/i,
+  /(?:\b(?:we\s+)?recommend(?:ed)?\s+(?:(?:using|an?|the)\s+)?|\bbest\s+)(?:exchange|market|pool)\b/i,
+  /(?:localhost|127\.0\.0\.1)[^.\n]{0,120}(?:rpc|daemon)/i,
+  /(?:bridge|wccx)[^.\n]{0,160}(?:solvent|fully backed|reserves? (?:are|will remain)|guarantee)/i,
+];
+const operatorSafetyMutations = [
+  'Mining hashrate: 42 MH/s',
+  'Best exchange',
+  'localhost RPC daemon',
+  'wCCX bridge reserves are fully backed',
+];
 
 async function collectMdxFiles(directory = docsDirectory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -96,6 +115,39 @@ test('includes every Task 2 user guide', async () => {
     assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected user guide`);
   }
   assert.equal(await fileExists(path.resolve('content/docs/wallets/meta.json')), true, 'wallet navigation');
+});
+
+test('includes every Task 3 operator and developer guide', async () => {
+  for (const source of taskThreeSources) {
+    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected operator guide`);
+  }
+});
+
+test('links Task 3 guides to canonical operator and bridge sources', async () => {
+  const sources = (await Promise.all(taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')))).join('\n');
+  for (const source of [
+    'https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml',
+    'https://github.com/ConcealNetwork/conceal-core/releases',
+    'https://github.com/ConcealNetwork/conceal-guardian/releases',
+    'https://explorer.conceal.network/',
+    'https://github.com/ConcealNetwork/wCCX',
+  ]) {
+    assert.match(sources, new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  }
+});
+
+test('does not publish stale or unsafe operator guidance', async () => {
+  const sources = (await Promise.all(taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')))).join('\n');
+  for (const prohibitedContent of operatorSafetyPatterns) {
+    assert.doesNotMatch(sources, prohibitedContent);
+  }
+});
+
+test('operator safety policy rejects stale or unsafe example mutations', () => {
+  for (const [index, prohibitedContent] of operatorSafetyPatterns.entries()) {
+    assert.match(operatorSafetyMutations[index], prohibitedContent);
+    assert.throws(() => assert.doesNotMatch(operatorSafetyMutations[index], prohibitedContent));
+  }
 });
 
 test('labels Next Wallet experimental', async () => {

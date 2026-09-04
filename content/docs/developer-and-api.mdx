@@ -1,0 +1,38 @@
+---
+title: Developer & API
+description: Start with Conceal's source-backed RPC reference and JavaScript library entry points.
+---
+
+Status: Current
+
+Last verified: 2026-09-05
+
+Build against the versioned interfaces you have actually installed. Conceal's Core source is the canonical reference for daemon RPC behaviour; do not infer methods, response fields, or security properties from an old code snippet.
+
+## Daemon RPC reference
+
+Use the Core [JSON RPC OpenAPI document](https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml) with the surrounding [RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc). Read the specification and the source for the Core release you deploy, especially before relying on an endpoint in an automated workflow.
+
+Keep RPC private by default. A development or operations API can disclose service state or trigger expensive and sensitive operations, so do not expose it to an untrusted network. Use a controlled test environment for integration work, minimise the permissions of any service account, and keep credentials and wallet recovery material out of source control, browser consoles, issue trackers, and logs.
+
+## JavaScript and TypeScript entry points
+
+For maintained first-party source entry points, review:
+
+- [Conceal API](https://github.com/ConcealNetwork/conceal-api), a JavaScript/Node.js RPC interface.
+- [conceal-lib-js](https://github.com/ConcealNetwork/conceal-lib-js), JavaScript and WebAssembly cryptographic primitives.
+- [conceal-wallet-sdk](https://github.com/ConcealNetwork/conceal-wallet-sdk), a typed wallet SDK built on the library primitives.
+
+Check each repository's current package metadata, releases, compatibility notes, and source before selecting it. A repository link is an entry point for review, not a promise of application support or security suitability for a particular use.
+
+## Integration checks
+
+Pin and review dependencies, test expected and rejected responses, and record the Core version and network used in a reproducible test plan. Verify data against an independent network view such as the [Conceal block explorer](https://explorer.conceal.network/) where appropriate, while remembering that explorer output is live and may change.
+
+## Primary sources
+
+- [Core JSON RPC OpenAPI document](https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml)
+- [Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc)
+- [Conceal API](https://github.com/ConcealNetwork/conceal-api)
+- [conceal-lib-js](https://github.com/ConcealNetwork/conceal-lib-js)
+- [conceal-wallet-sdk](https://github.com/ConcealNetwork/conceal-wallet-sdk)
