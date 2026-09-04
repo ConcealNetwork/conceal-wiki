@@ -34,6 +34,23 @@ test('uses the exact Task 2 release-tag snapshot', () => {
   });
 });
 
+test('matches the release monitor map to the wallet and node documentation snapshot', async () => {
+  const sources = Object.fromEntries(await Promise.all([
+    ['Core', '../content/docs/wallets/core-cli.mdx', /Core (\d+\.\d+\.\d+)/],
+    ['Desktop', '../content/docs/wallets/desktop.mdx', /Desktop (\d+\.\d+\.\d+)/],
+    ['Web Wallet', '../content/docs/wallets/web.mdx', /Web Wallet (\d+\.\d+\.\d+)/, 'v'],
+    ['Android', '../content/docs/wallets/android.mdx', /Android (\d+\.\d+\.\d+-f-droid)/, 'v'],
+    ['Guardian', '../content/docs/run-a-node.mdx', /Guardian (\d+\.\d+\.\d+)/, 'v'],
+  ].map(async ([component, file, pattern, prefix = '']) => {
+    const source = await readFile(new URL(file, import.meta.url), 'utf8');
+    const version = source.match(pattern)?.[1];
+    assert.ok(version, `${component}: documented release snapshot`);
+    return [component, `${prefix}${version}`];
+  })));
+
+  assert.deepEqual(DOCUMENTED_RELEASES, sources);
+});
+
 test('formats a deterministic documentation-drift issue body', () => {
   assert.equal(
     formatDriftIssue([{ component: 'Core', documentedTag: 'v6.7.5', latestTag: 'v6.7.6' }]),

@@ -29,7 +29,7 @@ npm run verify
 
 ## Publishing boundary
 
-This repository does not modify the existing FTP-hosted wiki or the production site. The legacy production wiki at https://conceal.network/wiki/ remains authoritative until migration and cutover are separately approved.
+This repository does not modify the existing FTP-hosted wiki or the production site. The legacy production wiki at https://conceal.network/wiki/doku.php remains authoritative until migration and cutover are separately approved.
 
 ## Release-drift monitoring
 

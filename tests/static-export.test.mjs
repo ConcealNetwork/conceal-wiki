@@ -3,6 +3,7 @@ import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
+import { EXPECTED_DOCS } from './expected-docs.mjs';
 
 const outputDirectory = path.resolve('out');
 const walletSafetyPatterns = [
@@ -79,6 +80,18 @@ test('exports the verified documentation landing pages', async () => {
   for (const page of [docs, startHere, walletChoice, network]) {
     assert.match(page, /Status: Current/);
     assert.match(page, /Last verified: 2026-09-05/);
+  }
+});
+
+test('exports every source in the canonical expected-source manifest', async () => {
+  for (const { route, status } of EXPECTED_DOCS) {
+    const pagePath = path.join(outputDirectory, route, 'index.html');
+    const exists = await stat(pagePath).then(() => true, () => false);
+    assert.equal(exists, true, `${route}: expected exported route`);
+    if (!exists) continue;
+    const page = await readFile(pagePath, 'utf8');
+    assert.match(page, new RegExp(`Status: ${status}`), `${route}: visible status`);
+    assert.match(page, /Last verified: 2026-09-05/, `${route}: visible verification date`);
   }
 });
 

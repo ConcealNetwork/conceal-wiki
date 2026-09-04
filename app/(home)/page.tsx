@@ -15,7 +15,7 @@ export default function HomePage() {
         <Link href="/docs/" className="rounded-full bg-fd-primary px-5 py-3 font-medium text-fd-primary-foreground">
           Open documentation
         </Link>
-        <a href="https://conceal.network/wiki/" className="rounded-full border border-fd-border px-5 py-3 font-medium">
+        <a href="https://conceal.network/wiki/doku.php" className="rounded-full border border-fd-border px-5 py-3 font-medium">
           Visit the legacy production wiki
         </a>
       </div>

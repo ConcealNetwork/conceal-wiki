@@ -1,0 +1,45 @@
+---
+title: Troubleshooting
+description: Diagnose synchronization, transaction-output, and application-startup problems safely.
+---
+
+Status: Current
+
+Last verified: 2026-09-05
+
+Start with observation, not data removal. Preserve a current wallet backup before changing software or configuration, and never send recovery material, passwords, or private keys to a support contact.
+
+## Wallet or node synchronization is incomplete
+
+1. Record the wallet or node version and its displayed block height. Compare that height and the most recent block time with the [live explorer](https://explorer.conceal.network/).
+2. Confirm that the host clock is correct, the device is not sleeping, storage has free space, and the application reports network peers or a reachable configured node.
+3. Leave the application open long enough to make progress and check whether its height advances. A wallet that is still synchronizing may not show a complete balance or submit a transaction reliably.
+4. If progress stops, capture the exact non-sensitive error, application version, operating system, architecture, local height, and explorer height. Review the release notes and [ask official support](./support.mdx) before attempting recovery.
+
+This guide intentionally does not prescribe a from-scratch resynchronization. That can discard cached chain state and is not a first diagnostic step.
+
+## A transaction is too large or asks for output optimization
+
+A wallet balance can consist of many small transaction outputs. Combining too many in one spend can exceed transaction-size limits. The current Core CLI exposes `outputs` to inspect unlocked outputs, `optimize` for one self-transaction, and `optimize_all` for repeated rounds. Desktop builds expose their supported optimization action through the application.
+
+Before optimizing, confirm that the wallet is synchronized, preserve a backup, and use the help built into the exact release you installed. Optimization creates transactions to the same wallet; wait for their confirmations before trying the original spend again. Do not paste commands or values from old examples into an RPC service without reviewing the current [wallet RPC definitions](https://github.com/ConcealNetwork/conceal-core/blob/master/src/Wallet/WalletRpcServerCommandsDefinitions.h).
+
+## The application does not start
+
+1. Confirm that the downloaded asset matches the operating system and CPU architecture, came from the official [Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases) or [Core releases](https://github.com/ConcealNetwork/conceal-core/releases), and matches any published integrity information.
+2. Launch it in the platform's normal diagnostic view, such as a terminal, so the exact startup error remains visible. Do not disable antivirus, Gatekeeper, package verification, or other platform protections merely to force an unverified file to run.
+3. On Windows, an `MSVCP140.dll` or `VCRUNTIME140.dll` error indicates that the Microsoft Visual C++ runtime is missing or damaged. Use Microsoft's [current supported Visual C++ Redistributable guidance](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170); do not download individual DLL files from third-party sites.
+4. If the error remains, report the application version, asset filename, checksum result, operating system and architecture, and the exact error through [official support](./support.mdx). Review logs before sharing them and remove wallet addresses or other sensitive data.
+
+## Legacy context and attribution
+
+The synchronization, output-optimization, and Windows runtime topics were selected from the legacy [FAQ](https://conceal.network/wiki/doku.php?id=faq) and [wallets page](https://conceal.network/wiki/doku.php?id=wallets). The procedures above are rewritten against current Core source, releases, and platform guidance; substantially adapted legacy material is available under the [GNU Free Documentation License 1.3](https://www.gnu.org/licenses/fdl-1.3.html).
+
+## Primary sources
+
+- [Conceal Core wallet commands](https://github.com/ConcealNetwork/conceal-core/blob/master/src/ConcealWallet/ConcealWallet.cpp)
+- [Conceal Desktop optimization source](https://github.com/ConcealNetwork/conceal-desktop/blob/master/src/OptimizationManager.cpp)
+- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [Microsoft supported Visual C++ Redistributable downloads](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)
+- [Legacy FAQ](https://conceal.network/wiki/doku.php?id=faq)
+

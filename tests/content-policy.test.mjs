@@ -3,6 +3,7 @@ import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
+import { EXPECTED_DOCS } from './expected-docs.mjs';
 
 const docsDirectory = path.resolve('content/docs');
 const verificationDate = '2026-09-05';
@@ -18,6 +19,7 @@ const expectedNavigation = [
   'developer-and-api',
   'wccx-bridge',
   'releases-and-verification',
+  'troubleshooting',
   'support',
   'research',
   'historical',
@@ -58,6 +60,7 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
+const canonicalLegacyWikiUrl = /^https:\/\/conceal\.network\/wiki\/doku\.php(?:\?id=[a-z0-9_-]+)?$/i;
 
 async function collectMdxFiles(directory = docsDirectory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -86,6 +89,12 @@ async function fileExists(file) {
 test('orders the task-oriented root navigation', async () => {
   const meta = JSON.parse(await readFile(path.join(docsDirectory, 'meta.json'), 'utf8'));
   assert.deepEqual(meta.pages, expectedNavigation);
+});
+
+test('keeps the canonical expected source manifest present', async () => {
+  for (const { source } of EXPECTED_DOCS) {
+    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected documentation source`);
+  }
 });
 
 test('requires dated operational content and primary sources on every published MDX page', async () => {
@@ -121,6 +130,82 @@ test('includes research and historical archive pages with explicit retirement bo
     assert.match(archive, /(?:unavailable|do not use|do not follow)/i);
     assert.doesNotMatch(archive, /https:\/\/conceal\.cloud\/[^\s)]+/i);
   }
+});
+
+test('expands the dated legacy archive stubs without reviving them', async () => {
+  const concealLive = await readFile(path.resolve('content/docs/historical/conceal-live.mdx'), 'utf8');
+  assert.match(concealLive, /Q2 2021/);
+  assert.match(concealLive, /discontinued/i);
+  assert.match(concealLive, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=clive/);
+  assert.match(concealLive, /GNU Free Documentation License 1\.3/);
+
+  const roadmapAndMedia = await readFile(
+    path.resolve('content/docs/historical/roadmap-and-media.mdx'),
+    'utf8',
+  );
+  assert.match(roadmapAndMedia, /2018[^\n]{0,80}2025|2025[^\n]{0,80}2018/);
+  assert.match(roadmapAndMedia, /2019[^\n]{0,80}2022|2022[^\n]{0,80}2019/);
+  assert.match(roadmapAndMedia, /historical|retired/i);
+  assert.match(roadmapAndMedia, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=roadmap/);
+  assert.match(roadmapAndMedia, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=media/);
+  assert.match(roadmapAndMedia, /GNU Free Documentation License 1\.3/);
+});
+
+test('uses canonical DokuWiki URLs for legacy entry points and articles', async () => {
+  for (const [file, source] of await readMdxSources()) {
+    const urls = [...source.matchAll(/https:\/\/conceal\.network\/wiki[^\s)>]*/g)]
+      .map(([url]) => url.replace(/[.,;:]$/, ''));
+    for (const url of urls) {
+      assert.match(url, canonicalLegacyWikiUrl, `${file}: ${url}`);
+    }
+  }
+
+  for (const nonCanonical of [
+    'https://conceal.network/wiki/',
+    'https://conceal.network/wiki/start',
+    'https://conceal.network/wiki/doku.php/start',
+  ]) {
+    assert.doesNotMatch(nonCanonical, canonicalLegacyWikiUrl);
+  }
+});
+
+test('publishes safe troubleshooting for sync, output, and platform-startup failures', async () => {
+  const sourcePath = path.resolve('content/docs/troubleshooting.mdx');
+  const exists = await fileExists(sourcePath);
+  assert.equal(exists, true, 'troubleshooting source');
+  if (!exists) return;
+  const troubleshooting = await readFile(sourcePath, 'utf8');
+
+  assert.match(troubleshooting, /synchroniz/i);
+  assert.match(troubleshooting, /(?:output|transaction)[^\n]{0,100}optimiz|optimiz[^\n]{0,100}(?:output|transaction)/i);
+  assert.match(troubleshooting, /(?:start|launch)[^\n]{0,100}(?:fail|error)|(?:fail|error)[^\n]{0,100}(?:start|launch)/i);
+  assert.match(troubleshooting, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=faq/i);
+  assert.doesNotMatch(
+    troubleshooting,
+    /(?:^|\n)\s*(?:[-*]\s*)?`?(?:reset\b|rm\s+-rf|(?:delete|remove)\s+(?:the\s+)?(?:blockchain|chain data|data directory))/im,
+  );
+});
+
+test('describes current consensus issuance separately from a dated explorer snapshot', async () => {
+  const network = await readFile(path.resolve('content/docs/network-and-ccx.mdx'), 'utf8');
+
+  assert.match(network, /fixed consensus/i);
+  assert.match(network, /200,000,000 CCX/);
+  assert.match(network, /120-second|120 seconds/i);
+  assert.match(network, /6 CCX/);
+  assert.match(network, /live explorer snapshot/i);
+  assert.match(network, /33,712,033\.757459 CCX/);
+  assert.match(network, /2026-09-05/);
+  assert.doesNotMatch(network, /^\|[^\n]*(?:height|reward|emission)[^\n]*\|/im);
+});
+
+test('links wallet choices to current internal guides in present tense', async () => {
+  const chooseWallet = await readFile(path.resolve('content/docs/start-here/choose-a-wallet.mdx'), 'utf8');
+
+  for (const route of ['desktop', 'core-cli', 'web', 'android', 'next-wallet']) {
+    assert.match(chooseWallet, new RegExp(`\\.\\.\\/wallets\\/${route}\\.mdx`));
+  }
+  assert.doesNotMatch(chooseWallet, /Dedicated pages will cover/i);
 });
 
 test('does not retain migration-preview copy in published MDX', async () => {
