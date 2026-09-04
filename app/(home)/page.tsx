@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl flex-col justify-center px-6 py-16">
+    <section className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl flex-col justify-center px-6 py-16">
       <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-fd-muted-foreground">
         Migration preview
       </p>
@@ -19,6 +19,6 @@ export default function HomePage() {
           Visit the current production wiki
         </a>
       </div>
-    </main>
+    </section>
   );
 }

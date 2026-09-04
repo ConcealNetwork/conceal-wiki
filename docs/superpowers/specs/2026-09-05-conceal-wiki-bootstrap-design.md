@@ -88,6 +88,14 @@ Concurrency will allow only one Pages deployment at a time. A newer deployment m
 - Imported DokuWiki HTML will not be rendered as arbitrary raw HTML. Later conversion must map supported constructs to Markdown/MDX components or explicitly sanitize exceptional HTML.
 - The repository will contain a security contact path and contribution guidance before outside contributions are encouraged.
 
+## Post-plan compatibility note
+
+This note records the as-built dependency decision after the original execution
+plan was approved. TypeScript is deliberately pinned to 6.0.3 because the
+currently installed `typescript-eslint` peer range is `>=4.8.4 <6.1.0`.
+TypeScript 7 is deferred until the surrounding linting ecosystem declares
+support; it is not an unplanned upgrade target for this bootstrap.
+
 ## Validation
 
 Implementation will use test-first development for custom routing and base-path behaviour. At minimum, automated checks must demonstrate:

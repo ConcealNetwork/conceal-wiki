@@ -5,15 +5,47 @@ import test from 'node:test';
 
 const outputDirectory = path.resolve('out');
 
-async function collectHtml(directory) {
+async function collectFiles(directory, extension) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
   for (const entry of entries) {
     const entryPath = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...(await collectHtml(entryPath)));
-    if (entry.isFile() && entry.name.endsWith('.html')) files.push(entryPath);
+    if (entry.isDirectory()) files.push(...(await collectFiles(entryPath, extension)));
+    if (entry.isFile() && entry.name.endsWith(extension)) files.push(entryPath);
   }
   return files;
+}
+
+async function collectHtml(directory) {
+  return collectFiles(directory, '.html');
+}
+
+async function collectReachableJavaScript() {
+  const htmlFiles = await collectHtml(outputDirectory);
+  const html = await Promise.all(htmlFiles.map((file) => readFile(file, 'utf8')));
+  const urls = new Set(html.flatMap((page) =>
+    [...page.matchAll(/(?:src|href)="(\/conceal-wiki\/[^\"]+\.js)"/g)].map((match) => match[1]),
+  ));
+
+  return Promise.all(
+    [...urls].map((url) => readFile(path.join(outputDirectory, url.replace(/^\/conceal-wiki\//, '')), 'utf8')),
+  );
+}
+
+function metaContent(html, attribute, value) {
+  const tag = [...html.matchAll(/<meta\s+[^>]*>/g)].find((match) =>
+    match[0].includes(`${attribute}="${value}"`),
+  );
+  assert.ok(tag, `expected meta ${attribute}=${value}`);
+
+  const content = tag[0].match(/content="([^"]*)"/);
+  assert.ok(content, `expected meta ${attribute}=${value} to have content`);
+  return content[1];
+}
+
+function publicTargetPath(publicPath) {
+  const relativePath = publicPath.replace(/^\/conceal-wiki\//, '');
+  return path.join(outputDirectory, relativePath, 'index.html');
 }
 
 test('exports links and assets beneath the GitHub project path', async () => {
@@ -35,8 +67,46 @@ test('exports project-prefixed public social image URLs', async () => {
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';
   assert.doesNotMatch(docs, /https?:\/\/localhost(?::\d+)?/);
-  assert.match(docs, new RegExp(`property="og:image" content="${imageUrl}"`));
-  assert.match(docs, new RegExp(`name="twitter:image" content="${imageUrl}"`));
+  assert.equal(metaContent(docs, 'property', 'og:image'), imageUrl);
+  assert.equal(metaContent(docs, 'name', 'twitter:image'), imageUrl);
+});
+
+for (const file of ['llms.txt', 'llms-full.txt']) {
+  test(`${file} advertises project-prefixed documentation URLs that exist`, async () => {
+    const llmText = await readFile(path.join(outputDirectory, file), 'utf8');
+    const paths = [...llmText.matchAll(/(?:\]\(|\()(\/conceal-wiki\/[^)]+)\)/g)].map((match) => match[1]);
+
+    assert.ok(paths.length > 0, `${file} should advertise a project-prefixed URL`);
+    assert.doesNotMatch(llmText, /(?:\]\(|\()\/docs(?:[)/]|\))/);
+    for (const publicPath of paths) {
+      assert.equal((await stat(publicTargetPath(publicPath))).isFile(), true, `${file}: ${publicPath}`);
+    }
+  });
+}
+
+test('exports one home main landmark', async () => {
+  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
+  assert.equal(home.match(/<main(?:\s|>)/g)?.length, 1);
+});
+
+test('does not export prohibited AI integrations', async () => {
+  const exportFiles = await collectHtml(outputDirectory);
+  const exportedText = [
+    ...(await Promise.all(exportFiles.map((file) => readFile(file, 'utf8')))),
+    ...(await collectReachableJavaScript()),
+  ].join('\n');
+  for (const prohibitedIntegration of [
+    /scira\.ai/i,
+    /chatgpt\.com/i,
+    /claude\.ai/i,
+    /cursor\.com/i,
+    /Open in Scira AI/i,
+    /Open in ChatGPT/i,
+    /Open in Claude/i,
+    /Open in Cursor/i,
+  ]) {
+    assert.doesNotMatch(exportedText, prohibitedIntegration);
+  }
 });
 
 test('exports a project-prefixed favicon whose target exists', async () => {
