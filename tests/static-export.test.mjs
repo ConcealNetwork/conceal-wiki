@@ -90,6 +90,12 @@ test('exports one home main landmark', async () => {
   assert.equal(home.match(/<main(?:\s|>)/g)?.length, 1);
 });
 
+test('exports one docs main landmark with the table of contents', async () => {
+  const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
+  assert.equal(docs.match(/<main(?:\s|>)/g)?.length, 1);
+  assert.equal(docs.match(/href="#what-this-preview-proves"/g)?.length, 2);
+});
+
 test('does not export prohibited AI integrations', async () => {
   const exportFiles = await collectHtml(outputDirectory);
   const exportedText = [

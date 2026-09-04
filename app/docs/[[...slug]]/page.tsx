@@ -1,5 +1,6 @@
 import { getPageImageUrl, getPageMarkdownUrl, source } from '@/lib/source';
 import { CopyMarkdownButton } from '@/components/copy-markdown-button';
+import { InlineTOC } from 'fumadocs-ui/components/inline-toc';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
@@ -15,8 +16,11 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const markdownUrl = getPageMarkdownUrl(page).url;
 
   return (
-    <section className="grid [grid-area:main] justify-items-center">
-      <article id="nd-page" className="flex min-w-0 w-full max-w-[900px] flex-col gap-4 px-4 py-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14">
+    <main className="grid [grid-area:main] justify-items-center" data-layout-main="">
+      <article
+        id="nd-page"
+        className="flex min-w-0 w-full max-w-[900px] flex-col gap-4 px-4 py-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14"
+      >
         <h1 className="text-[1.75em] font-semibold">{page.data.title}</h1>
         <p className="mb-0 text-lg text-fd-muted-foreground">{page.data.description}</p>
         <div className="flex flex-row items-center gap-2 border-b pb-6">
@@ -30,6 +34,7 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
             Edit on GitHub
           </a>
         </div>
+        <InlineTOC items={page.data.toc} defaultOpen />
         <div className="prose flex-1">
           <MDX
             components={getMDXComponents({
@@ -39,7 +44,7 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
           />
         </div>
       </article>
-    </section>
+    </main>
   );
 }
 
