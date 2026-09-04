@@ -2,15 +2,23 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col justify-center text-center flex-1">
-      <h1 className="text-2xl font-bold mb-4">Hello World</h1>
-      <p>
-        You can open{' '}
-        <Link href="/docs" className="font-medium underline">
-          /docs
-        </Link>{' '}
-        and see the documentation.
+    <main className="mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-3xl flex-col justify-center px-6 py-16">
+      <p className="mb-4 text-sm font-medium uppercase tracking-[0.2em] text-fd-muted-foreground">
+        Migration preview
       </p>
-    </div>
+      <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">Conceal Wiki</h1>
+      <p className="mt-6 max-w-2xl text-lg leading-8 text-fd-muted-foreground">
+        A new, searchable home for Conceal Network documentation. This preview establishes the
+        publishing platform before the existing wiki content is migrated.
+      </p>
+      <div className="mt-10 flex flex-wrap gap-4">
+        <Link href="/docs/" className="rounded-full bg-fd-primary px-5 py-3 font-medium text-fd-primary-foreground">
+          Open documentation preview
+        </Link>
+        <a href="https://conceal.network/wiki/" className="rounded-full border border-fd-border px-5 py-3 font-medium">
+          Visit the current production wiki
+        </a>
+      </div>
+    </main>
   );
 }

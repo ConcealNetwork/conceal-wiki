@@ -7,7 +7,9 @@
     "dev": "next dev",
     "start": "serve out",
     "types:check": "next typegen && tsc --noEmit",
-    "lint": "eslint"
+    "lint": "eslint",
+    "test:static": "node --test tests/static-export.test.mjs",
+    "verify": "npm run lint && npm run types:check && GITHUB_PAGES=true npm run build && npm run test:static"
   },
   "dependencies": {
     "cn": "^0.2.4",

@@ -2,6 +2,11 @@ import { Inter } from 'next/font/google';
 import { Provider } from '@/components/provider';
 import './global.css';
 
+export const metadata = {
+  title: { default: 'Conceal Wiki', template: '%s | Conceal Wiki' },
+  description: 'Documentation for Conceal Network.',
+};
+
 const inter = Inter({
   subsets: ['latin'],
 });
