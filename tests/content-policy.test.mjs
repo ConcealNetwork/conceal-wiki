@@ -34,6 +34,14 @@ const taskTwoSources = [
   'content/docs/messaging.mdx',
   'content/docs/support.mdx',
 ];
+const walletSafetyPatterns = [
+  /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
+  /private(?:[\s-]+[a-z]+){0,2}[\s-]+key\s*(?:example|:|\[)/i,
+  /rm\s+-rf/i,
+  /(?:browser|web) wallet[^.\n]{0,160}(?:stores?|uploads?|backs? up)[^.\n]{0,160}conceal (?:server|network)/i,
+  /(?:native|official) iOS wallet/i,
+];
+const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
 
 async function collectMdxFiles(directory = docsDirectory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -100,15 +108,15 @@ test('labels Next Wallet experimental', async () => {
 
 test('does not publish unsafe wallet recovery or platform claims', async () => {
   const sources = (await readMdxSources()).map(([, source]) => source).join('\n');
-  for (const prohibitedContent of [
-    /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
-    /private (?:spend )?key\s*(?:example|:|\[)/i,
-    /rm\s+-rf/i,
-    /(?:browser|web) wallet[^.\n]{0,160}(?:stores?|uploads?|backs? up)[^.\n]{0,160}conceal (?:server|network)/i,
-    /(?:native|official) iOS wallet/i,
-  ]) {
+  for (const prohibitedContent of walletSafetyPatterns) {
     assert.doesNotMatch(sources, prohibitedContent);
   }
+});
+
+test('source safety policy rejects a private view key example mutation', () => {
+  const privateKeyPattern = walletSafetyPatterns[1];
+  assert.match(privateViewKeyMutation, privateKeyPattern);
+  assert.throws(() => assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern));
 });
 
 test('records legacy documentation attribution and licence', async () => {

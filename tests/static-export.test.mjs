@@ -4,6 +4,14 @@ import path from 'node:path';
 import test from 'node:test';
 
 const outputDirectory = path.resolve('out');
+const walletSafetyPatterns = [
+  /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
+  /private(?:[\s-]+[a-z]+){0,2}[\s-]+key\s*(?:example|:|\[)/i,
+  /rm\s+-rf/i,
+  /(?:browser|web) wallet[^.\n]{0,160}(?:stores?|uploads?|backs? up)[^.\n]{0,160}conceal (?:server|network)/i,
+  /(?:native|official) iOS wallet/i,
+];
+const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
 
 async function collectFiles(directory, extension) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -187,13 +195,13 @@ test('does not export unsafe wallet recovery or platform claims', async () => {
     ...(await Promise.all(exportFiles.map((file) => readFile(file, 'utf8')))),
     ...(await collectReachableJavaScript()),
   ].join('\n');
-  for (const prohibitedContent of [
-    /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
-    /private (?:spend )?key\s*(?:example|:|\[)/i,
-    /rm\s+-rf/i,
-    /(?:browser|web) wallet[^.\n]{0,160}(?:stores?|uploads?|backs? up)[^.\n]{0,160}conceal (?:server|network)/i,
-    /(?:native|official) iOS wallet/i,
-  ]) {
+  for (const prohibitedContent of walletSafetyPatterns) {
     assert.doesNotMatch(exportedText, prohibitedContent);
   }
+});
+
+test('export safety policy rejects a private view key example mutation', () => {
+  const privateKeyPattern = walletSafetyPatterns[1];
+  assert.match(privateViewKeyMutation, privateKeyPattern);
+  assert.throws(() => assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern));
 });
