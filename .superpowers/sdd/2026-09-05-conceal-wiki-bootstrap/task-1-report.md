@@ -65,3 +65,21 @@ Build outputs, dependencies, environment files, and credentials are ignored and 
 - The generated scaffold currently identifies the site as `My App` and contains the default Hello World/Components content; later tasks must replace this with Conceal branding and migration preview content.
 - The generated Next 16 export names the docs page `out/docs.html`; the contract intentionally requires `out/docs/index.html` and therefore remains red until the project export routing is adapted.
 - The TypeScript pin is a bootstrap compatibility adjustment necessitated by the current generator dependency range and ESLint peer support.
+
+## Fix round 1: plain npm ci evidence
+
+The required unmodified command was rerun exactly:
+
+```text
+npm ci
+```
+
+Result:
+
+```text
+added 628 packages, and audited 629 packages in 9s
+found 0 vulnerabilities
+PLAIN_NPM_CI_STATUS:0
+```
+
+The command completed successfully with the generated lockfile. `git status --short` produced no output afterward, confirming the source tree and lockfile remained clean. No source or lockfile fix was needed, so no additional commit was created for this round.
