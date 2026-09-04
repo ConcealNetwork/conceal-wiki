@@ -108,7 +108,9 @@ test('includes research and historical archive pages with explicit retirement bo
 
   const research = await readFile(path.resolve('content/docs/research.mdx'), 'utf8');
   assert.match(research, /Status: Experimental/);
-  assert.match(research, /(?:provisional|not a consensus decision)/i);
+  assert.match(research, /unaudited/i);
+  assert.match(research, /provisional/i);
+  assert.match(research, /not a consensus decision/i);
 
   for (const source of [
     'content/docs/historical/conceal-id.mdx',

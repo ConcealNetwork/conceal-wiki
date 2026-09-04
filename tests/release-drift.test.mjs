@@ -17,10 +17,20 @@ test('reports only official release tags that differ from the documented snapsho
   assert.deepEqual(
     compareReleaseTags(DOCUMENTED_RELEASES, {
       ...DOCUMENTED_RELEASES,
-      Core: 'v6.7.6',
+      Core: '6.7.6',
     }),
-    [{ component: 'Core', documentedTag: 'v6.7.5', latestTag: 'v6.7.6' }],
+    [{ component: 'Core', documentedTag: '6.7.5', latestTag: '6.7.6' }],
   );
+});
+
+test('uses the exact Task 2 release-tag snapshot', () => {
+  assert.deepEqual(DOCUMENTED_RELEASES, {
+    Core: '6.7.5',
+    Desktop: '6.7.8',
+    'Web Wallet': 'v2.1.4',
+    Android: 'v6.0.4-f-droid',
+    Guardian: 'v0.7.8',
+  });
 });
 
 test('formats a deterministic documentation-drift issue body', () => {
@@ -67,16 +77,19 @@ test('compares the documented snapshot after reading official release tags', asy
   ]);
 });
 
-test('the issue-only drift workflow is scheduled, manual, and least-privilege', async () => {
+test('the issue-only drift workflow is scheduled, manual, singleton-safe, and least-privilege', async () => {
   const workflow = await readFile(new URL('../.github/workflows/docs-drift.yml', import.meta.url), 'utf8');
 
   assert.match(workflow, /^on:\n(?:[\s\S]*\n)?\s*schedule:/m);
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /contents: read/);
   assert.match(workflow, /issues: write/);
+  assert.match(workflow, /^concurrency:\n\s+group: docs-release-drift-\$\{\{ github\.repository \}\}\n\s+cancel-in-progress: false/m);
   assert.match(workflow, /actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1/);
   assert.match(workflow, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7\.0\.0/);
   assert.match(workflow, /actions\/github-script@ed597411d8f924073f98dfc5c65a23a2325f34 # v8\.0\.0/);
+  assert.match(workflow, /github\.paginate\(github\.rest\.issues\.listForRepo,/);
+  assert.match(workflow, /issues\s*\.filter\(\(issue\) => !issue\.pull_request\)\s*\.find\(\(issue\) => issue\.title === title\)/);
   assert.doesNotMatch(workflow, /npm run (?:build|verify)|next build|deploy|configure-pages|upload-pages-artifact/i);
   assert.doesNotMatch(workflow, /(?:ftp|hosting|api)[_-]?(?:key|token|secret|credential)|secrets\./i);
 });

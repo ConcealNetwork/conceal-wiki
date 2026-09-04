@@ -1,6 +1,6 @@
 export const DOCUMENTED_RELEASES = Object.freeze({
-  Core: 'v6.7.5',
-  Desktop: 'v6.7.8',
+  Core: '6.7.5',
+  Desktop: '6.7.8',
   'Web Wallet': 'v2.1.4',
   Android: 'v6.0.4-f-droid',
   Guardian: 'v0.7.8',

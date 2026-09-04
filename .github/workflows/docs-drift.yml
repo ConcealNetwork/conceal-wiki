@@ -9,6 +9,10 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  group: docs-release-drift-${{ github.repository }}
+  cancel-in-progress: false
+
 jobs:
   check-release-drift:
     runs-on: ubuntu-latest
@@ -30,13 +34,15 @@ jobs:
               return;
             }
             const title = 'Documentation release drift';
-            const { data: issues } = await github.rest.issues.listForRepo({
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
               owner: context.repo.owner,
               repo: context.repo.repo,
               state: 'open',
               per_page: 100,
             });
-            const existingIssue = issues.find((issue) => issue.title === title);
+            const existingIssue = issues
+              .filter((issue) => !issue.pull_request)
+              .find((issue) => issue.title === title);
             if (existingIssue) {
               await github.rest.issues.update({
                 owner: context.repo.owner,
