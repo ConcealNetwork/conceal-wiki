@@ -42,22 +42,15 @@ test('orders the task-oriented root navigation', async () => {
   assert.deepEqual(meta.pages, expectedNavigation);
 });
 
-test('publishes dated, current landing content with primary sources', async () => {
-  const expectedPages = [
-    'index.mdx',
-    'start-here/index.mdx',
-    'start-here/choose-a-wallet.mdx',
-    'network-and-ccx.mdx',
-  ];
-  const sources = new Map(await readMdxSources());
-
-  for (const page of expectedPages) {
-    const source = sources.get(path.join(docsDirectory, page));
-    assert.ok(source, `expected ${page} to be published`);
-    assert.match(source, /Status: Current/);
-    assert.match(source, new RegExp(`Last verified: ${verificationDate}`));
-    assert.match(source, /## Primary sources/);
-    assert.match(source, /https:\/\//);
+test('requires dated operational content and primary sources on every published MDX page', async () => {
+  for (const [file, source] of await readMdxSources()) {
+    assert.match(source, /Status: (?:Current|Experimental)/, `${file}: operational status`);
+    assert.match(source, new RegExp(`Last verified: ${verificationDate}`), `${file}: verification date`);
+    assert.match(
+      source,
+      /^## Primary sources\s*$((?:(?!^## ).)*https:\/\/)/ms,
+      `${file}: primary-source URL`,
+    );
   }
 });
 
