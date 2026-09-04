@@ -31,6 +31,14 @@ test('exports the Conceal migration preview', async () => {
   assert.match(docs, /Conceal documentation is moving/);
 });
 
+test('exports project-prefixed public social image URLs', async () => {
+  const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
+  const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';
+  assert.doesNotMatch(docs, /https?:\/\/localhost(?::\d+)?/);
+  assert.match(docs, new RegExp(`property="og:image" content="${imageUrl}"`));
+  assert.match(docs, new RegExp(`name="twitter:image" content="${imageUrl}"`));
+});
+
 test('does not expose a local filesystem path', async () => {
   const files = await collectHtml(outputDirectory);
   const html = (await Promise.all(files.map((file) => readFile(file, 'utf8')))).join('\n');

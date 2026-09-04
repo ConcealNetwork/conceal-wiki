@@ -3,6 +3,7 @@ import { Provider } from '@/components/provider';
 import './global.css';
 
 export const metadata = {
+  metadataBase: new URL('https://concealnetwork.github.io/conceal-wiki/'),
   title: { default: 'Conceal Wiki', template: '%s | Conceal Wiki' },
   description: 'Documentation for Conceal Network.',
 };
