@@ -91,10 +91,11 @@ Concurrency will allow only one Pages deployment at a time. A newer deployment m
 ## Post-plan compatibility note
 
 This note records the as-built dependency decision after the original execution
-plan was approved. TypeScript is deliberately pinned to 6.0.3 because the
-currently installed `typescript-eslint` peer range is `>=4.8.4 <6.1.0`.
-TypeScript 7 is deferred until the surrounding linting ecosystem declares
-support; it is not an unplanned upgrade target for this bootstrap.
+plan was approved. The project uses Microsoft's supported side-by-side
+transition: `@typescript/native` aliases TypeScript 7 for the `tsc` CLI, while
+`typescript` aliases `@typescript/typescript6` so the current typescript-eslint
+integration continues to receive a TypeScript 6 compiler API. This preserves a
+valid peer graph while adopting the TypeScript 7 compiler.
 
 ## Validation
 

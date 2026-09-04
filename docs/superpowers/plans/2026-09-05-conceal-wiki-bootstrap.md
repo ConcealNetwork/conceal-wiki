@@ -6,7 +6,7 @@
 
 **Architecture:** Generate the official Next.js static Fumadocs template, then add a GitHub-project base-path contract and a small Conceal preview page. A least-privilege GitHub Actions workflow builds the static `out/` artifact and deploys it through GitHub Pages; the public deployment is verified independently of the workflow result.
 
-**Tech Stack:** Node.js 24, npm, Next.js 16.3.4, React 19.2.8, Fumadocs Core/UI 16.15.6, Fumadocs MDX 15.4.0, TypeScript 7.0.2, ESLint 9, Node test runner, GitHub Actions, GitHub Pages.
+**Tech Stack:** Node.js 24, npm, Next.js 16.3.4, React 19.2.8, Fumadocs Core/UI 16.15.7, Fumadocs MDX 15.4.0, TypeScript 7.0.2, ESLint 9, Node test runner, GitHub Actions, GitHub Pages.
 
 **Spec:** `docs/superpowers/specs/2026-09-05-conceal-wiki-bootstrap-design.md`
 
