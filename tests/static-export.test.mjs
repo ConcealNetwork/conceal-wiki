@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
 
@@ -37,6 +37,19 @@ test('exports project-prefixed public social image URLs', async () => {
   assert.doesNotMatch(docs, /https?:\/\/localhost(?::\d+)?/);
   assert.match(docs, new RegExp(`property="og:image" content="${imageUrl}"`));
   assert.match(docs, new RegExp(`name="twitter:image" content="${imageUrl}"`));
+});
+
+test('exports a project-prefixed favicon whose target exists', async () => {
+  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
+  const favicon = home.match(/<link rel="icon" href="([^"]+)"/);
+  assert.ok(favicon, 'expected the exported home page to declare a favicon');
+  assert.match(favicon[1], /^\/conceal-wiki\//);
+
+  const faviconPath = new URL(favicon[1], 'https://example.test').pathname.replace(
+    /^\/conceal-wiki\//,
+    '',
+  );
+  assert.equal((await stat(path.join(outputDirectory, faviconPath))).isFile(), true);
 });
 
 test('does not expose a local filesystem path', async () => {
