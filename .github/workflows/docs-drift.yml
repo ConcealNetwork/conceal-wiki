@@ -33,28 +33,7 @@ jobs:
               core.notice('Documented releases match official latest tags.');
               return;
             }
-            const title = 'Documentation release drift';
-            const issues = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100,
-            });
-            const existingIssue = issues
-              .filter((issue) => !issue.pull_request)
-              .find((issue) => issue.title === title);
-            if (existingIssue) {
-              await github.rest.issues.update({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: existingIssue.number,
-                body,
-              });
-              return;
-            }
-            await github.rest.issues.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title,
-              body,
-            });
+            const { createOrUpdateDocumentationDriftIssue } = await import(
+              `${process.env.GITHUB_WORKSPACE}/scripts/check-doc-release-drift.mjs`,
+            );
+            await createOrUpdateDocumentationDriftIssue(github, context.repo, body);

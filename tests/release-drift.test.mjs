@@ -6,6 +6,7 @@ import * as releaseDrift from '../scripts/check-doc-release-drift.mjs';
 const {
   checkDocumentedReleaseDrift,
   compareReleaseTags,
+  createOrUpdateDocumentationDriftIssue,
   DOCUMENTED_RELEASES,
   fetchOfficialReleaseTags,
   formatDriftIssue,
@@ -77,6 +78,74 @@ test('compares the documented snapshot after reading official release tags', asy
   ]);
 });
 
+test('updates the existing documentation-drift issue after filtering pull requests', async () => {
+  assert.equal(typeof createOrUpdateDocumentationDriftIssue, 'function');
+  if (typeof createOrUpdateDocumentationDriftIssue !== 'function') return;
+
+  const calls = { paginate: [], update: [], create: [] };
+  const listForRepo = () => {};
+  const github = {
+    paginate: async (...args) => {
+      calls.paginate.push(args);
+      return [
+        { number: 10, title: 'Documentation release drift', pull_request: {} },
+        { number: 20, title: 'Documentation release drift' },
+      ];
+    },
+    rest: {
+      issues: {
+        listForRepo,
+        update: async (parameters) => calls.update.push(parameters),
+        create: async (parameters) => calls.create.push(parameters),
+      },
+    },
+  };
+
+  const result = await createOrUpdateDocumentationDriftIssue(
+    github,
+    { owner: 'ConcealNetwork', repo: 'conceal-wiki' },
+    'changed release tags',
+  );
+
+  assert.deepEqual(calls.paginate, [[listForRepo, {
+    owner: 'ConcealNetwork', repo: 'conceal-wiki', state: 'open', per_page: 100,
+  }]]);
+  assert.deepEqual(calls.update, [{
+    owner: 'ConcealNetwork', repo: 'conceal-wiki', issue_number: 20, body: 'changed release tags',
+  }]);
+  assert.deepEqual(calls.create, []);
+  assert.deepEqual(result, { action: 'updated', issueNumber: 20 });
+});
+
+test('creates the documentation-drift issue only when no actual issue exists', async () => {
+  assert.equal(typeof createOrUpdateDocumentationDriftIssue, 'function');
+  if (typeof createOrUpdateDocumentationDriftIssue !== 'function') return;
+
+  const calls = { update: [], create: [] };
+  const github = {
+    paginate: async () => [{ number: 10, title: 'Documentation release drift', pull_request: {} }],
+    rest: {
+      issues: {
+        listForRepo: () => {},
+        update: async (parameters) => calls.update.push(parameters),
+        create: async (parameters) => calls.create.push(parameters),
+      },
+    },
+  };
+
+  const result = await createOrUpdateDocumentationDriftIssue(
+    github,
+    { owner: 'ConcealNetwork', repo: 'conceal-wiki' },
+    'changed release tags',
+  );
+
+  assert.deepEqual(calls.update, []);
+  assert.deepEqual(calls.create, [{
+    owner: 'ConcealNetwork', repo: 'conceal-wiki', title: 'Documentation release drift', body: 'changed release tags',
+  }]);
+  assert.deepEqual(result, { action: 'created' });
+});
+
 test('the issue-only drift workflow is scheduled, manual, singleton-safe, and least-privilege', async () => {
   const workflow = await readFile(new URL('../.github/workflows/docs-drift.yml', import.meta.url), 'utf8');
 
@@ -88,8 +157,8 @@ test('the issue-only drift workflow is scheduled, manual, singleton-safe, and le
   assert.match(workflow, /actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1/);
   assert.match(workflow, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7\.0\.0/);
   assert.match(workflow, /actions\/github-script@ed597411d8f924073f98dfc5c65a23a2325f34 # v8\.0\.0/);
-  assert.match(workflow, /github\.paginate\(github\.rest\.issues\.listForRepo,/);
-  assert.match(workflow, /issues\s*\.filter\(\(issue\) => !issue\.pull_request\)\s*\.find\(\(issue\) => issue\.title === title\)/);
+  assert.match(workflow, /await import\(\s*`\$\{process\.env\.GITHUB_WORKSPACE\}\/scripts\/check-doc-release-drift\.mjs`,\s*\)/);
+  assert.match(workflow, /createOrUpdateDocumentationDriftIssue\(github, context\.repo, body\)/);
   assert.doesNotMatch(workflow, /npm run (?:build|verify)|next build|deploy|configure-pages|upload-pages-artifact/i);
   assert.doesNotMatch(workflow, /(?:ftp|hosting|api)[_-]?(?:key|token|secret|credential)|secrets\./i);
 });

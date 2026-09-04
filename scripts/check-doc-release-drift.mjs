@@ -55,6 +55,30 @@ export async function checkDocumentedReleaseDrift(fetchImplementation = fetch) {
   return compareReleaseTags(DOCUMENTED_RELEASES, await fetchOfficialReleaseTags(fetchImplementation));
 }
 
+export async function createOrUpdateDocumentationDriftIssue(github, repository, body) {
+  const title = 'Documentation release drift';
+  const issues = await github.paginate(github.rest.issues.listForRepo, {
+    ...repository,
+    state: 'open',
+    per_page: 100,
+  });
+  const existingIssue = issues
+    .filter((issue) => !issue.pull_request)
+    .find((issue) => issue.title === title);
+
+  if (existingIssue) {
+    await github.rest.issues.update({
+      ...repository,
+      issue_number: existingIssue.number,
+      body,
+    });
+    return { action: 'updated', issueNumber: existingIssue.number };
+  }
+
+  await github.rest.issues.create({ ...repository, title, body });
+  return { action: 'created' };
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
   const mismatches = await checkDocumentedReleaseDrift();
   process.stdout.write(formatDriftIssue(mismatches));
