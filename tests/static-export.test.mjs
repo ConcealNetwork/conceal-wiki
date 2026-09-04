@@ -137,6 +137,32 @@ test('exports every Task 3 operator and developer guide with its visible status 
   }
 });
 
+test('exports research and historical archive routes with their visible status contract', async () => {
+  const experimentalRoutes = ['docs/research'];
+  const historicalRoutes = [
+    'docs/historical',
+    'docs/historical/conceal-live',
+    'docs/historical/roadmap-and-media',
+  ];
+  const unavailableRoutes = ['docs/historical/conceal-id', 'docs/historical/conceal-pay'];
+
+  for (const route of experimentalRoutes) {
+    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
+    assert.match(page, /Status: Experimental/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
+  for (const route of historicalRoutes) {
+    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
+    assert.match(page, /Status: Historical/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
+  for (const route of unavailableRoutes) {
+    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
+    assert.match(page, /Status: Unavailable/);
+    assert.match(page, /unavailable/i);
+  }
+});
+
 test('exports project-prefixed public social image URLs', async () => {
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';

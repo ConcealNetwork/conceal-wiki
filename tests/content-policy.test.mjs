@@ -42,6 +42,14 @@ const taskThreeSources = [
   'content/docs/releases-and-verification.mdx',
   'content/docs/wccx-bridge.mdx',
 ];
+const taskFourSources = [
+  'content/docs/research.mdx',
+  'content/docs/historical/index.mdx',
+  'content/docs/historical/conceal-live.mdx',
+  'content/docs/historical/conceal-id.mdx',
+  'content/docs/historical/conceal-pay.mdx',
+  'content/docs/historical/roadmap-and-media.mdx',
+];
 const walletSafetyPatterns = [
   /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
   /private(?:[\s-]+[a-z]+){0,2}[\s-]+key\s*(?:example|:|\[)/i,
@@ -82,13 +90,34 @@ test('orders the task-oriented root navigation', async () => {
 
 test('requires dated operational content and primary sources on every published MDX page', async () => {
   for (const [file, source] of await readMdxSources()) {
-    assert.match(source, /Status: (?:Current|Experimental)/, `${file}: operational status`);
+    assert.match(source, /Status: (?:Current|Experimental|Historical|Unavailable)/, `${file}: status`);
     assert.match(source, new RegExp(`Last verified: ${verificationDate}`), `${file}: verification date`);
     assert.match(
       source,
       /^## Primary sources\s*$((?:(?!^## ).)*https:\/\/)/ms,
       `${file}: primary-source URL`,
     );
+  }
+});
+
+test('includes research and historical archive pages with explicit retirement boundaries', async () => {
+  for (const source of taskFourSources) {
+    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected Task 4 page`);
+  }
+  assert.equal(await fileExists(path.resolve('content/docs/historical/meta.json')), true, 'historical navigation');
+
+  const research = await readFile(path.resolve('content/docs/research.mdx'), 'utf8');
+  assert.match(research, /Status: Experimental/);
+  assert.match(research, /(?:provisional|not a consensus decision)/i);
+
+  for (const source of [
+    'content/docs/historical/conceal-id.mdx',
+    'content/docs/historical/conceal-pay.mdx',
+  ]) {
+    const archive = await readFile(path.resolve(source), 'utf8');
+    assert.match(archive, /Status: Unavailable/);
+    assert.match(archive, /(?:unavailable|do not use|do not follow)/i);
+    assert.doesNotMatch(archive, /https:\/\/conceal\.cloud\/[^\s)]+/i);
   }
 });
 

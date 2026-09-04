@@ -1,0 +1,61 @@
+export const DOCUMENTED_RELEASES = Object.freeze({
+  Core: 'v6.7.5',
+  Desktop: 'v6.7.8',
+  'Web Wallet': 'v2.1.4',
+  Android: 'v6.0.4-f-droid',
+  Guardian: 'v0.7.8',
+});
+
+export const OFFICIAL_RELEASE_ENDPOINTS = Object.freeze({
+  Core: 'https://api.github.com/repos/ConcealNetwork/conceal-core/releases/latest',
+  Desktop: 'https://api.github.com/repos/ConcealNetwork/conceal-desktop/releases/latest',
+  'Web Wallet': 'https://api.github.com/repos/ConcealNetwork/conceal-web-wallet/releases/latest',
+  Android: 'https://api.github.com/repos/ConcealNetwork/conceal-wallet-cordova/releases/latest',
+  Guardian: 'https://api.github.com/repos/ConcealNetwork/conceal-guardian/releases/latest',
+});
+
+export function compareReleaseTags(documentedTags, latestTags) {
+  return Object.entries(documentedTags)
+    .filter(([component, documentedTag]) => latestTags[component] !== documentedTag)
+    .map(([component, documentedTag]) => ({
+      component,
+      documentedTag,
+      latestTag: latestTags[component],
+    }));
+}
+
+export function formatDriftIssue(mismatches) {
+  if (mismatches.length === 0) return '';
+
+  const rows = mismatches
+    .map(({ component, documentedTag, latestTag }) => `| ${component} | ${documentedTag} | ${latestTag} |`)
+    .join('\n');
+
+  return `## Documentation release drift\n\nThe documented release snapshot differs from the official GitHub release tags. Review the linked official release before changing documentation.\n\n| Component | Documented tag | Official latest tag |\n| --- | --- | --- |\n${rows}\n\nThis issue is a review signal only. It does not publish or change documentation.\n`;
+}
+
+export async function fetchOfficialReleaseTags(fetchImplementation = fetch) {
+  const entries = await Promise.all(Object.entries(OFFICIAL_RELEASE_ENDPOINTS).map(async ([component, endpoint]) => {
+    const response = await fetchImplementation(endpoint, {
+      headers: { Accept: 'application/vnd.github+json' },
+    });
+    if (!response.ok) throw new Error(`${component}: official release lookup failed (${response.status})`);
+
+    const release = await response.json();
+    if (typeof release.tag_name !== 'string' || release.tag_name.length === 0) {
+      throw new Error(`${component}: official release response has no tag_name`);
+    }
+    return [component, release.tag_name];
+  }));
+
+  return Object.fromEntries(entries);
+}
+
+export async function checkDocumentedReleaseDrift(fetchImplementation = fetch) {
+  return compareReleaseTags(DOCUMENTED_RELEASES, await fetchOfficialReleaseTags(fetchImplementation));
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const mismatches = await checkDocumentedReleaseDrift();
+  process.stdout.write(formatDriftIssue(mismatches));
+}
