@@ -9,6 +9,12 @@ Last verified: 2026-09-05
 
 CN-GPU mining participates in Conceal's proof-of-work network. Treat the Core source as the implementation reference for the current algorithm and network rules. Mining has hardware, electricity, software, pool, network, and market risk; this page does not estimate an outcome or recommend a miner, pool, or market.
 
+## How CN-GPU mining works
+
+A miner takes current work from a node, tries proof-of-work nonces, and produces a candidate block when its work meets the network rules. The node validates and submits that candidate to the network; a block reward is assigned only when the candidate is accepted as a valid block under consensus. The [Core miner implementation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Miner.cpp) and [consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h) are the primary implementation references for those rules.
+
+In solo mining, the miner submits candidate work through its own node. In a pool, the pool operator coordinates work submission from multiple miners and applies its own current accounting rules; a pool share is not the same thing as an accepted network block. Check any pool's live terms independently rather than treating a historical comparison as current.
+
 ## Before connecting hardware
 
 1. Read the current [Core consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h) and [Core releases](https://github.com/ConcealNetwork/conceal-core/releases) before choosing software or updating a host.
@@ -25,5 +31,6 @@ Pool availability and terms can change without notice. Assess a pool independent
 ## Primary sources
 
 - [Conceal Core consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h)
+- [Conceal Core miner implementation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Miner.cpp)
 - [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
 - [Conceal Network block explorer and pool directory](https://explorer.conceal.network/)

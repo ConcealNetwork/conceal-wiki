@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
+import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
 
 const outputDirectory = path.resolve('out');
 const walletSafetyPatterns = [
@@ -12,12 +13,6 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
-const operatorSafetyPatterns = [
-  /(?:pool|mining)[^.\n]{0,160}(?:fee|hashrate)[^.\n]{0,160}\b\d+(?:\.\d+)?\s*(?:%|[kmgth]?h\/s)/i,
-  /(?:\b(?:we\s+)?recommend(?:ed)?\s+(?:(?:using|an?|the)\s+)?|\bbest\s+)(?:exchange|market|pool)\b/i,
-  /(?:localhost|127\.0\.0\.1)[^.\n]{0,120}(?:rpc|daemon)/i,
-  /(?:bridge|wccx)[^.\n]{0,160}(?:solvent|fully backed|reserves? (?:are|will remain)|guarantee)/i,
-];
 
 async function collectFiles(directory, extension) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -228,12 +223,22 @@ test('does not export unsafe wallet recovery or platform claims', async () => {
 
 test('does not export stale or unsafe operator guidance', async () => {
   const exportFiles = await collectHtml(outputDirectory);
-  const exportedText = [
+  const exportedArtifacts = [
     ...(await Promise.all(exportFiles.map((file) => readFile(file, 'utf8')))),
     ...(await collectReachableJavaScript()),
-  ].join('\n');
-  for (const prohibitedContent of operatorSafetyPatterns) {
-    assert.doesNotMatch(exportedText, prohibitedContent);
+  ];
+  for (const [index, artifact] of exportedArtifacts.entries()) {
+    for (const [name, isUnsafe] of Object.entries(operatorSafetyChecks)) {
+      assert.equal(isUnsafe(artifact), false, `artifact ${index}: ${name}`);
+    }
+  }
+});
+
+test('export safety policy rejects unsafe operator mutations', () => {
+  for (const [name, mutations] of Object.entries(operatorSafetyMutations)) {
+    for (const mutation of mutations) {
+      assert.equal(operatorSafetyChecks[name](mutation), true, name);
+    }
   }
 });
 

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
+import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
 
 const docsDirectory = path.resolve('content/docs');
 const verificationDate = '2026-09-05';
@@ -49,18 +50,6 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
-const operatorSafetyPatterns = [
-  /(?:pool|mining)[^.\n]{0,160}(?:fee|hashrate)[^.\n]{0,160}\b\d+(?:\.\d+)?\s*(?:%|[kmgth]?h\/s)/i,
-  /(?:\b(?:we\s+)?recommend(?:ed)?\s+(?:(?:using|an?|the)\s+)?|\bbest\s+)(?:exchange|market|pool)\b/i,
-  /(?:localhost|127\.0\.0\.1)[^.\n]{0,120}(?:rpc|daemon)/i,
-  /(?:bridge|wccx)[^.\n]{0,160}(?:solvent|fully backed|reserves? (?:are|will remain)|guarantee)/i,
-];
-const operatorSafetyMutations = [
-  'Mining hashrate: 42 MH/s',
-  'Best exchange',
-  'localhost RPC daemon',
-  'wCCX bridge reserves are fully backed',
-];
 
 async function collectMdxFiles(directory = docsDirectory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -136,17 +125,28 @@ test('links Task 3 guides to canonical operator and bridge sources', async () =>
   }
 });
 
+test('explains CN-GPU mining mechanics from a primary source', async () => {
+  const mining = await readFile(path.resolve('content/docs/mining.mdx'), 'utf8');
+  assert.match(mining, /https:\/\/github\.com\/ConcealNetwork\/conceal-core\/blob\/master\/src\/CryptoNoteCore\/Miner\.cpp/);
+  assert.match(mining, /miner[^.\n]{0,120}(?:proof of work|candidate block)/i);
+  assert.match(mining, /submit[^.\n]{0,120}(?:candidate|work|block)/i);
+  assert.match(mining, /reward[^.\n]{0,120}(?:accepted|block|valid)/i);
+  assert.match(mining, /\bsolo mining\b/i);
+  assert.match(mining, /\bin a pool\b/i);
+});
+
 test('does not publish stale or unsafe operator guidance', async () => {
   const sources = (await Promise.all(taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')))).join('\n');
-  for (const prohibitedContent of operatorSafetyPatterns) {
-    assert.doesNotMatch(sources, prohibitedContent);
+  for (const [name, isUnsafe] of Object.entries(operatorSafetyChecks)) {
+    assert.equal(isUnsafe(sources), false, name);
   }
 });
 
 test('operator safety policy rejects stale or unsafe example mutations', () => {
-  for (const [index, prohibitedContent] of operatorSafetyPatterns.entries()) {
-    assert.match(operatorSafetyMutations[index], prohibitedContent);
-    assert.throws(() => assert.doesNotMatch(operatorSafetyMutations[index], prohibitedContent));
+  for (const [name, mutations] of Object.entries(operatorSafetyMutations)) {
+    for (const mutation of mutations) {
+      assert.equal(operatorSafetyChecks[name](mutation), true, name);
+    }
   }
 });
 
