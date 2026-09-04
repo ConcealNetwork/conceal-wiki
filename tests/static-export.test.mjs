@@ -54,13 +54,23 @@ test('exports links and assets beneath the GitHub project path', async () => {
   assert.match(home, /(?:src|href)="\/conceal-wiki\/_next\//);
 });
 
-test('exports the Conceal migration preview', async () => {
+test('exports the verified documentation landing pages', async () => {
   const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
+  const startHere = await readFile(path.join(outputDirectory, 'docs/start-here/index.html'), 'utf8');
+  const walletChoice = await readFile(
+    path.join(outputDirectory, 'docs/start-here/choose-a-wallet/index.html'),
+    'utf8',
+  );
+  const network = await readFile(path.join(outputDirectory, 'docs/network-and-ccx/index.html'), 'utf8');
+
   assert.match(home, /Conceal Wiki/);
-  assert.match(home, /Migration preview/);
-  assert.match(home, /https:\/\/conceal\.network\/wiki\//);
-  assert.match(docs, /Conceal documentation is moving/);
+  assert.doesNotMatch(home, /Migration preview/i);
+  assert.doesNotMatch(docs, /migration preview/i);
+  for (const page of [docs, startHere, walletChoice, network]) {
+    assert.match(page, /Status: Current/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
 });
 
 test('exports project-prefixed public social image URLs', async () => {
@@ -93,7 +103,7 @@ test('exports one home main landmark', async () => {
 test('exports one docs main landmark with the table of contents', async () => {
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   assert.equal(docs.match(/<main(?:\s|>)/g)?.length, 1);
-  assert.equal(docs.match(/href="#what-this-preview-proves"/g)?.length, 2);
+  assert.equal(docs.match(/href="#start-here"/g)?.length, 2);
 });
 
 test('does not export prohibited AI integrations', async () => {

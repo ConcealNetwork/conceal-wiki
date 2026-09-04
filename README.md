@@ -1,6 +1,6 @@
-# Conceal Wiki preview
+# Conceal Wiki
 
-This repository hosts the preview for the new Conceal Network documentation platform. It is a static Fumadocs site prepared for GitHub Pages at https://concealnetwork.github.io/conceal-wiki/.
+This repository hosts source-backed Conceal Network documentation. It is a static Fumadocs site prepared for GitHub Pages at https://concealnetwork.github.io/conceal-wiki/.
 
 ## Requirements
 
@@ -27,6 +27,6 @@ Run the full validation, including the GitHub Pages project-path build and stati
 npm run verify
 ```
 
-## Preview boundary
+## Publishing boundary
 
-This preview does not modify the existing FTP-hosted wiki or the production site. The current production wiki at https://conceal.network/wiki/ remains authoritative until migration and cutover are approved.
+This repository does not modify the existing FTP-hosted wiki or the production site. The legacy production wiki at https://conceal.network/wiki/ remains authoritative until migration and cutover are separately approved.
