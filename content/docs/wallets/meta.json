@@ -1,0 +1,12 @@
+{
+  "title": "Wallets",
+  "pages": [
+    "index",
+    "desktop",
+    "core-cli",
+    "web",
+    "android",
+    "next-wallet",
+    "paper-wallet"
+  ]
+}

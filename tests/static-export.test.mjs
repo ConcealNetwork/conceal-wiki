@@ -73,6 +73,41 @@ test('exports the verified documentation landing pages', async () => {
   }
 });
 
+test('exports every Task 2 user guide with its visible status contract', async () => {
+  const currentRoutes = [
+    'docs/wallets',
+    'docs/wallets/desktop',
+    'docs/wallets/core-cli',
+    'docs/wallets/web',
+    'docs/wallets/android',
+    'docs/wallets/paper-wallet',
+    'docs/backup-and-security',
+    'docs/earn-and-deposits',
+    'docs/messaging',
+    'docs/support',
+  ];
+  const experimentalRoutes = ['docs/wallets/next-wallet'];
+
+  for (const route of currentRoutes) {
+    const pagePath = path.join(outputDirectory, route, 'index.html');
+    const exists = await stat(pagePath).then(() => true, () => false);
+    assert.equal(exists, true, `${route}: expected exported route`);
+    if (!exists) continue;
+    const page = await readFile(pagePath, 'utf8');
+    assert.match(page, /Status: Current/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
+  for (const route of experimentalRoutes) {
+    const pagePath = path.join(outputDirectory, route, 'index.html');
+    const exists = await stat(pagePath).then(() => true, () => false);
+    assert.equal(exists, true, `${route}: expected exported route`);
+    if (!exists) continue;
+    const page = await readFile(pagePath, 'utf8');
+    assert.match(page, /Status: Experimental/);
+    assert.match(page, /Last verified: 2026-09-05/);
+  }
+});
+
 test('exports project-prefixed public social image URLs', async () => {
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';
@@ -144,4 +179,21 @@ test('does not expose a local filesystem path', async () => {
   const html = (await Promise.all(files.map((file) => readFile(file, 'utf8')))).join('\n');
   assert.doesNotMatch(html, /(?:file:\/\/)?\/Users\/travis\//);
   assert.doesNotMatch(html, /\/tmp\/conceal-wiki-/);
+});
+
+test('does not export unsafe wallet recovery or platform claims', async () => {
+  const exportFiles = await collectHtml(outputDirectory);
+  const exportedText = [
+    ...(await Promise.all(exportFiles.map((file) => readFile(file, 'utf8')))),
+    ...(await collectReachableJavaScript()),
+  ].join('\n');
+  for (const prohibitedContent of [
+    /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
+    /private (?:spend )?key\s*(?:example|:|\[)/i,
+    /rm\s+-rf/i,
+    /(?:browser|web) wallet[^.\n]{0,160}(?:stores?|uploads?|backs? up)[^.\n]{0,160}conceal (?:server|network)/i,
+    /(?:native|official) iOS wallet/i,
+  ]) {
+    assert.doesNotMatch(exportedText, prohibitedContent);
+  }
 });
