@@ -12,10 +12,18 @@ export function toPublicProjectPath(pathname: string) {
 }
 
 /**
+ * Maps an application page route to the canonical, trailing-slash Pages URL.
+ */
+export function toPublicPagePath(pathname: string) {
+  const publicPath = toPublicProjectPath(pathname);
+  return publicPath.endsWith('/') ? publicPath : `${publicPath}/`;
+}
+
+/**
  * Updates root-relative Markdown links while preserving external URLs.
  */
 export function toPublicProjectMarkdown(markdown: string) {
   return markdown.replace(/\]\((\/[^)]+)\)/g, (_match, pathname: string) => {
-    return `](${toPublicProjectPath(pathname)})`;
+    return `](${toPublicPagePath(pathname)})`;
   });
 }

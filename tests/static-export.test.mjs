@@ -79,6 +79,7 @@ for (const file of ['llms.txt', 'llms-full.txt']) {
     assert.ok(paths.length > 0, `${file} should advertise a project-prefixed URL`);
     assert.doesNotMatch(llmText, /(?:\]\(|\()\/docs(?:[)/]|\))/);
     for (const publicPath of paths) {
+      assert.ok(publicPath.endsWith('/'), `${file}: ${publicPath} should be a canonical Pages URL`);
       assert.equal((await stat(publicTargetPath(publicPath))).isFile(), true, `${file}: ${publicPath}`);
     }
   });

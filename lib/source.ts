@@ -1,6 +1,6 @@
 import { loader } from 'fumadocs-core/source';
 import { docsContentRoute, docsImageRoute, docsRoute } from './shared';
-import { toPublicProjectPath } from './project-path';
+import { toPublicPagePath, toPublicProjectPath } from './project-path';
 import { defineDocs } from 'fumadocs-mdx/macro';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 
@@ -47,7 +47,7 @@ export function getPageMarkdownUrl(page: (typeof source)['$inferPage']) {
 export async function getLLMText(page: (typeof source)['$inferPage']) {
   const processed = await page.data.getText('processed');
 
-  return `# ${page.data.title} (${toPublicProjectPath(page.url)})
+  return `# ${page.data.title} (${toPublicPagePath(page.url)})
 
 ${processed}`;
 }
