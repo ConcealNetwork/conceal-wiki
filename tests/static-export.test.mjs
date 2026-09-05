@@ -78,7 +78,7 @@ test('anchors the desktop sidebar to the viewport edge on wide screens', async (
   );
 });
 
-test('exports the verified documentation landing pages', async () => {
+test('exports the official documentation landing pages', async () => {
   const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
   const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
   const startHere = await readFile(path.join(outputDirectory, 'docs/start-here/index.html'), 'utf8');
@@ -88,29 +88,25 @@ test('exports the verified documentation landing pages', async () => {
   );
   const network = await readFile(path.join(outputDirectory, 'docs/network-and-ccx/index.html'), 'utf8');
 
-  assert.match(home, /Conceal Wiki/);
-  assert.doesNotMatch(home, /Migration preview/i);
-  assert.doesNotMatch(docs, /migration preview/i);
-  for (const page of [docs, startHere, walletChoice, network]) {
-    assert.match(page, /Status: Current/);
-    assert.match(page, /Last verified: 2026-09-05/);
+  assert.match(home, /Official documentation/);
+  assert.match(home, /Conceal documentation/);
+  assert.match(docs, /Learn how to use Conceal Network/);
+  for (const page of [home, docs, startHere, walletChoice, network]) {
+    assert.doesNotMatch(page, /source-backed|migration|legacy (?:production )?wiki|Last verified:|Status: Current/i);
   }
 });
 
 test('exports every source in the canonical expected-source manifest', async () => {
-  for (const { route, status } of EXPECTED_DOCS) {
+  for (const { route } of EXPECTED_DOCS) {
     const pagePath = path.join(outputDirectory, route, 'index.html');
     const exists = await stat(pagePath).then(() => true, () => false);
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
-    const page = await readFile(pagePath, 'utf8');
-    assert.match(page, new RegExp(`Status: ${status}`), `${route}: visible status`);
-    assert.match(page, /Last verified: 2026-09-05/, `${route}: visible verification date`);
   }
 });
 
-test('exports every Task 2 user guide with its visible status contract', async () => {
-  const currentRoutes = [
+test('exports every user guide without editorial status stamps', async () => {
+  const routes = [
     'docs/wallets',
     'docs/wallets/desktop',
     'docs/wallets/core-cli',
@@ -121,30 +117,20 @@ test('exports every Task 2 user guide with its visible status contract', async (
     'docs/earn-and-deposits',
     'docs/messaging',
     'docs/support',
+    'docs/wallets/next-wallet',
   ];
-  const experimentalRoutes = ['docs/wallets/next-wallet'];
 
-  for (const route of currentRoutes) {
+  for (const route of routes) {
     const pagePath = path.join(outputDirectory, route, 'index.html');
     const exists = await stat(pagePath).then(() => true, () => false);
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
     const page = await readFile(pagePath, 'utf8');
-    assert.match(page, /Status: Current/);
-    assert.match(page, /Last verified: 2026-09-05/);
-  }
-  for (const route of experimentalRoutes) {
-    const pagePath = path.join(outputDirectory, route, 'index.html');
-    const exists = await stat(pagePath).then(() => true, () => false);
-    assert.equal(exists, true, `${route}: expected exported route`);
-    if (!exists) continue;
-    const page = await readFile(pagePath, 'utf8');
-    assert.match(page, /Status: Experimental/);
-    assert.match(page, /Last verified: 2026-09-05/);
+    assert.doesNotMatch(page, /Last verified:|Status:/i);
   }
 });
 
-test('exports every Task 3 operator and developer guide with its visible status contract', async () => {
+test('exports every operator and developer guide without editorial status stamps', async () => {
   const routes = [
     'docs/mining',
     'docs/run-a-node',
@@ -159,35 +145,27 @@ test('exports every Task 3 operator and developer guide with its visible status 
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
     const page = await readFile(pagePath, 'utf8');
-    assert.match(page, /Status: Current/);
-    assert.match(page, /Last verified: 2026-09-05/);
+    assert.doesNotMatch(page, /Last verified:|Status:/i);
   }
 });
 
-test('exports research and historical archive routes with their visible status contract', async () => {
-  const experimentalRoutes = ['docs/research'];
-  const historicalRoutes = [
+test('exports research and retired-product notices with direct warnings', async () => {
+  const routes = [
+    'docs/research',
     'docs/historical',
     'docs/historical/conceal-live',
     'docs/historical/roadmap-and-media',
+    'docs/historical/conceal-id',
+    'docs/historical/conceal-pay',
   ];
-  const unavailableRoutes = ['docs/historical/conceal-id', 'docs/historical/conceal-pay'];
 
-  for (const route of experimentalRoutes) {
+  for (const route of routes) {
     const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
-    assert.match(page, /Status: Experimental/);
-    assert.match(page, /Last verified: 2026-09-05/);
+    assert.doesNotMatch(page, /Last verified:|Status:/i);
   }
-  for (const route of historicalRoutes) {
-    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
-    assert.match(page, /Status: Historical/);
-    assert.match(page, /Last verified: 2026-09-05/);
-  }
-  for (const route of unavailableRoutes) {
-    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
-    assert.match(page, /Status: Unavailable/);
-    assert.match(page, /unavailable/i);
-  }
+  assert.match(await readFile(path.join(outputDirectory, 'docs/research/index.html'), 'utf8'), /experimental/i);
+  assert.match(await readFile(path.join(outputDirectory, 'docs/historical/conceal-id/index.html'), 'utf8'), /unavailable/i);
+  assert.match(await readFile(path.join(outputDirectory, 'docs/historical/conceal-pay/index.html'), 'utf8'), /unavailable/i);
 });
 
 test('exports project-prefixed public social image URLs', async () => {

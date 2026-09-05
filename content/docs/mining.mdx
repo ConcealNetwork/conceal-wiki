@@ -3,17 +3,13 @@ title: Mining
 description: Learn the boundaries for CN-GPU mining and where to check live Conceal pool information.
 ---
 
-Status: Current
-
-Last verified: 2026-09-05
-
-CN-GPU mining participates in Conceal's proof-of-work network. Treat the Core source as the implementation reference for the current algorithm and network rules. Mining has hardware, electricity, software, pool, network, and market risk; this page does not estimate an outcome or recommend a miner, pool, or market.
+CN-GPU mining secures Conceal's proof-of-work network. Core defines the algorithm and network rules. Mining costs depend on your hardware, electricity, software, pool, network connection, and the CCX market. This guide does not estimate profit or recommend a miner or pool.
 
 ## How CN-GPU mining works
 
-A miner takes current work from a node, tries proof-of-work nonces, and produces a candidate block when its work meets the network rules. The node validates and submits that candidate to the network; a block reward is assigned only when the candidate is accepted as a valid block under consensus. The [Core miner implementation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Miner.cpp) and [consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h) are the primary implementation references for those rules.
+A miner requests work from a node and tries proof-of-work nonces. When the work meets the network rules, it produces a candidate block. The node validates and submits that block. The network assigns a reward only after accepting a valid block. See the [Core miner implementation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Miner.cpp) and [consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h) for the code that applies these rules.
 
-In solo mining, the miner submits candidate work through its own node. In a pool, the pool operator coordinates work submission from multiple miners and applies its own current accounting rules; a pool share is not the same thing as an accepted network block. Check any pool's live terms independently rather than treating a historical comparison as current.
+In solo mining, your miner submits work through your node. A pool coordinates work from many miners and uses its own accounting rules. A pool share is not an accepted network block. Check the pool's current fees, payout rules, and availability before connecting.
 
 ## Before connecting hardware
 
@@ -24,11 +20,11 @@ In solo mining, the miner submits candidate work through its own node. In a pool
 
 ## Operational boundaries
 
-Do not copy a configuration merely because it worked for someone else. Confirm the selected software, address, and network settings in your own environment. Keep mining hosts patched, restrict administrative access, and inspect logs locally for unexpected processes or configuration changes.
+Confirm the software, wallet address, and network settings on your own host. Keep the host patched and restrict administrative access. Check local logs for unexpected processes or configuration changes.
 
 Pool availability and terms can change without notice. Assess a pool independently at the time you use it; this guide intentionally does not publish a pool comparison or standing performance figures.
 
-## Primary sources
+## Resources
 
 - [Conceal Core consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h)
 - [Conceal Core miner implementation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Miner.cpp)

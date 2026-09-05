@@ -4,7 +4,7 @@ import './global.css';
 
 export const metadata = {
   metadataBase: new URL('https://concealnetwork.github.io/conceal-wiki/'),
-  title: { default: 'Conceal Wiki', template: '%s | Conceal Wiki' },
+  title: { default: 'Conceal Docs', template: '%s | Conceal Docs' },
   description: 'Documentation for Conceal Network.',
 };
 

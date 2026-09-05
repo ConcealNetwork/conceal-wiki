@@ -1,6 +1,6 @@
-# Conceal Wiki
+# Conceal Docs
 
-This repository hosts source-backed Conceal Network documentation. It is a static Fumadocs site prepared for GitHub Pages at https://concealnetwork.github.io/conceal-wiki/.
+This repository contains the official Conceal Network documentation. The Fumadocs site is published at https://concealnetwork.github.io/conceal-wiki/.
 
 ## Requirements
 
@@ -27,10 +27,6 @@ Run the full validation, including the GitHub Pages project-path build and stati
 npm run verify
 ```
 
-## Publishing boundary
-
-This repository does not modify the existing FTP-hosted wiki or the production site. The legacy production wiki at https://conceal.network/wiki/doku.php remains authoritative until migration and cutover are separately approved.
-
 ## Release-drift monitoring
 
-The weekly, manually runnable documentation-drift workflow compares the dated release snapshot in this repository with official GitHub latest-release endpoints. When a tag differs, it creates or updates one review issue. It does not change documentation, build or deploy the site, access hosting, or use stored credentials.
+The weekly release check compares documented versions with the latest GitHub releases. When a tag changes, it creates or updates one review issue. It never edits or publishes documentation.

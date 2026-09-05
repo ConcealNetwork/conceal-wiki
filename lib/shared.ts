@@ -1,4 +1,4 @@
-export const appName = 'Conceal Wiki';
+export const appName = 'Conceal Docs';
 export const docsRoute = '/docs';
 export const docsImageRoute = '/og/docs';
 export const docsContentRoute = '/llms.mdx/docs';

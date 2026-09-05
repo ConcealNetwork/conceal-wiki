@@ -54,7 +54,7 @@ test('matches the release monitor map to the wallet and node documentation snaps
 test('formats a deterministic documentation-drift issue body', () => {
   assert.equal(
     formatDriftIssue([{ component: 'Core', documentedTag: 'v6.7.5', latestTag: 'v6.7.6' }]),
-    `## Documentation release drift\n\nThe documented release snapshot differs from the official GitHub release tags. Review the linked official release before changing documentation.\n\n| Component | Documented tag | Official latest tag |\n| --- | --- | --- |\n| Core | v6.7.5 | v6.7.6 |\n\nThis issue is a review signal only. It does not publish or change documentation.\n`,
+    `## Documentation versions changed\n\nThe versions listed in the docs no longer match the latest GitHub releases. Check each release, then update the affected guides.\n\n| Component | Documented tag | Latest tag |\n| --- | --- | --- |\n| Core | v6.7.5 | v6.7.6 |\n\nThis issue does not edit or publish documentation.\n`,
   );
 });
 

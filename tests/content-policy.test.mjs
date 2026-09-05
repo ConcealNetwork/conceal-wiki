@@ -6,7 +6,6 @@ import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety
 import { EXPECTED_DOCS } from './expected-docs.mjs';
 
 const docsDirectory = path.resolve('content/docs');
-const verificationDate = '2026-09-05';
 const expectedNavigation = [
   'start-here',
   'wallets',
@@ -60,7 +59,6 @@ const walletSafetyPatterns = [
   /(?:native|official) iOS wallet/i,
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
-const canonicalLegacyWikiUrl = /^https:\/\/conceal\.network\/wiki\/doku\.php(?:\?id=[a-z0-9_-]+)?$/i;
 
 async function collectMdxFiles(directory = docsDirectory) {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -97,14 +95,35 @@ test('keeps the canonical expected source manifest present', async () => {
   }
 });
 
-test('requires dated operational content and primary sources on every published MDX page', async () => {
+test('presents Conceal documentation without migration-era editorial copy', async () => {
+  const home = await readFile(path.resolve('app/(home)/page.tsx'), 'utf8');
+  const readme = await readFile(path.resolve('README.md'), 'utf8');
+  const sources = [...(await readMdxSources()).map(([, source]) => source), home, readme];
+  const prohibitedCopy = [
+    /source[- ]backed/i,
+    /legacy(?:[ -]wiki| production wiki| documentation| page| roadmap| media)/i,
+    /conceal\.network\/wiki/i,
+    /\b(?:migration preview|migration snapshot|migration material|migration and cutover|this migration|for this migration)\b/i,
+    /authoritative until/i,
+    /separately approved cutover/i,
+    /searchable, reviewable|maintained, reviewable|version-controlled and reviewable/i,
+    /^Status: (?:Current|Experimental|Historical|Unavailable)$/im,
+    /^Last verified:/im,
+    /^## Primary sources$/im,
+  ];
+
+  for (const source of sources) {
+    for (const pattern of prohibitedCopy) assert.doesNotMatch(source, pattern);
+  }
+  assert.equal(await fileExists(path.resolve('ATTRIBUTION.md')), false);
+});
+
+test('links every published guide to useful project resources', async () => {
   for (const [file, source] of await readMdxSources()) {
-    assert.match(source, /Status: (?:Current|Experimental|Historical|Unavailable)/, `${file}: status`);
-    assert.match(source, new RegExp(`Last verified: ${verificationDate}`), `${file}: verification date`);
     assert.match(
       source,
-      /^## Primary sources\s*$((?:(?!^## ).)*https:\/\/)/ms,
-      `${file}: primary-source URL`,
+      /^## Resources\s*$((?:(?!^## ).)*https:\/\/)/ms,
+      `${file}: resource URL`,
     );
   }
 });
@@ -116,9 +135,8 @@ test('includes research and historical archive pages with explicit retirement bo
   assert.equal(await fileExists(path.resolve('content/docs/historical/meta.json')), true, 'historical navigation');
 
   const research = await readFile(path.resolve('content/docs/research.mdx'), 'utf8');
-  assert.match(research, /Status: Experimental/);
+  assert.match(research, /experimental/i);
   assert.match(research, /unaudited/i);
-  assert.match(research, /provisional/i);
   assert.match(research, /not a consensus decision/i);
 
   for (const source of [
@@ -126,46 +144,27 @@ test('includes research and historical archive pages with explicit retirement bo
     'content/docs/historical/conceal-pay.mdx',
   ]) {
     const archive = await readFile(path.resolve(source), 'utf8');
-    assert.match(archive, /Status: Unavailable/);
     assert.match(archive, /(?:unavailable|do not use|do not follow)/i);
     assert.doesNotMatch(archive, /https:\/\/conceal\.cloud\/[^\s)]+/i);
   }
 });
 
-test('expands the dated legacy archive stubs without reviving them', async () => {
+test('keeps retired-product notices direct and non-operational', async () => {
   const concealLive = await readFile(path.resolve('content/docs/historical/conceal-live.mdx'), 'utf8');
-  assert.match(concealLive, /Q2 2021/);
   assert.match(concealLive, /discontinued/i);
-  assert.match(concealLive, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=clive/);
-  assert.match(concealLive, /GNU Free Documentation License 1\.3/);
+  assert.match(concealLive, /do not use old setup/i);
 
   const roadmapAndMedia = await readFile(
     path.resolve('content/docs/historical/roadmap-and-media.mdx'),
     'utf8',
   );
-  assert.match(roadmapAndMedia, /2018[^\n]{0,80}2025|2025[^\n]{0,80}2018/);
-  assert.match(roadmapAndMedia, /2019[^\n]{0,80}2022|2022[^\n]{0,80}2019/);
-  assert.match(roadmapAndMedia, /historical|retired/i);
-  assert.match(roadmapAndMedia, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=roadmap/);
-  assert.match(roadmapAndMedia, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=media/);
-  assert.match(roadmapAndMedia, /GNU Free Documentation License 1\.3/);
+  assert.match(roadmapAndMedia, /release history/i);
+  assert.match(roadmapAndMedia, /do not confirm that a product shipped/i);
 });
 
-test('uses canonical DokuWiki URLs for legacy entry points and articles', async () => {
+test('does not link to the superseded documentation system', async () => {
   for (const [file, source] of await readMdxSources()) {
-    const urls = [...source.matchAll(/https:\/\/conceal\.network\/wiki[^\s)>]*/g)]
-      .map(([url]) => url.replace(/[.,;:]$/, ''));
-    for (const url of urls) {
-      assert.match(url, canonicalLegacyWikiUrl, `${file}: ${url}`);
-    }
-  }
-
-  for (const nonCanonical of [
-    'https://conceal.network/wiki/',
-    'https://conceal.network/wiki/start',
-    'https://conceal.network/wiki/doku.php/start',
-  ]) {
-    assert.doesNotMatch(nonCanonical, canonicalLegacyWikiUrl);
+    assert.doesNotMatch(source, /https:\/\/conceal\.network\/wiki/i, file);
   }
 });
 
@@ -179,21 +178,20 @@ test('publishes safe troubleshooting for sync, output, and platform-startup fail
   assert.match(troubleshooting, /synchroniz/i);
   assert.match(troubleshooting, /(?:output|transaction)[^\n]{0,100}optimiz|optimiz[^\n]{0,100}(?:output|transaction)/i);
   assert.match(troubleshooting, /(?:start|launch)[^\n]{0,100}(?:fail|error)|(?:fail|error)[^\n]{0,100}(?:start|launch)/i);
-  assert.match(troubleshooting, /https:\/\/conceal\.network\/wiki\/doku\.php\?id=faq/i);
   assert.doesNotMatch(
     troubleshooting,
     /(?:^|\n)\s*(?:[-*]\s*)?`?(?:reset\b|rm\s+-rf|(?:delete|remove)\s+(?:the\s+)?(?:blockchain|chain data|data directory))/im,
   );
 });
 
-test('describes current consensus issuance separately from a dated explorer snapshot', async () => {
+test('describes fixed consensus issuance separately from dated explorer figures', async () => {
   const network = await readFile(path.resolve('content/docs/network-and-ccx.mdx'), 'utf8');
 
   assert.match(network, /fixed consensus/i);
   assert.match(network, /200,000,000 CCX/);
   assert.match(network, /120-second|120 seconds/i);
   assert.match(network, /6 CCX/);
-  assert.match(network, /live explorer snapshot/i);
+  assert.match(network, /At \*\*2026-09-05[^\n]+the explorer reported/i);
   assert.match(network, /33,712,033\.757459 CCX/);
   assert.match(network, /2026-09-05/);
   assert.doesNotMatch(network, /^\|[^\n]*(?:height|reward|emission)[^\n]*\|/im);
@@ -241,14 +239,14 @@ test('links Task 3 guides to canonical operator and bridge sources', async () =>
   }
 });
 
-test('explains CN-GPU mining mechanics from a primary source', async () => {
+test('explains CN-GPU mining mechanics from the Core implementation', async () => {
   const mining = await readFile(path.resolve('content/docs/mining.mdx'), 'utf8');
   assert.match(mining, /https:\/\/github\.com\/ConcealNetwork\/conceal-core\/blob\/master\/src\/CryptoNoteCore\/Miner\.cpp/);
-  assert.match(mining, /miner[^.\n]{0,120}(?:proof of work|candidate block)/i);
+  assert.match(mining, /miner[^.\n]{0,120}(?:proof-of-work|candidate block)/i);
   assert.match(mining, /submit[^.\n]{0,120}(?:candidate|work|block)/i);
   assert.match(mining, /reward[^.\n]{0,120}(?:accepted|block|valid)/i);
   assert.match(mining, /\bsolo mining\b/i);
-  assert.match(mining, /\bin a pool\b/i);
+  assert.match(mining, /\ba pool coordinates\b/i);
 });
 
 test('does not publish stale or unsafe operator guidance', async () => {
@@ -266,12 +264,12 @@ test('operator safety policy rejects stale or unsafe example mutations', () => {
   }
 });
 
-test('labels Next Wallet experimental', async () => {
+test('warns that Next Wallet is experimental', async () => {
   const nextWallet = path.resolve('content/docs/wallets/next-wallet.mdx');
   assert.equal(await fileExists(nextWallet), true, 'Next Wallet guide');
   if (!(await fileExists(nextWallet))) return;
   const source = await readFile(nextWallet, 'utf8');
-  assert.match(source, /Status: Experimental/);
+  assert.match(source, /experimental and unaudited/i);
 });
 
 test('does not publish unsafe wallet recovery or platform claims', async () => {
@@ -285,10 +283,4 @@ test('source safety policy rejects a private view key example mutation', () => {
   const privateKeyPattern = walletSafetyPatterns[1];
   assert.match(privateViewKeyMutation, privateKeyPattern);
   assert.throws(() => assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern));
-});
-
-test('records legacy documentation attribution and licence', async () => {
-  const attribution = await readFile(path.resolve('ATTRIBUTION.md'), 'utf8');
-  assert.match(attribution, /https:\/\/conceal\.network\/wiki\//);
-  assert.match(attribution, /GNU Free Documentation License 1\.3/);
 });

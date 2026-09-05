@@ -1,38 +1,29 @@
 ---
 title: Network & CCX
-description: Find source-backed information about the Conceal network and its native asset.
+description: Learn how the Conceal network works and check current CCX supply data.
 ---
 
-Status: Current
-
-Last verified: 2026-09-05
-
-CCX is the native asset of the Conceal network. Network rules and issuance are implementation details that should be read from the current Core source and checked against live network information, not copied from an old static table.
+CCX is the native asset of the Conceal network. Core defines the network rules and issuance. The explorer reports current chain data.
 
 ## Fixed consensus issuance
 
-The current Core source configures a maximum money supply of **200,000,000 CCX**, six decimal places, and a **120-second** target between blocks. After the consensus-v8 activation height, the base reward function uses **6 CCX** per block and caps each reward at the supply remaining. Transaction fees and deposit state are separate from that base issuance calculation.
+Core sets a maximum supply of **200,000,000 CCX**, six decimal places, and a **120-second** block target. After the consensus-v8 activation height, the base reward is **6 CCX** per block and cannot exceed the remaining supply. Transaction fees and deposits do not change that base reward calculation.
 
 These are fixed consensus parameters in the referenced Core source, not a statement of how much CCX has already been issued. The release and source actually run by network participants determine the rules they enforce.
 
 ## Live issued supply
 
-At the **2026-09-05 04:54:15 AEST** live explorer snapshot, block 2,152,231 reported **33,712,033.757459 CCX** already generated and **11,436,394.196725 CCX** in deposits. The explorer derived **22,275,639.560734 CCX** circulating by subtracting those deposits from generated coins, and reported a 6 CCX base reward for that block.
+At **2026-09-05 04:54:15 AEST**, the explorer reported block 2,152,231, **33,712,033.757459 CCX** generated, and **11,436,394.196725 CCX** in deposits. It calculated **22,275,639.560734 CCX** circulating and showed a 6 CCX base reward for that block.
 
-Those height, issued-supply, deposit, and circulating values are time-sensitive explorer state. Use the [Conceal block explorer](https://explorer.conceal.network/) for a current view instead of treating this dated snapshot as live now.
+Those values change as the chain advances. Open the [Conceal block explorer](https://explorer.conceal.network/) for current figures.
 
-## What this page does not claim
+## Market and service conditions
 
-This page does not promise liquidity, profitability, exchange availability, or a particular network service level. Those are volatile conditions that need their own current, independent assessment.
+Liquidity, profitability, exchange availability, and service levels can change. Check each service before relying on it.
 
-## Legacy context
-
-The former [About page](https://conceal.network/wiki/doku.php?id=about) and [start page](https://conceal.network/wiki/doku.php?id=start) are retained as historical source context while the legacy wiki remains authoritative. This migration deliberately does not reproduce its legacy emission table.
-
-## Primary sources
+## Resources
 
 - [Conceal Core consensus configuration](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteConfig.h)
 - [Conceal Core reward calculation](https://github.com/ConcealNetwork/conceal-core/blob/master/src/CryptoNoteCore/Currency.cpp)
 - [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
 - [Conceal Network block explorer](https://explorer.conceal.network/)
-- [Legacy About page](https://conceal.network/wiki/doku.php?id=about)

@@ -3,11 +3,7 @@ title: wCCX Bridge
 description: Verify the intended wCCX token contract by chain and assess bridge operations separately.
 ---
 
-Status: Current
-
-Last verified: 2026-09-05
-
-wCCX is a chain-specific token representation documented by the official [wCCX source repository](https://github.com/ConcealNetwork/wCCX). A token contract, a bridge operation, reserves, liquidity, and the native gas needed to transact are separate things. Verifying one does not establish the state or safety of the others.
+wCCX represents CCX on another chain. The [wCCX repository](https://github.com/ConcealNetwork/wCCX) lists the contract addresses for each supported network. A valid contract address does not prove that a bridge route has reserves, liquidity, or enough native gas to complete a transaction.
 
 ## Verify token identity for the selected chain
 
@@ -18,11 +14,11 @@ wCCX is a chain-specific token representation documented by the official [wCCX s
 
 ## Bridge operation and risk boundaries
 
-Treat a bridge interface as a time-sensitive service. Confirm its current route, transaction requirements, and any stated limits from first-party material before submitting funds. Keep enough of the selected destination chain's native gas asset to pay for the transaction; gas requirements are chain-specific and can change.
+Check the bridge route, transaction requirements, and stated limits before sending funds. Keep enough of the destination chain's native asset to pay for gas. Gas requirements vary by chain and can change.
 
-This page makes no representation about bridge availability, custody, reserves, redemption, exit liquidity, market value, or transaction completion. Assess those conditions independently at the time of use, and do not interpret a token contract listing as evidence that a transfer path is currently usable.
+A contract listing does not mean a transfer route is working. Check bridge availability, custody terms, reserves, redemption, liquidity, and transaction status when you use it.
 
-## Primary sources
+## Resources
 
 - [Conceal wCCX repository and chain-specific contract listings](https://github.com/ConcealNetwork/wCCX)
 - [Conceal Core repository](https://github.com/ConcealNetwork/conceal-core)
