@@ -9,6 +9,13 @@ CCX is the native asset of the Conceal network. Core defines the network rules a
 
 Core sets a maximum supply of **200,000,000 CCX**, six decimal places, and a **120-second** block target. After the consensus-v8 activation height, the base reward is **6 CCX** per block and cannot exceed the remaining supply. Transaction fees and deposits do not change that base reward calculation.
 
+| Parameter | Value | Meaning |
+| --- | --- | --- |
+| Maximum supply | 200,000,000 CCX | Upper bound enforced by Core consensus rules |
+| Decimal places | 6 | Smallest represented unit is 0.000001 CCX |
+| Target block interval | 120 seconds | Intended interval used by the network rules |
+| Base reward after consensus v8 | 6 CCX | Reward before transaction fees, limited by remaining supply |
+
 These are fixed consensus parameters in the referenced Core source, not a statement of how much CCX has already been issued. The release and source actually run by network participants determine the rules they enforce.
 
 ## Live issued supply

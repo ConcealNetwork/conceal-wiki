@@ -1,0 +1,42 @@
+---
+title: Send and Receive CCX
+description: Check addresses, synchronization, amounts and confirmations when transferring CCX.
+---
+
+Confirm that the wallet is synchronized before relying on its balance or sending a transaction. Compare its block height with the [Conceal explorer](https://explorer.conceal.network/).
+
+## Receive CCX
+
+1. Open **Receive** in the wallet and select the intended account or address.
+2. Copy the address using the wallet control or show its QR code.
+3. Compare the beginning and end of the address after pasting or scanning it. Clipboard-changing malware can replace an address after you copy it.
+4. If a service requires a payment ID or an integrated address, follow that service's current deposit instructions. Do not invent or omit an identifier.
+5. For a new sender or workflow, receive a small test amount first.
+6. Wait for the transaction to appear and receive the number of confirmations required by the receiving party.
+
+An address is safe to share for receiving funds. Recovery information and private keys are not.
+
+## Send CCX
+
+1. Obtain the destination address through a trusted channel and confirm which network and asset the recipient expects.
+2. Paste or scan the address, then compare it with the original source. Recheck it after changing any other field.
+3. Enter the amount and any required payment identifier. Review the displayed fee and final total.
+4. Confirm that the remaining unlocked balance is sufficient. A total balance may include locked deposits, unconfirmed transfers, or outputs that are not yet spendable.
+5. Send a small test transaction when the destination or process is new.
+6. Record the transaction hash, not private wallet information, and use the explorer to follow confirmation.
+
+<Callout type="warn" title="Blockchain transfers cannot be recalled">
+  Do not approve the transaction until the asset, network, address, amount and any payment identifier have all been checked.
+</Callout>
+
+## If the wallet cannot construct the transaction
+
+Wait for synchronization and pending transactions to finish. If the wallet reports too many small outputs or asks for optimization, follow the output guidance in [Troubleshooting](../troubleshooting.mdx) before retrying.
+
+## Resources
+
+- [Conceal Network explorer](https://explorer.conceal.network/)
+- [Conceal Core wallet commands](https://github.com/ConcealNetwork/conceal-core/blob/master/src/ConcealWallet/ConcealWallet.cpp)
+- [Conceal Web Wallet source](https://github.com/ConcealNetwork/conceal-web-wallet)
+- [Official Conceal support](https://conceal.network/support/)
+

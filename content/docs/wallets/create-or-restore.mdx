@@ -1,0 +1,42 @@
+---
+title: Create or Restore a Wallet
+description: Create a new Conceal wallet or restore an existing one without exposing recovery information.
+---
+
+Creating and restoring are different operations. Create a wallet only when you need a new address and new recovery information. Restore when you already control recovery information for an existing wallet.
+
+## Create a new wallet
+
+1. Confirm that the application and version came from the official source described in [Install a Wallet](./install.mdx).
+2. Choose the wallet's **create** or **new wallet** action.
+3. Set a unique local password when the wallet offers encryption. This password protects that local copy; it is not a replacement for recovery information.
+4. Record every recovery item the wallet presents, in the original order and spelling, without copying it into chat, email, cloud notes, screenshots, or a support ticket.
+5. Complete the wallet's confirmation step, then lock the record away from the device.
+6. Let the wallet synchronize before treating its displayed balance or transaction history as complete.
+
+Use the receiving address only after checking it inside the wallet. Begin with a small transfer when practical.
+
+## Restore an existing wallet
+
+1. Work on a device and wallet installation you trust. Disconnect screen sharing and close applications that can record the clipboard or screen.
+2. Choose **restore**, **import**, or the specific import type that matches what you possess.
+3. Enter recovery information only into the verified wallet application. Wallets may support a mnemonic phrase, spend and view keys, or an encrypted backup file; not every wallet accepts every format.
+4. Set the restore height or scan start only when the wallet explains it. An incorrect recent height can hide older transactions until you rescan from an earlier point.
+5. Allow synchronization to finish, then compare the wallet height with the [live explorer](https://explorer.conceal.network/).
+6. Confirm the expected address and history before moving funds or deleting the previous wallet installation.
+
+<Callout type="warn" title="Recovery information controls the wallet">
+  Conceal support does not need your mnemonic phrase, private spend key, wallet file password, or unredacted backup. Anyone who asks for it can take control of the wallet.
+</Callout>
+
+## If the restored balance looks wrong
+
+Check synchronization first. Confirm the address, wallet type, restore height and network without changing or deleting the original backup. Use [Troubleshooting](../troubleshooting.mdx) if progress stops.
+
+## Resources
+
+- [Backup & Security](../backup-and-security.mdx)
+- [Conceal Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases)
+- [Conceal Web Wallet source](https://github.com/ConcealNetwork/conceal-web-wallet)
+- [Conceal Next Wallet recovery capabilities](https://github.com/ConcealNetwork/conceal-next-wallet)
+

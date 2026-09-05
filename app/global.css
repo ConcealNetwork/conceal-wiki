@@ -2,8 +2,116 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+:root {
+  --conceal-signal: #ffa500;
+  --conceal-signal-strong: #c26a00;
+  --conceal-ink: #0a0a0a;
+  --conceal-graphite: #151515;
+  --conceal-fog: #b0b0b0;
+  --conceal-paper: #ffffff;
+  --color-fd-primary: var(--conceal-signal-strong);
+  --color-fd-ring: var(--conceal-signal-strong);
+}
+
+.dark {
+  --color-fd-background: var(--conceal-ink);
+  --color-fd-card: var(--conceal-graphite);
+  --color-fd-primary: var(--conceal-signal);
+  --color-fd-primary-foreground: var(--conceal-ink);
+  --color-fd-ring: var(--conceal-signal);
+}
+
 html {
   scrollbar-gutter: stable;
+}
+
+body {
+  font-family: var(--font-conceal), Arial, Helvetica, sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--conceal-signal) 35%, transparent);
+}
+
+.conceal-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.conceal-brand img {
+  height: 1.75rem;
+  width: 1.75rem;
+  object-fit: contain;
+}
+
+.conceal-home {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.conceal-home::before {
+  position: absolute;
+  z-index: -1;
+  top: -18rem;
+  right: -12rem;
+  width: 38rem;
+  height: 38rem;
+  border: 1px solid color-mix(in srgb, var(--conceal-signal) 24%, transparent);
+  border-radius: 50%;
+  content: '';
+}
+
+.conceal-home::after {
+  position: absolute;
+  z-index: -1;
+  top: 8rem;
+  right: 12%;
+  width: 8rem;
+  border-top: 2px solid var(--conceal-signal);
+  content: '';
+  transform: rotate(-28deg);
+  transform-origin: right;
+}
+
+.conceal-task-card {
+  position: relative;
+  min-height: 10.5rem;
+  border: 1px solid var(--color-fd-border);
+  background: color-mix(in srgb, var(--color-fd-card) 86%, transparent);
+}
+
+.conceal-task-card::before {
+  position: absolute;
+  top: -1px;
+  left: 1.25rem;
+  width: 2.5rem;
+  border-top: 2px solid var(--conceal-signal);
+  content: '';
+}
+
+.conceal-task-card:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--conceal-signal) 45%, transparent);
+  outline-offset: 3px;
+}
+
+.prose table {
+  display: table;
+  width: 100%;
+}
+
+.prose thead {
+  border-top: 2px solid var(--conceal-signal);
+}
+
+.prose img[src*='/diagrams/'] {
+  width: 100%;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 0.75rem;
+  background: var(--conceal-ink);
 }
 
 html > body[data-scroll-locked] {

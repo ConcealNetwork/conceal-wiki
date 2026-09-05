@@ -25,6 +25,10 @@ const expectedNavigation = [
 ];
 const taskTwoSources = [
   'content/docs/wallets/index.mdx',
+  'content/docs/wallets/install.mdx',
+  'content/docs/wallets/create-or-restore.mdx',
+  'content/docs/wallets/send-and-receive.mdx',
+  'content/docs/wallets/update-and-move.mdx',
   'content/docs/wallets/desktop.mdx',
   'content/docs/wallets/core-cli.mdx',
   'content/docs/wallets/web.mdx',
@@ -194,7 +198,7 @@ test('describes fixed consensus issuance separately from dated explorer figures'
   assert.match(network, /At \*\*2026-09-05[^\n]+the explorer reported/i);
   assert.match(network, /33,712,033\.757459 CCX/);
   assert.match(network, /2026-09-05/);
-  assert.doesNotMatch(network, /^\|[^\n]*(?:height|reward|emission)[^\n]*\|/im);
+  assert.doesNotMatch(network, /^\|[^\n]*(?:current height|issued supply|circulating|deposits)[^\n]*\|/im);
 });
 
 test('links wallet choices to current internal guides in present tense', async () => {

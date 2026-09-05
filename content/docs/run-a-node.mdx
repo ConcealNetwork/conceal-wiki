@@ -5,6 +5,14 @@ description: Install Conceal Core and optionally Guardian with release verificat
 
 Run a Conceal node on a host where you control storage, network access, and updates. This guide covers **Core 6.7.5** and **Guardian 0.7.8**. Check both release pages before installation.
 
+<ProjectImage
+  src="/diagrams/node-rpc-boundary.svg"
+  alt="Diagram showing public Conceal peer traffic reaching conceald while daemon and wallet RPC stay inside a private administration boundary."
+  caption="Default mainnet ports from the current Core configuration. Confirm the release you operate before applying firewall rules."
+  width={1200}
+  height={560}
+/>
+
 ## Core installation
 
 1. Start at the official [Core releases page](https://github.com/ConcealNetwork/conceal-core/releases), select the intended release and platform asset, and read its notes.
@@ -15,6 +23,14 @@ Run a Conceal node on a host where you control storage, network access, and upda
 ## RPC and host boundaries
 
 Treat daemon and wallet RPC as private administration interfaces. Never publish an unauthenticated RPC endpoint. If a remote application needs access, add authentication, network filtering, encryption, logs, and a way to revoke access. Check the Core documentation for your installed version before exposing the endpoint.
+
+| Interface | Default port | Normal boundary |
+| --- | --- | --- |
+| Mainnet P2P | TCP 15000 | Public only when the operator intends to accept peers |
+| Daemon RPC | TCP 16000 | Private host or administration network |
+| Wallet RPC | TCP 3333 when configured that way | Private application boundary with authentication and filtering |
+
+Ports can be changed by configuration. Treat the values above as Core defaults, not instructions to open every port.
 
 Run services with the fewest host permissions they need. Separate administrative access from public services. Keep the operating system and node software patched, then check disk use, logs, and restart behaviour after upgrades.
 

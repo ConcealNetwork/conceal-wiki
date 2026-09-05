@@ -1,0 +1,48 @@
+---
+title: Install a Wallet
+description: Choose the correct Conceal wallet release, verify the download, and complete a safe first launch.
+---
+
+Use a wallet that matches your device and your comfort with local files, browser storage, or command-line tools. If you have not chosen one, start with [Choose a wallet](../start-here/choose-a-wallet.mdx).
+
+## Choose the official download
+
+| Wallet | Platforms | Official location |
+| --- | --- | --- |
+| Desktop | Windows, macOS, Ubuntu and AppImage | [Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases) |
+| Core CLI | Windows, macOS and Ubuntu | [Core releases](https://github.com/ConcealNetwork/conceal-core/releases) |
+| Web Wallet | Current desktop and mobile browsers | [wallet.conceal.network](https://wallet.conceal.network/) |
+| Android | Supported Android devices | [Android releases](https://github.com/ConcealNetwork/conceal-wallet-cordova/releases) |
+
+Open the official location directly. Match the release asset to both your operating system and processor architecture. Do not use a file re-uploaded to a forum, file-sharing service, direct message, or unofficial app store.
+
+## Verify the file
+
+1. Read the release notes and confirm that the tag is the version you intended to install.
+2. Compare the complete filename with the asset listed on the release.
+3. If the release publishes a SHA-256 file, signature, or other integrity material, download it from the same release and verify it locally.
+4. Stop if the calculated value, signing identity, platform, or architecture does not match.
+
+Common local checksum commands are:
+
+```text
+macOS:   shasum -a 256 <downloaded-file>
+Linux:   sha256sum <downloaded-file>
+Windows: Get-FileHash <downloaded-file> -Algorithm SHA256
+```
+
+These commands calculate a value; they do not tell you what the correct value should be. Compare the result only with integrity information published by the official project release.
+
+## Complete the first launch
+
+Keep platform protections enabled. Extract an archive before running files inside it. On Linux, make an AppImage executable only after completing the release checks. On Android, confirm that the package installation prompt names Conceal Mobile and that you obtained the APK from the official release.
+
+At the create-or-restore screen, stop and prepare a private place for recovery information. Continue with [Create or Restore a Wallet](./create-or-restore.mdx).
+
+## Resources
+
+- [Conceal Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases)
+- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [Conceal Android releases](https://github.com/ConcealNetwork/conceal-wallet-cordova/releases)
+- [Conceal Web Wallet](https://wallet.conceal.network/)
+

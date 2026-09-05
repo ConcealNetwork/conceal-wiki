@@ -7,6 +7,22 @@ export const EXPECTED_DOCS = Object.freeze([
     status: 'Current',
   },
   { source: 'content/docs/wallets/index.mdx', route: 'docs/wallets', status: 'Current' },
+  { source: 'content/docs/wallets/install.mdx', route: 'docs/wallets/install', status: 'Current' },
+  {
+    source: 'content/docs/wallets/create-or-restore.mdx',
+    route: 'docs/wallets/create-or-restore',
+    status: 'Current',
+  },
+  {
+    source: 'content/docs/wallets/send-and-receive.mdx',
+    route: 'docs/wallets/send-and-receive',
+    status: 'Current',
+  },
+  {
+    source: 'content/docs/wallets/update-and-move.mdx',
+    route: 'docs/wallets/update-and-move',
+    status: 'Current',
+  },
   { source: 'content/docs/wallets/desktop.mdx', route: 'docs/wallets/desktop', status: 'Current' },
   { source: 'content/docs/wallets/core-cli.mdx', route: 'docs/wallets/core-cli', status: 'Current' },
   { source: 'content/docs/wallets/web.mdx', route: 'docs/wallets/web', status: 'Current' },
@@ -71,4 +87,3 @@ export const EXPECTED_DOCS = Object.freeze([
     status: 'Historical',
   },
 ]);
-

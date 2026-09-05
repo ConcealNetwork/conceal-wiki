@@ -88,8 +88,8 @@ test('exports the official documentation landing pages', async () => {
   );
   const network = await readFile(path.join(outputDirectory, 'docs/network-and-ccx/index.html'), 'utf8');
 
-  assert.match(home, /Official documentation/);
-  assert.match(home, /Conceal documentation/);
+  assert.match(home, /Use Conceal with confidence/);
+  assert.match(home, /What do you need to do/);
   assert.match(docs, /Learn how to use Conceal Network/);
   for (const page of [home, docs, startHere, walletChoice, network]) {
     assert.doesNotMatch(page, /source-backed|migration|legacy (?:production )?wiki|Last verified:|Status: Current/i);
@@ -108,6 +108,10 @@ test('exports every source in the canonical expected-source manifest', async () 
 test('exports every user guide without editorial status stamps', async () => {
   const routes = [
     'docs/wallets',
+    'docs/wallets/install',
+    'docs/wallets/create-or-restore',
+    'docs/wallets/send-and-receive',
+    'docs/wallets/update-and-move',
     'docs/wallets/desktop',
     'docs/wallets/core-cli',
     'docs/wallets/web',

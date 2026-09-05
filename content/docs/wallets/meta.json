@@ -2,6 +2,10 @@
   "title": "Wallets",
   "pages": [
     "index",
+    "install",
+    "create-or-restore",
+    "send-and-receive",
+    "update-and-move",
     "desktop",
     "core-cli",
     "web",

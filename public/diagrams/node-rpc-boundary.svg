@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">Conceal node and RPC trust boundaries</title>
+  <desc id="desc">Peer-to-peer traffic reaches the Conceal daemon on port 15000. Daemon and wallet RPC remain inside a private administration boundary.</desc>
+  <rect width="1200" height="560" rx="24" fill="#0a0a0a"/>
+  <g font-family="Poppins,Arial,sans-serif">
+    <text x="48" y="68" fill="#fff" font-size="32" font-weight="600">Expose P2P deliberately. Keep RPC private.</text>
+    <text x="48" y="104" fill="#b0b0b0" font-size="19">Default mainnet ports shown. Confirm the settings in the Core release you run.</text>
+    <rect x="38" y="140" width="250" height="316" rx="18" fill="#111" stroke="#444"/>
+    <text x="64" y="184" fill="#b0b0b0" font-size="18">PUBLIC NETWORK</text>
+    <circle cx="100" cy="260" r="28" fill="none" stroke="#ffa500" stroke-width="3"/>
+    <circle cx="210" cy="340" r="28" fill="none" stroke="#ffa500" stroke-width="3"/>
+    <circle cx="196" cy="226" r="18" fill="#ffa500"/>
+    <path d="M124 274l58 48m-54-72 50-18m20 32 8 48" stroke="#ffa500" stroke-width="3"/>
+    <text x="64" y="414" fill="#fff" font-size="24" font-weight="600">Conceal peers</text>
+    <text x="64" y="440" fill="#b0b0b0" font-size="17">P2P · TCP 15000</text>
+    <path d="M288 298h108" stroke="#ffa500" stroke-width="4"/>
+    <path d="m382 286 16 12-16 12" fill="none" stroke="#ffa500" stroke-width="4"/>
+    <rect x="398" y="194" width="250" height="208" rx="18" fill="#151515" stroke="#ffa500" stroke-width="2"/>
+    <text x="430" y="250" fill="#fff" font-size="29" font-weight="600">conceald</text>
+    <text x="430" y="286" fill="#b0b0b0" font-size="18">Validates and relays</text>
+    <text x="430" y="313" fill="#b0b0b0" font-size="18">network data</text>
+    <text x="430" y="360" fill="#ffa500" font-size="17" font-weight="600">Daemon RPC · 16000</text>
+    <rect x="716" y="140" width="446" height="316" rx="18" fill="#111" stroke="#555" stroke-dasharray="10 8"/>
+    <text x="748" y="184" fill="#b0b0b0" font-size="18">PRIVATE ADMINISTRATION BOUNDARY</text>
+    <rect x="748" y="220" width="174" height="126" rx="14" fill="#151515" stroke="#555"/>
+    <text x="774" y="268" fill="#fff" font-size="23" font-weight="600">Guardian</text>
+    <text x="774" y="301" fill="#b0b0b0" font-size="16">Node monitoring</text>
+    <rect x="954" y="220" width="176" height="126" rx="14" fill="#151515" stroke="#555"/>
+    <text x="980" y="268" fill="#fff" font-size="23" font-weight="600">Wallet app</text>
+    <text x="980" y="301" fill="#b0b0b0" font-size="16">Wallet RPC · 3333</text>
+    <path d="M648 268h100m174 15h32" stroke="#ffa500" stroke-width="4"/>
+    <path d="m734 256 16 12-16 12m206-9 16 12-16 12" fill="none" stroke="#ffa500" stroke-width="4"/>
+    <text x="716" y="500" fill="#ffa500" font-size="18" font-weight="600">DO NOT PUBLISH AN UNAUTHENTICATED RPC ENDPOINT</text>
+  </g>
+</svg>
