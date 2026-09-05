@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight, Blocks, Download, HardDrive, KeyRound, Pickaxe, WalletCards } from 'lucide-react';
 import { BrandMark } from '@/components/brand-mark';
+import { toPublicProjectPath } from '@/lib/project-path';
 
 const tasks = [
   {
@@ -44,7 +46,7 @@ const tasks = [
 export default function HomePage() {
   return (
     <div className="conceal-home">
-      <section className="mx-auto grid min-h-[34rem] w-full max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-[minmax(0,1fr)_20rem] lg:px-10">
+      <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-[minmax(0,1fr)_30rem] lg:px-10">
         <div className="max-w-3xl">
           <BrandMark />
           <h1 className="mt-10 max-w-3xl text-5xl font-semibold leading-[1.04] tracking-[-0.045em] sm:text-7xl">
@@ -70,16 +72,15 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className="hidden lg:block" aria-hidden="true">
-          <svg viewBox="0 0 320 320" role="presentation" className="w-full text-[var(--conceal-signal)]">
-            <path d="M40 160 160 48l120 112-120 112Z" fill="none" stroke="currentColor" strokeWidth="2" />
-            <path d="M40 160h240M160 48v224M82 120l156 80M82 200l156-80" fill="none" stroke="currentColor" strokeOpacity=".34" />
-            <circle cx="40" cy="160" r="7" fill="currentColor" />
-            <circle cx="160" cy="48" r="7" fill="currentColor" />
-            <circle cx="280" cy="160" r="7" fill="currentColor" />
-            <circle cx="160" cy="272" r="7" fill="currentColor" />
-            <circle cx="160" cy="160" r="13" fill="currentColor" />
-          </svg>
+        <div className="conceal-hero-shot">
+          <Image
+            src={toPublicProjectPath('/brand/desktop-wallet-dashboard.png')}
+            alt="Conceal Desktop wallet dashboard"
+            width={1268}
+            height={680}
+            priority
+            className="w-full"
+          />
         </div>
       </section>
 

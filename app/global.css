@@ -127,6 +127,30 @@ body {
   outline-offset: 3px;
 }
 
+/* Product hero: the wallet UI is a dark screenshot, so it keeps the same
+   frame in both schemes with an amber accent to match the task cards. */
+.conceal-hero-shot {
+  position: relative;
+  border: 1px solid var(--color-fd-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.5);
+}
+
+.conceal-hero-shot img {
+  display: block;
+  border-radius: inherit;
+}
+
+.conceal-hero-shot::before {
+  position: absolute;
+  z-index: 1;
+  top: -1px;
+  left: 1.25rem;
+  width: 2.5rem;
+  border-top: 2px solid var(--conceal-signal);
+  content: '';
+}
+
 .prose table {
   display: table;
   width: 100%;
