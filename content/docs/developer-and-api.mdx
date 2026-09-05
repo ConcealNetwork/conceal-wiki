@@ -1,34 +1,66 @@
 ---
 title: Developer & API
-description: Build with the Conceal RPC API and JavaScript libraries.
+description: Query a local Conceal node and choose the supported JavaScript building blocks.
 ---
 
-Build against the interface shipped with your installed Core version. Check the Core RPC specification before relying on methods, response fields, or security behaviour.
+Conceal Core exposes daemon RPC interfaces for reading network state and submitting work. Build against the interface shipped with the exact Core version you operate: methods and response fields can change between releases.
 
-## Daemon RPC reference
+## Five-minute local RPC check
 
-Start with the Core [JSON RPC OpenAPI document](https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml) and [RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc). Read the files for the Core release you deploy before adding an endpoint to an automated workflow.
+Run this only on the same machine as a synchronized `conceald` instance. It reads daemon state and does not require a wallet:
 
-Keep RPC private by default. It can disclose service state or trigger expensive operations. Use a test environment for integration work and give service accounts only the permissions they need. Keep credentials and wallet recovery material out of source control, browser consoles, issues, and logs.
+```bash
+curl --fail --silent --show-error http://127.0.0.1:16000/getinfo
+```
 
-## JavaScript and TypeScript entry points
+A successful response is JSON describing the daemon and network. Check its status, height, network, and version before using the node for an integration. Compare the height with the [Conceal explorer](https://explorer.conceal.network/) if you need an independent, time-sensitive reference.
 
-Conceal maintains these JavaScript and TypeScript projects:
+If the request fails, confirm that `conceald` is running, has finished starting, and is listening on the configured RPC address. Do not solve a local connection problem by publishing RPC to the internet.
 
-- [Conceal API](https://github.com/ConcealNetwork/conceal-api), a JavaScript/Node.js RPC interface.
-- [conceal-lib-js](https://github.com/ConcealNetwork/conceal-lib-js), JavaScript and WebAssembly cryptographic primitives.
-- [conceal-wallet-sdk](https://github.com/ConcealNetwork/conceal-wallet-sdk), a typed wallet SDK built on the library primitives.
+## RPC references
 
-Check each repository's package metadata, releases, compatibility notes, and source before adding it to an application. Test the version you install against the Core version you run.
+The Core repository maintains its RPC schemas alongside the daemon source:
 
-## Integration checks
+- [JSON RPC OpenAPI document](https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml)
+- [RPC schema directory](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc/openapi)
 
-Pin and review dependencies. Test successful and rejected responses, and record the Core version and network in the test plan. Compare network data with the [Conceal block explorer](https://explorer.conceal.network/) when appropriate.
+Read the files at the tag matching your Core release before generating a client or relying on a field. Test rejected requests, timeouts, a node that is still synchronizing, and a response from the wrong network as well as the happy path.
+
+## JavaScript and TypeScript projects
+
+Availability checked **5 September 2026**. A repository, npm package, and GitHub Release are different distribution channels; verify the current channel before upgrading.
+
+| Project | Current version | Distribution | Use it for |
+| --- | --- | --- | --- |
+| [conceal-api](https://github.com/ConcealNetwork/conceal-api) | 0.8.8 | [npm registry](https://registry.npmjs.org/conceal-api/0.8.8) | Calling daemon and wallet RPC from Node.js |
+| [conceal-lib-js](https://github.com/ConcealNetwork/conceal-lib-js) | 0.3.1 | [GitHub Release](https://github.com/ConcealNetwork/conceal-lib-js/releases/tag/v0.3.1) tarball | JavaScript and WebAssembly cryptographic primitives |
+| [conceal-wallet-sdk](https://github.com/ConcealNetwork/conceal-wallet-sdk) | 0.2.14 | [GitHub Release](https://github.com/ConcealNetwork/conceal-wallet-sdk/releases/tag/v0.2.14) tarball | A typed wallet SDK built on the library primitives |
+
+Install the published RPC client with an exact version:
+
+```bash
+npm install --save-exact conceal-api@0.8.8
+```
+
+`conceal-lib-js` and `conceal-wallet-sdk` were not published in the public npm registry when this page was checked. Download the `.tgz` asset from the matching official GitHub Release, verify the asset you received, and install it from a local path:
+
+```bash
+npm install --save-exact ./conceal-lib-js-0.3.1.tgz
+npm install --save-exact ./conceal-wallet-sdk-0.2.14.tgz
+```
+
+Do not treat those commands as compatibility guarantees. Check each package's engine requirement, package metadata, release notes, and dependency tree before adopting it.
+
+## Security boundary
+
+Keep daemon and wallet RPC private by default. RPC can disclose service state or trigger expensive or wallet-sensitive operations. If a remote service must call it, place an authenticated, encrypted, rate-limited boundary in front of the node and restrict the source network. Never send a mnemonic seed, spend key, wallet password, or raw credential to a browser log, issue, analytics service, or public endpoint.
+
+For production work, pin dependencies and retain the lockfile. Record the Core version, package versions, network, and test height with the integration results. Treat explorer agreement as a useful cross-check, not proof that your node is healthy or that a transaction is final.
 
 ## Resources
 
-- [Core JSON RPC OpenAPI document](https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml)
 - [Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc)
-- [Conceal API](https://github.com/ConcealNetwork/conceal-api)
-- [conceal-lib-js](https://github.com/ConcealNetwork/conceal-lib-js)
-- [conceal-wallet-sdk](https://github.com/ConcealNetwork/conceal-wallet-sdk)
+- [Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [conceal-api 0.8.8 registry metadata](https://registry.npmjs.org/conceal-api/0.8.8)
+- [conceal-lib-js releases](https://github.com/ConcealNetwork/conceal-lib-js/releases)
+- [conceal-wallet-sdk releases](https://github.com/ConcealNetwork/conceal-wallet-sdk/releases)

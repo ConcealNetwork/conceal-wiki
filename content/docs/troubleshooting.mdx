@@ -5,6 +5,16 @@ description: Diagnose synchronization, transaction-output, and application-start
 
 Start with observation, not data removal. Preserve a current wallet backup before changing software or configuration, and never send recovery material, passwords, or private keys to a support contact.
 
+## Find the symptom
+
+| Symptom | Check first | Continue with |
+| --- | --- | --- |
+| Balance looks wrong or history is incomplete | Wallet height and node synchronization | [Wallet or node synchronization is incomplete](#wallet-or-node-synchronization-is-incomplete) |
+| Transaction is pending or absent from the explorer | Node height, transaction hash, and whether broadcast completed | [How transactions move](./transactions.mdx) |
+| Wallet cannot build a large payment | Unlocked outputs and any optimization warning | [A transaction is too large or asks for output optimization](#a-transaction-is-too-large-or-asks-for-output-optimization) |
+| Application closes or never opens | Exact startup error, asset, operating system, and architecture | [The application does not start](#the-application-does-not-start) |
+| Node keeps stopping or falling behind | First error, free storage, peers, host time, and recent changes | [Run a Node](./run-a-node.mdx#incident-checklist) |
+
 ## Wallet or node synchronization is incomplete
 
 1. Record the wallet or node version and its displayed block height. Compare that height and the most recent block time with the [live explorer](https://explorer.conceal.network/).
@@ -26,6 +36,12 @@ Before optimizing, confirm that the wallet is synchronized and backed up. Use th
 2. Launch it in the platform's normal diagnostic view, such as a terminal, so the exact startup error remains visible. Do not disable antivirus, Gatekeeper, package verification, or other platform protections merely to force an unverified file to run.
 3. On Windows, an `MSVCP140.dll` or `VCRUNTIME140.dll` error indicates that the Microsoft Visual C++ runtime is missing or damaged. Use Microsoft's [current supported Visual C++ Redistributable guidance](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170); do not download individual DLL files from third-party sites.
 4. If the error remains, report the application version, asset filename, checksum result, operating system and architecture, and the exact error through [official support](./support.mdx). Review logs before sharing them and remove wallet addresses or other sensitive data.
+
+## Before contacting support
+
+Write down the software version, operating system, release asset name, local and explorer heights, the time the problem began, and the exact error. Add the transaction hash only when it is relevant and safe to disclose. Remove wallet addresses, local paths, IP addresses, account names, and credentials from screenshots and logs.
+
+Say what you have already tried. Keep the original wallet data and logs until someone has identified the failure; repeated reinstalls and deleted data make diagnosis harder.
 
 ## Resources
 

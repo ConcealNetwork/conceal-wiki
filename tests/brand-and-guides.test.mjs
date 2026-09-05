@@ -68,3 +68,78 @@ test('adds comparison tables and task diagrams to the documentation', async () =
   assert.equal(await exists('public/diagrams/wallet-recovery.svg'), true);
   assert.equal(await exists('public/diagrams/node-rpc-boundary.svg'), true);
 });
+
+test('publishes only sanitized, source-recorded product screenshots', async () => {
+  const [createOrRestore, sendAndReceive, mediaNotes] = await Promise.all([
+    read('content/docs/wallets/create-or-restore.mdx'),
+    read('content/docs/wallets/send-and-receive.mdx'),
+    read('public/screenshots/README.md'),
+  ]);
+
+  for (const screenshot of [
+    'public/screenshots/web-wallet-create-or-import.png',
+    'public/screenshots/android-send.png',
+    'public/screenshots/android-receive.png',
+  ]) {
+    assert.equal(await exists(screenshot), true, screenshot);
+  }
+
+  assert.match(createOrRestore, /web-wallet-create-or-import\.png/);
+  assert.match(sendAndReceive, /android-send\.png/);
+  assert.match(sendAndReceive, /android-receive\.png/);
+  assert.match(mediaNotes, /547b789c1facf80002c7928e9e2b33f50388219a/);
+  assert.match(mediaNotes, /wallet\.conceal\.network/);
+  assert.doesNotMatch(mediaNotes, /seed phrase|private spend key/i);
+});
+
+test('provides an executable local-RPC developer quickstart and accurate package channels', async () => {
+  const developer = await read('content/docs/developer-and-api.mdx');
+
+  assert.match(developer, /curl[^\n]+127\.0\.0\.1:16000\/getinfo/);
+  assert.match(developer, /\| Project \| Current version \| Distribution \|/);
+  assert.match(developer, /conceal-api[^\n]+0\.8\.8[^\n]+npm/i);
+  assert.match(developer, /conceal-lib-js[^\n]+0\.3\.1[^\n]+GitHub Release/i);
+  assert.match(developer, /conceal-wallet-sdk[^\n]+0\.2\.14[^\n]+GitHub Release/i);
+  const rpcExamples = developer.match(/https?:\/\/[^\s)`]+:16000\/getinfo/g) ?? [];
+  assert.deepEqual(rpcExamples, ['http://127.0.0.1:16000/getinfo']);
+});
+
+test('turns node guidance into an operations handbook', async () => {
+  const node = await read('content/docs/run-a-node.mdx');
+
+  assert.match(node, /ccx-cli-macOS-v6\.7\.5\.zip/);
+  assert.match(node, /ccx-cli-ubuntu-2204-v6\.7\.5\.tar\.gz/);
+  assert.match(node, /## First start and synchronization/);
+  assert.match(node, /## Routine operations/);
+  assert.match(node, /Discord|email/);
+  assert.match(node, /Never publish an unauthenticated RPC endpoint/);
+});
+
+test('explains the transaction lifecycle and core terminology', async () => {
+  const [transactions, glossary, navigation] = await Promise.all([
+    read('content/docs/transactions.mdx'),
+    read('content/docs/glossary.mdx'),
+    read('content/docs/meta.json'),
+  ]);
+
+  assert.match(transactions, /transaction-lifecycle\.svg/);
+  assert.match(transactions, /sign locally/i);
+  assert.match(transactions, /mempool/i);
+  assert.match(transactions, /confirmations?/i);
+  assert.match(glossary, /## Mnemonic seed/);
+  assert.match(glossary, /## View key/);
+  assert.match(glossary, /## Integrated address/);
+  assert.match(navigation, /"transactions"/);
+  assert.match(navigation, /"glossary"/);
+  assert.equal(await exists('public/diagrams/transaction-lifecycle.svg'), true);
+});
+
+test('offers a symptom-first troubleshooting index', async () => {
+  const troubleshooting = await read('content/docs/troubleshooting.mdx');
+
+  assert.match(troubleshooting, /\| Symptom \| Check first \| Continue with \|/);
+  assert.match(troubleshooting, /balance looks wrong/i);
+  assert.match(troubleshooting, /transaction is pending/i);
+  assert.match(troubleshooting, /node keeps stopping/i);
+  assert.match(troubleshooting, /Before contacting support/);
+});

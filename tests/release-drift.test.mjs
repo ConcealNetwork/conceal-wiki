@@ -31,6 +31,9 @@ test('uses the exact Task 2 release-tag snapshot', () => {
     'Web Wallet': 'v2.1.4',
     Android: 'v6.0.4-f-droid',
     Guardian: 'v0.7.8',
+    'Conceal API': '0.8.8',
+    'JS Library': 'v0.3.1',
+    'Wallet SDK': 'v0.2.14',
   });
 });
 
@@ -41,6 +44,9 @@ test('matches the release monitor map to the wallet and node documentation snaps
     ['Web Wallet', '../content/docs/wallets/web.mdx', /Web Wallet (\d+\.\d+\.\d+)/, 'v'],
     ['Android', '../content/docs/wallets/android.mdx', /Android (\d+\.\d+\.\d+-f-droid)/, 'v'],
     ['Guardian', '../content/docs/run-a-node.mdx', /Guardian (\d+\.\d+\.\d+)/, 'v'],
+    ['Conceal API', '../content/docs/developer-and-api.mdx', /conceal-api[^\n]+\| (\d+\.\d+\.\d+) \|/],
+    ['JS Library', '../content/docs/developer-and-api.mdx', /conceal-lib-js[^\n]+\| (\d+\.\d+\.\d+) \|/, 'v'],
+    ['Wallet SDK', '../content/docs/developer-and-api.mdx', /conceal-wallet-sdk[^\n]+\| (\d+\.\d+\.\d+) \|/, 'v'],
   ].map(async ([component, file, pattern, prefix = '']) => {
     const source = await readFile(new URL(file, import.meta.url), 'utf8');
     const version = source.match(pattern)?.[1];
@@ -54,11 +60,11 @@ test('matches the release monitor map to the wallet and node documentation snaps
 test('formats a deterministic documentation-drift issue body', () => {
   assert.equal(
     formatDriftIssue([{ component: 'Core', documentedTag: 'v6.7.5', latestTag: 'v6.7.6' }]),
-    `## Documentation versions changed\n\nThe versions listed in the docs no longer match the latest GitHub releases. Check each release, then update the affected guides.\n\n| Component | Documented tag | Latest tag |\n| --- | --- | --- |\n| Core | v6.7.5 | v6.7.6 |\n\nThis issue does not edit or publish documentation.\n`,
+    `## Documentation versions changed\n\nThe versions listed in the docs no longer match their official release sources. Check each release, then update the affected guides.\n\n| Component | Documented tag | Latest tag |\n| --- | --- | --- |\n| Core | v6.7.5 | v6.7.6 |\n\nThis issue does not edit or publish documentation.\n`,
   );
 });
 
-test('reads tags only from the literal official GitHub latest-release endpoints', async () => {
+test('reads versions only from literal official GitHub or npm endpoints', async () => {
   assert.equal(typeof fetchOfficialReleaseTags, 'function');
   if (typeof fetchOfficialReleaseTags !== 'function') return;
 
@@ -67,10 +73,9 @@ test('reads tags only from the literal official GitHub latest-release endpoints'
     requestedEndpoints.push(endpoint);
     const component = Object.entries(OFFICIAL_RELEASE_ENDPOINTS)
       .find(([, officialEndpoint]) => officialEndpoint === endpoint)?.[0];
-    return {
-      ok: true,
-      json: async () => ({ tag_name: DOCUMENTED_RELEASES[component] }),
-    };
+    return component === 'Conceal API'
+      ? { ok: true, json: async () => ({ version: DOCUMENTED_RELEASES[component] }) }
+      : { ok: true, json: async () => ({ tag_name: DOCUMENTED_RELEASES[component] }) };
   });
 
   assert.deepEqual(requestedEndpoints, Object.values(OFFICIAL_RELEASE_ENDPOINTS));
@@ -84,10 +89,12 @@ test('compares the documented snapshot after reading official release tags', asy
   const mismatches = await checkDocumentedReleaseDrift(async (endpoint) => {
     const component = Object.entries(OFFICIAL_RELEASE_ENDPOINTS)
       .find(([, officialEndpoint]) => officialEndpoint === endpoint)?.[0];
-    return {
-      ok: true,
-      json: async () => ({ tag_name: component === 'Guardian' ? 'v0.7.9' : DOCUMENTED_RELEASES[component] }),
-    };
+    return component === 'Conceal API'
+      ? { ok: true, json: async () => ({ version: DOCUMENTED_RELEASES[component] }) }
+      : {
+          ok: true,
+          json: async () => ({ tag_name: component === 'Guardian' ? 'v0.7.9' : DOCUMENTED_RELEASES[component] }),
+        };
   });
 
   assert.deepEqual(mismatches, [

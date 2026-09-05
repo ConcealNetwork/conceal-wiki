@@ -13,6 +13,7 @@ const expectedNavigation = [
   'network-and-ccx',
   'earn-and-deposits',
   'messaging',
+  'transactions',
   'mining',
   'run-a-node',
   'developer-and-api',
@@ -20,6 +21,7 @@ const expectedNavigation = [
   'releases-and-verification',
   'troubleshooting',
   'support',
+  'glossary',
   'research',
   'historical',
 ];

@@ -1,49 +1,101 @@
 ---
 title: Run a Node
-description: Install Conceal Core and optionally Guardian with release verification and private operations in mind.
+description: Install, synchronize, monitor, and maintain Conceal Core without exposing private RPC.
 ---
 
-Run a Conceal node on a host where you control storage, network access, and updates. This guide covers **Core 6.7.5** and **Guardian 0.7.8**. Check both release pages before installation.
+Run a Conceal node on a host where you control storage, network access, backups, and updates. This guide covers **Core 6.7.5** and **Guardian 0.7.8**. Check both release pages before installation.
 
 <ProjectImage
   src="/diagrams/node-rpc-boundary.svg"
-  alt="Diagram showing public Conceal peer traffic reaching conceald while daemon and wallet RPC stay inside a private administration boundary."
+  alt="Public Conceal peer traffic reaches conceald while daemon and wallet RPC remain inside a private administration boundary."
   caption="Default mainnet ports from the current Core configuration. Confirm the release you operate before applying firewall rules."
   width={1200}
   height={560}
 />
 
-## Core installation
+## Choose and verify a Core package
 
-1. Start at the official [Core releases page](https://github.com/ConcealNetwork/conceal-core/releases), select the intended release and platform asset, and read its notes.
-2. Verify a published checksum or signature before running an asset. If the release does not provide integrity information you can independently validate, stop and assess that risk before proceeding.
-3. Follow the [Core build and operating documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs) for the exact release and platform. Preserve a backup of any local data before changing versions or storage paths.
-4. Check synchronization and network state through the [live Conceal explorer](https://explorer.conceal.network/) as an independent, time-sensitive reference.
+Core 6.7.5 provides these platform archives on its [official release page](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.5):
+
+| Platform | Release asset |
+| --- | --- |
+| macOS | `ccx-cli-macOS-v6.7.5.zip` |
+| Ubuntu 22.04 | `ccx-cli-ubuntu-2204-v6.7.5.tar.gz` |
+| Ubuntu 24.04 | `ccx-cli-ubuntu-2404-v6.7.5.tar.gz` |
+| Windows 64-bit | `ccx-cli-win64-v6.7.5.zip` |
+
+Download only from the official release. Verify any checksum or signature the release publishes before executing the archive. If the release provides no integrity value you can independently validate, record that gap and assess the risk. Never run a binary received through chat, email, a mirror, or an unverified download link.
+
+Keep a copy of your configuration and a tested wallet backup outside the node's data directory. A blockchain copy is replaceable; wallet recovery material is not.
+
+## First start and synchronization
+
+1. Read the [Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs) for the release and platform you selected.
+2. Run the daemon as a dedicated, unprivileged operating-system account. Keep its data and logs out of publicly served directories.
+3. Start with the default network unless you intentionally need another network. Record the binary version and configuration path.
+4. Allow the daemon to discover peers and synchronize. Watch the local height, peer count, disk space, and logs.
+5. Compare the local height with the [live explorer](https://explorer.conceal.network/). Small differences can occur while a block propagates; a persistent or growing gap needs investigation.
+6. Restart the host or service once under controlled conditions and confirm that the daemon returns, reconnects, and resumes synchronization.
+
+Do not use a node for wallet or application traffic until it reports a healthy status and remains close to the network height.
 
 ## RPC and host boundaries
 
-Treat daemon and wallet RPC as private administration interfaces. Never publish an unauthenticated RPC endpoint. If a remote application needs access, add authentication, network filtering, encryption, logs, and a way to revoke access. Check the Core documentation for your installed version before exposing the endpoint.
+Treat daemon and wallet RPC as private administration interfaces. Never publish an unauthenticated RPC endpoint. If a remote application needs access, add authentication, network filtering, encryption, rate limits, logs, and a way to revoke access. Check the Core documentation for your installed version before enabling a method.
 
 | Interface | Default port | Normal boundary |
 | --- | --- | --- |
 | Mainnet P2P | TCP 15000 | Public only when the operator intends to accept peers |
-| Daemon RPC | TCP 16000 | Private host or administration network |
+| Daemon RPC | TCP 16000 | Local host or private administration network |
 | Wallet RPC | TCP 3333 when configured that way | Private application boundary with authentication and filtering |
 
-Ports can be changed by configuration. Treat the values above as Core defaults, not instructions to open every port.
+Ports can be changed by configuration. These are Core defaults, not instructions to open every port. Exposing P2P does not require exposing RPC.
 
-Run services with the fewest host permissions they need. Separate administrative access from public services. Keep the operating system and node software patched, then check disk use, logs, and restart behaviour after upgrades.
+## Routine operations
+
+Use a small, repeatable checklist instead of waiting for a wallet failure:
+
+| Frequency | Check | Investigate when |
+| --- | --- | --- |
+| Continuous | Service state and restart loop | The daemon exits, repeatedly restarts, or stops advancing |
+| Continuous | Local height against a trusted network reference | The gap persists or grows |
+| Daily | Peer count, warnings, and recent error logs | Peers remain absent or one error repeats |
+| Daily | Free disk space and filesystem health | Growth leaves too little headroom for sync and logs |
+| After change | Version, bind addresses, firewall, and RPC reachability | A private interface becomes reachable from an unintended network |
+| Scheduled | Restore procedure and configuration backup | The backup cannot be read or the recovery steps are incomplete |
+
+Before an upgrade, read the release notes, capture the current version and height, back up configuration, and confirm there is enough free space. Stop cleanly, change one component at a time, then verify version, peer recovery, height progress, logs, and private RPC boundaries. Keep the prior package available for a planned rollback, but do not roll back across incompatible data changes without release-specific guidance.
 
 ## Guardian monitoring
 
-[Conceal Guardian](https://github.com/ConcealNetwork/conceal-guardian) monitors the `conceald` daemon. This guide covers **Guardian 0.7.8**. Use the release notes, installation guide, and sample configuration for the version you install. Never copy notification addresses, credentials, or public-listing settings from an example into a production host.
+[Conceal Guardian](https://github.com/ConcealNetwork/conceal-guardian) monitors `conceald`, checks block progress, can restart the daemon, and can send Discord or email notifications. This guide covers **Guardian 0.7.8**.
 
-Monitoring helps surface conditions to investigate. It does not prove node correctness, availability, or network service level.
+Treat Guardian as a separate privileged service:
+
+- Run it with only the permissions needed to inspect and restart the daemon.
+- Store webhook and SMTP credentials outside source control, and restrict access to the configuration file.
+- Begin with notifications enabled but automated restart disabled or carefully observed, then test a planned failure.
+- Alert on repeated restart attempts so a bad configuration, damaged disk, or incompatible binary does not become an endless loop.
+- Enable pool-listing or remote-node features only when you intend to operate those public services and understand their exposure.
+
+Monitoring flags conditions to investigate. It does not prove node correctness, availability, wallet safety, or a network service level.
+
+## Incident checklist
+
+If the daemon falls behind or becomes unavailable:
+
+1. Preserve the current logs, version, configuration, height, and disk state before restarting.
+2. Check host time, storage, memory pressure, peer connectivity, and recent changes.
+3. Confirm whether the explorer and other independent nodes are advancing.
+4. Restart once through the normal service manager, then observe whether height and peers recover.
+5. If the fault repeats, stop the restart loop and diagnose the first error. Do not delete the data directory or restore wallet files as a generic fix.
+6. When asking for help, remove credentials, private addresses, wallet paths, and recovery material from logs and screenshots.
 
 ## Resources
 
-- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
-- [Conceal Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs)
+- [Conceal Core 6.7.5 release](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.5)
+- [Conceal Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs)
+- [Conceal Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs/rpc)
 - [Conceal Guardian repository](https://github.com/ConcealNetwork/conceal-guardian)
 - [Conceal Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases)
 - [Conceal Network block explorer](https://explorer.conceal.network/)

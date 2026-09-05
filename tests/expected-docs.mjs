@@ -49,6 +49,7 @@ export const EXPECTED_DOCS = Object.freeze([
     status: 'Current',
   },
   { source: 'content/docs/messaging.mdx', route: 'docs/messaging', status: 'Current' },
+  { source: 'content/docs/transactions.mdx', route: 'docs/transactions', status: 'Current' },
   { source: 'content/docs/mining.mdx', route: 'docs/mining', status: 'Current' },
   { source: 'content/docs/run-a-node.mdx', route: 'docs/run-a-node', status: 'Current' },
   {
@@ -64,6 +65,7 @@ export const EXPECTED_DOCS = Object.freeze([
   },
   { source: 'content/docs/troubleshooting.mdx', route: 'docs/troubleshooting', status: 'Current' },
   { source: 'content/docs/support.mdx', route: 'docs/support', status: 'Current' },
+  { source: 'content/docs/glossary.mdx', route: 'docs/glossary', status: 'Current' },
   { source: 'content/docs/research.mdx', route: 'docs/research', status: 'Experimental' },
   { source: 'content/docs/historical/index.mdx', route: 'docs/historical', status: 'Historical' },
   {

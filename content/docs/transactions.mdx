@@ -1,0 +1,49 @@
+---
+title: How transactions move
+description: Follow a Conceal transaction from a wallet to the mempool, a block, and confirmations.
+---
+
+A wallet and a node do different jobs. The wallet holds the keys. It builds and signs a transaction locally. A node validates and relays the signed transaction, but does not need the sender's mnemonic seed or private spend key.
+
+<ProjectImage
+  src="/diagrams/transaction-lifecycle.svg"
+  alt="A five-step transaction flow: construct in the wallet, sign locally, broadcast to a node, wait in the mempool, then enter a block and gain confirmations."
+  caption="The normal transaction path. A wallet can show submitted before the network has included the transaction in a block."
+  width={1400}
+  height={520}
+/>
+
+## The lifecycle
+
+1. **Construct.** The wallet selects available funds, the destination, an amount, and a fee. Review the destination and amount on the signing device.
+2. **Sign locally.** The wallet authorizes the transaction with private key material. A legitimate node or explorer does not need your mnemonic seed or private spend key.
+3. **Broadcast.** The wallet sends the signed transaction to a Conceal node. Broadcast success means the node accepted it for processing; it is not yet a confirmation.
+4. **Mempool.** Valid pending transactions wait for a miner to include them in a block. A transaction can be delayed or rejected, so retain its transaction hash and check its state.
+5. **Block and confirmations.** The first containing block gives the transaction its first confirmation. Each later block increases the confirmation count. The receiving service decides how many confirmations it requires.
+
+## What the explorer can tell you
+
+Search the [Conceal explorer](https://explorer.conceal.network/) with the transaction hash when the wallet provides one. The explorer can help confirm whether the network has seen the transaction, its containing block, and its confirmation progress.
+
+Explorer data is a view of network state, not wallet authority. It cannot recover a wallet, reverse a transfer, prove who controls an address, or replace the recipient's own acceptance checks. A missing result can mean the transaction has not propagated, the explorer is delayed, the hash is wrong, or the wallet never completed broadcast.
+
+## Privacy and disclosure
+
+Conceal uses privacy-preserving cryptography, but day-to-day behaviour can still reveal information. Reusing addresses, posting transaction hashes with identifying context, exposing wallet RPC, sharing logs, or correlating timing across services can weaken privacy.
+
+Never publish a mnemonic seed, private spend key, wallet password, or unredacted wallet export. A support agent needs the symptom, software version, transaction hash when appropriate, and sanitized logs. They do not need recovery secrets.
+
+## If a transaction appears stuck
+
+1. Confirm the wallet is connected to a synchronized node.
+2. Record the transaction hash, wallet version, submission time, destination network, and exact status text.
+3. Search the explorer without sharing private wallet data.
+4. Wait for the recipient's stated confirmation threshold; do not send a duplicate simply because confirmation is not immediate.
+5. If the transaction remains missing or rejected, follow [Troubleshooting](./troubleshooting.mdx) and provide sanitized evidence through an official support channel.
+
+## Resources
+
+- [Conceal Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs/rpc)
+- [Conceal Core source](https://github.com/ConcealNetwork/conceal-core)
+- [Conceal block explorer](https://explorer.conceal.network/)
+- [Backup & Security](./backup-and-security.mdx)

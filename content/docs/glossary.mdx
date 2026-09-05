@@ -1,0 +1,82 @@
+---
+title: Glossary
+description: Plain-language definitions for Conceal wallet, network, and privacy terms.
+---
+
+These definitions explain how terms are used in these docs. Exact field names can differ between wallet and Core releases.
+
+## Address
+
+A public destination used to receive CCX. Check the full destination in the wallet before sending; a visually similar prefix or suffix is not enough.
+
+## Block
+
+A batch of validated transactions added to the blockchain. A transaction receives its first confirmation when it enters a block.
+
+## Blockchain
+
+The ordered record of Conceal blocks maintained and validated by network nodes.
+
+## CCX
+
+The native asset of the Conceal Network.
+
+## Confirmation
+
+A measure of how many blocks have been built from the block containing a transaction. A recipient or service chooses its own acceptance threshold.
+
+## Daemon
+
+The `conceald` Core process. It connects to peers, validates and relays network data, maintains the local blockchain, and can serve daemon RPC.
+
+## Deposit
+
+A protocol feature that locks eligible CCX for a selected term under the rules implemented by the network. It is not a bank deposit, and displayed returns can change with protocol and network conditions.
+
+## Integrated address
+
+An address form that combines a destination with payment-identifying information for compatible flows. Use it only where the sending and receiving software explicitly support it.
+
+## Mempool
+
+The set of valid transactions a node knows about that have not yet been included in a block.
+
+## Mnemonic seed
+
+Recovery words from which compatible wallet key material can be restored. Anyone with the seed may be able to control the wallet, so keep it offline and never enter it into support forms or messages.
+
+## Node
+
+A system running Conceal Core and participating in validation, synchronization, and peer-to-peer relay. A wallet may use a local node or connect to a remote one.
+
+## Private spend key
+
+Secret key material used to authorize spending. Exposure can lead to loss of funds. It must never be sent to a node operator, explorer, or support agent.
+
+## RPC
+
+Remote procedure call: an interface software uses to query or control a daemon or wallet service. RPC is an administration boundary and should remain local or protected by authentication, encryption, filtering, and rate limits.
+
+## Transaction hash
+
+An identifier for a transaction. It can help locate network state in a wallet or explorer, but sharing it alongside identity or payment context may reduce privacy.
+
+## View key
+
+Key material that can allow compatible software to inspect wallet-related transaction data without granting spending authority. It is still sensitive because it can reveal financial activity.
+
+## Wallet file
+
+The local data a wallet uses to retain encrypted keys, state, and metadata. A password alone is not a backup; keep tested recovery material separately.
+
+## Wallet RPC
+
+An interface for automating a wallet. Because it can expose wallet data or initiate sensitive actions, bind it privately and add authentication and network controls.
+
+## Resources
+
+- [Conceal Core source](https://github.com/ConcealNetwork/conceal-core)
+- [How transactions move](./transactions.mdx)
+- [Backup & Security](./backup-and-security.mdx)
+- [Network & CCX](./network-and-ccx.mdx)
+- [Developer & API](./developer-and-api.mdx)

@@ -5,6 +5,23 @@ description: Check addresses, synchronization, amounts and confirmations when tr
 
 Confirm that the wallet is synchronized before relying on its balance or sending a transaction. Compare its block height with the [Conceal explorer](https://explorer.conceal.network/).
 
+<div className="not-prose grid gap-5 sm:grid-cols-2">
+  <ProjectImage
+    src="/screenshots/android-send.png"
+    alt="Conceal Android wallet send form with destination address, amount, payment ID and message fields."
+    caption="The Android send form separates the destination, amount and optional fields. Review all populated values before continuing."
+    width={707}
+    height={1500}
+  />
+  <ProjectImage
+    src="/screenshots/android-receive.png"
+    alt="Conceal Android wallet receive screen with the wallet address and QR code blurred."
+    caption="The Android receive screen provides copy, share and QR controls. The published address and QR payload are blurred."
+    width={707}
+    height={1500}
+  />
+</div>
+
 ## Receive CCX
 
 1. Open **Receive** in the wallet and select the intended account or address.
@@ -39,4 +56,3 @@ Wait for synchronization and pending transactions to finish. If the wallet repor
 - [Conceal Core wallet commands](https://github.com/ConcealNetwork/conceal-core/blob/master/src/ConcealWallet/ConcealWallet.cpp)
 - [Conceal Web Wallet source](https://github.com/ConcealNetwork/conceal-web-wallet)
 - [Official Conceal support](https://conceal.network/support/)
-
