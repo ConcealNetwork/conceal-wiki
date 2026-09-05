@@ -28,6 +28,7 @@ test('presents the official Conceal visual identity', async () => {
   assert.match(css, /hsl\(36 38% 97%\)/);
   assert.match(css, /hsl\(30 9% 9%\)/);
   assert.match(layout, /BrandMark/);
+  assert.match(layout, /Geist/);
   assert.match(brand, /conceal-mark\.svg/);
   assert.match(brand, /conceal-mark-on-light\.svg/);
   assert.match(home, /Choose a wallet/);

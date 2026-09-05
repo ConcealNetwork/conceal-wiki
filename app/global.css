@@ -58,6 +58,13 @@ body {
   font-family: var(--font-conceal), Arial, Helvetica, sans-serif;
 }
 
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-conceal-mono), ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+}
+
 ::selection {
   background: color-mix(in srgb, var(--conceal-signal) 35%, transparent);
 }

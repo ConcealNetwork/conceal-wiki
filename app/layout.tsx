@@ -1,4 +1,4 @@
-import { Poppins } from 'next/font/google';
+import { Geist, Geist_Mono } from 'next/font/google';
 import type { Viewport } from 'next';
 import { Provider } from '@/components/provider';
 import './global.css';
@@ -16,16 +16,23 @@ export const metadata = {
   description: 'Documentation for Conceal Network.',
 };
 
-const poppins = Poppins({
+const geist = Geist({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
   variable: '--font-conceal',
+});
+
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-conceal-mono',
 });
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={`${poppins.className} ${poppins.variable}`} suppressHydrationWarning>
-      <body className="flex flex-col min-h-screen">
+    <html
+      lang="en"
+      className={`${geist.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >      <body className="flex flex-col min-h-screen">
         <Provider>{children}</Provider>
       </body>
     </html>
