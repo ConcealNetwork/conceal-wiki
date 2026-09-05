@@ -15,12 +15,13 @@ async function exists(file) {
 }
 
 test('presents the official Conceal visual identity', async () => {
-  const [css, layout, brand, home, icon] = await Promise.all([
+  const [css, layout, brand, home, icon, appLayout] = await Promise.all([
     read('app/global.css'),
     read('lib/layout.shared.tsx'),
     read('components/brand-mark.tsx'),
     read('app/(home)/page.tsx'),
     read('app/icon.svg'),
+    read('app/layout.tsx'),
   ]);
 
   assert.match(css, /--conceal-signal:\s*#ffa600/i);
@@ -28,7 +29,7 @@ test('presents the official Conceal visual identity', async () => {
   assert.match(css, /hsl\(36 38% 97%\)/);
   assert.match(css, /hsl\(30 9% 9%\)/);
   assert.match(layout, /BrandMark/);
-  assert.match(layout, /Geist/);
+  assert.match(appLayout, /Geist/);
   assert.match(brand, /conceal-mark\.svg/);
   assert.match(brand, /conceal-mark-on-light\.svg/);
   assert.match(home, /Choose a wallet/);
