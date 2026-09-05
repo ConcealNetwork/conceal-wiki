@@ -115,29 +115,36 @@ body {
   outline-offset: 3px;
 }
 
-/* Product hero: the coin render is staged against black, so it keeps a dark
-   studio card in both schemes with an amber accent to match the task cards. */
-.conceal-hero-shot {
+/* Hero coin: a large faded ornament blended into the page background,
+   masked radially like the official web wallet's landing treatment. The
+   transparent asset keeps it scheme-independent without a blend mode. */
+.conceal-hero-coin {
   position: relative;
-  border: 1px solid var(--color-fd-border);
-  border-radius: 0.75rem;
-  background: var(--conceal-ink);
-  box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.5);
+  display: grid;
+  place-items: center;
 }
 
-.conceal-hero-shot img {
-  display: block;
-  border-radius: inherit;
-}
-
-.conceal-hero-shot::before {
+.conceal-hero-coin::before {
   position: absolute;
-  z-index: 1;
-  top: -1px;
-  left: 1.25rem;
-  width: 2.5rem;
-  border-top: 2px solid var(--conceal-signal);
+  z-index: 0;
+  inset: -10%;
+  background: radial-gradient(
+    circle at center,
+    color-mix(in srgb, var(--conceal-signal) 16%, transparent),
+    color-mix(in srgb, var(--conceal-signal) 5%, transparent) 40%,
+    transparent 66%
+  );
   content: '';
+}
+
+.conceal-hero-coin img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  opacity: 0.55;
+  -webkit-mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
 }
 
 .prose table {
