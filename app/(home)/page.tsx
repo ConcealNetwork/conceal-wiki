@@ -46,7 +46,17 @@ const tasks = [
 export default function HomePage() {
   return (
     <div className="conceal-home">
-      <section className="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 py-20 lg:grid-cols-[minmax(0,1fr)_30rem] lg:px-10">
+      <section className="relative mx-auto flex min-h-[38rem] w-full max-w-6xl items-center px-6 py-20 lg:px-10">
+        <div className="conceal-hero-coin" aria-hidden="true">
+          <Image
+            src={toPublicProjectPath('/brand/conceal-coin.webp')}
+            alt=""
+            width={640}
+            height={640}
+            priority
+          />
+        </div>
+
         <div className="max-w-3xl">
           <BrandMark />
           <h1 className="mt-10 max-w-3xl text-5xl font-semibold leading-[1.04] tracking-[-0.045em] sm:text-7xl">
@@ -70,16 +80,6 @@ export default function HomePage() {
               Releases and verification
             </Link>
           </div>
-        </div>
-
-        <div className="conceal-hero-coin" aria-hidden="true">
-          <Image
-            src={toPublicProjectPath('/brand/conceal-coin.webp')}
-            alt=""
-            width={640}
-            height={640}
-            priority
-          />
         </div>
       </section>
 

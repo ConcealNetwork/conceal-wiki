@@ -104,22 +104,26 @@ body {
 }
 
 /* Hero coin: a large faded ornament blended into the page background,
-   masked radially like the official web wallet's landing treatment. The
-   transparent asset keeps it scheme-independent without a blend mode.
-   The halo box is larger than the coin and its gradient reaches zero
-   before the box edge, so the glow never shows a boundary. */
+   masked radially like the official web wallet's landing treatment. It is
+   absolutely positioned behind the hero copy so it takes no part in the
+   layout; the soft mask keeps its edges invisible where it bleeds. The
+   transparent asset keeps it scheme-independent without a blend mode. */
 .conceal-hero-coin {
-  position: relative;
-  display: grid;
-  place-items: center;
+  position: absolute;
+  z-index: -1;
+  top: 50%;
+  right: -14%;
+  width: min(50rem, 85vw);
+  aspect-ratio: 1 / 1;
+  transform: translateY(-50%);
+  pointer-events: none;
 }
 
 .conceal-hero-coin::before {
   position: absolute;
-  z-index: 0;
   left: 50%;
   top: 50%;
-  width: 190%;
+  width: 115%;
   aspect-ratio: 1 / 1;
   background: radial-gradient(
     circle 30rem at center,
@@ -134,14 +138,24 @@ body {
 }
 
 .conceal-hero-coin img {
-  position: relative;
-  z-index: 1;
-  width: 165%;
-  max-width: none;
+  display: block;
+  width: 100%;
   height: auto;
   opacity: 0.55;
   -webkit-mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
   mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
+}
+
+/* On narrow screens the coin would sit directly under the copy, so it drops
+   to the section's lower corner and fades further back. */
+@media (max-width: 63.99rem) {
+  .conceal-hero-coin {
+    top: auto;
+    right: -38%;
+    bottom: -34%;
+    transform: none;
+    opacity: 0.75;
+  }
 }
 
 .prose table {
