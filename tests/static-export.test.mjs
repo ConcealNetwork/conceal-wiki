@@ -30,6 +30,10 @@ async function collectHtml(directory) {
   return collectFiles(directory, '.html');
 }
 
+async function collectCss(directory) {
+  return collectFiles(directory, '.css');
+}
+
 async function collectReachableJavaScript() {
   const htmlFiles = await collectHtml(outputDirectory);
   const html = await Promise.all(htmlFiles.map((file) => readFile(file, 'utf8')));
@@ -62,6 +66,16 @@ test('exports links and assets beneath the GitHub project path', async () => {
   const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
   assert.match(home, /href="\/conceal-wiki\/docs\//);
   assert.match(home, /(?:src|href)="\/conceal-wiki\/_next\//);
+});
+
+test('anchors the desktop sidebar to the viewport edge on wide screens', async () => {
+  const cssFiles = await collectCss(outputDirectory);
+  const css = (await Promise.all(cssFiles.map((file) => readFile(file, 'utf8')))).join('\n');
+
+  assert.match(
+    css,
+    /@media\s*\(min-width:\s*48rem\)[^{]*\{[\s\S]*?#nd-sidebar\s*\{[^}]*width:\s*var\(--fd-sidebar-width\)/,
+  );
 });
 
 test('exports the verified documentation landing pages', async () => {

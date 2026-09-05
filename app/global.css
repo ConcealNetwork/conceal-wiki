@@ -10,3 +10,11 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* Keep the desktop navigation at the viewport edge on displays wider than the
+   centered documentation grid. The mobile drawer is intentionally unchanged. */
+@media (min-width: 48rem) {
+  #nd-sidebar {
+    width: var(--fd-sidebar-width);
+  }
+}
