@@ -85,18 +85,6 @@ body {
 .conceal-home::before {
   position: absolute;
   z-index: -1;
-  top: -18rem;
-  right: -12rem;
-  width: 38rem;
-  height: 38rem;
-  border: 1px solid color-mix(in srgb, var(--conceal-signal) 24%, transparent);
-  border-radius: 50%;
-  content: '';
-}
-
-.conceal-home::after {
-  position: absolute;
-  z-index: -1;
   top: 8rem;
   right: 12%;
   width: 8rem;
@@ -127,12 +115,13 @@ body {
   outline-offset: 3px;
 }
 
-/* Product hero: the wallet UI is a dark screenshot, so it keeps the same
-   frame in both schemes with an amber accent to match the task cards. */
+/* Product hero: the coin render is staged against black, so it keeps a dark
+   studio card in both schemes with an amber accent to match the task cards. */
 .conceal-hero-shot {
   position: relative;
   border: 1px solid var(--color-fd-border);
   border-radius: 0.75rem;
+  background: var(--conceal-ink);
   box-shadow: 0 24px 48px -24px rgb(0 0 0 / 0.5);
 }
 

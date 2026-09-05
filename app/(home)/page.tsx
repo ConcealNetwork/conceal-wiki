@@ -74,10 +74,10 @@ export default function HomePage() {
 
         <div className="conceal-hero-shot">
           <Image
-            src={toPublicProjectPath('/brand/desktop-wallet-dashboard.png')}
-            alt="Conceal Desktop wallet dashboard"
-            width={1268}
-            height={680}
+            src={toPublicProjectPath('/brand/conceal-coin.webp')}
+            alt="Conceal CCX coin"
+            width={800}
+            height={800}
             priority
             className="w-full"
           />
