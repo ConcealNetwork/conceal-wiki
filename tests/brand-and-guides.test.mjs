@@ -23,15 +23,19 @@ test('presents the official Conceal visual identity', async () => {
     read('app/icon.svg'),
   ]);
 
-  assert.match(css, /--conceal-signal:\s*#ffa500/i);
-  assert.match(css, /--conceal-ink:\s*#0a0a0a/i);
+  assert.match(css, /--conceal-signal:\s*#ffa600/i);
+  assert.match(css, /--conceal-ink:\s*#1a1613/i);
+  assert.match(css, /hsl\(36 38% 97%\)/);
+  assert.match(css, /hsl\(30 9% 9%\)/);
   assert.match(layout, /BrandMark/);
   assert.match(brand, /conceal-mark\.svg/);
+  assert.match(brand, /conceal-mark-on-light\.svg/);
   assert.match(home, /Choose a wallet/);
   assert.match(home, /Run a node/);
   assert.match(home, /Build with Conceal/);
   assert.doesNotMatch(icon, /#2dd4bf/i);
   assert.equal(await exists('public/brand/conceal-mark.svg'), true);
+  assert.equal(await exists('public/brand/conceal-mark-on-light.svg'), true);
 });
 
 test('publishes the four essential wallet journeys', async () => {

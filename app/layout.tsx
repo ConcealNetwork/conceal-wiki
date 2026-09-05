@@ -1,6 +1,14 @@
 import { Poppins } from 'next/font/google';
+import type { Viewport } from 'next';
 import { Provider } from '@/components/provider';
 import './global.css';
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#1a1613' },
+    { media: '(prefers-color-scheme: light)', color: '#faf7f2' },
+  ],
+};
 
 export const metadata = {
   metadataBase: new URL('https://concealnetwork.github.io/conceal-wiki/'),

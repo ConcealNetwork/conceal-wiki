@@ -2,22 +2,51 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/*
+  Palette tokens mirror the Conceal Wallet design (wallet.conceal.network):
+  warm neutrals under an amber signal accent, defined for both schemes.
+*/
 :root {
-  --conceal-signal: #ffa500;
+  --conceal-signal: #ffa600;
   --conceal-signal-strong: #c26a00;
-  --conceal-ink: #0a0a0a;
-  --conceal-graphite: #151515;
-  --conceal-fog: #b0b0b0;
-  --conceal-paper: #ffffff;
+  --conceal-ink: #1a1613;
+  --conceal-graphite: #24221e;
+  --conceal-fog: #a89f95;
+  --conceal-paper: #faf7f2;
+  --color-fd-background: hsl(36 38% 97%);
+  --color-fd-foreground: hsl(30 12% 12%);
+  --color-fd-card: hsl(0 0% 100%);
+  --color-fd-card-foreground: hsl(30 12% 12%);
+  --color-fd-popover: hsl(0 0% 100%);
+  --color-fd-popover-foreground: hsl(30 12% 12%);
+  --color-fd-muted: hsl(36 24% 92%);
+  --color-fd-muted-foreground: hsl(32 9% 38%);
+  --color-fd-border: hsl(34 18% 85%);
+  --color-fd-secondary: hsl(36 24% 92%);
+  --color-fd-secondary-foreground: hsl(30 12% 12%);
+  --color-fd-accent: hsl(36 24% 92%);
+  --color-fd-accent-foreground: hsl(30 12% 12%);
   --color-fd-primary: var(--conceal-signal-strong);
+  --color-fd-primary-foreground: hsl(0 0% 100%);
   --color-fd-ring: var(--conceal-signal-strong);
 }
 
 .dark {
-  --color-fd-background: var(--conceal-ink);
-  --color-fd-card: var(--conceal-graphite);
+  --color-fd-background: hsl(30 9% 9%);
+  --color-fd-foreground: hsl(0 0% 100%);
+  --color-fd-card: hsl(36 9% 13%);
+  --color-fd-card-foreground: hsl(0 0% 100%);
+  --color-fd-popover: hsl(36 10% 12%);
+  --color-fd-popover-foreground: hsl(0 0% 100%);
+  --color-fd-muted: hsl(34 8% 17%);
+  --color-fd-muted-foreground: hsl(36 7% 64%);
+  --color-fd-border: hsl(34 9% 21%);
+  --color-fd-secondary: hsl(34 8% 17%);
+  --color-fd-secondary-foreground: hsl(0 0% 100%);
+  --color-fd-accent: hsl(34 8% 17%);
+  --color-fd-accent-foreground: hsl(0 0% 100%);
   --color-fd-primary: var(--conceal-signal);
-  --color-fd-primary-foreground: var(--conceal-ink);
+  --color-fd-primary-foreground: hsl(0 0% 0%);
   --color-fd-ring: var(--conceal-signal);
 }
 
