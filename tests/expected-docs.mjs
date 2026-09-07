@@ -27,6 +27,7 @@ export const EXPECTED_DOCS = Object.freeze([
   { source: 'content/docs/wallets/core-cli.mdx', route: 'docs/wallets/core-cli', status: 'Current' },
   { source: 'content/docs/wallets/web.mdx', route: 'docs/wallets/web', status: 'Current' },
   { source: 'content/docs/wallets/android.mdx', route: 'docs/wallets/android', status: 'Current' },
+  { source: 'content/docs/wallets/ios-pwa.mdx', route: 'docs/wallets/ios-pwa', status: 'Current' },
   {
     source: 'content/docs/wallets/next-wallet.mdx',
     route: 'docs/wallets/next-wallet',

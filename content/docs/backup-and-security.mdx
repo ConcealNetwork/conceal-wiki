@@ -15,11 +15,20 @@ Recovery planning comes before a wallet upgrade, a browser reset, a reinstall, o
 
 ## Backup before change
 
-1. Use the wallet's documented backup or recovery flow while you still have normal access.
+1. Use the wallet's documented backup or export-to-file flow while you still have normal access. A file export is the fastest way to restore and continue where you left off after an upgrade or a new phone.
 2. Keep the resulting recovery information private and offline, separate from the device where practical.
 3. Confirm you can find the backup before changing software, clearing data, or moving devices.
 4. Record which wallet and version created it, without recording sensitive material in a ticket, chat, or cloud note.
 5. Test a recovery workflow with a small amount when the wallet documentation supports it.
+
+Exported files are **not interchangeable** across wallet families. Restore a file only in a wallet that accepts that format:
+
+| Wallet | Typical export | Restore in |
+| --- | --- | --- |
+| Desktop | `mywallet.wallet` | Desktop |
+| Next Wallet, Web Wallet, Conceal Mobile | `wallet.json` | Next Wallet, Web Wallet, or Conceal Mobile |
+
+Do not open a Desktop `.wallet` file in a browser or mobile wallet, and do not import `wallet.json` into Desktop. If you are changing wallet families, use that wallet's restore flow with your recovery information rather than the other family's export file.
 
 ## Verify downloads
 

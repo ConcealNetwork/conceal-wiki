@@ -2,6 +2,8 @@
 
 This repository contains the official Conceal Network documentation. The Fumadocs site is published at https://concealnetwork.github.io/conceal-wiki/.
 
+See [CONTRIBUTING.md](./CONTRIBUTING.md) to suggest a change with an issue or send a pull request.
+
 ## Requirements
 
 - Node.js 24

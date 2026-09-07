@@ -32,7 +32,8 @@ export default function Layout({ children }: LayoutProps<'/'>) {
       lang="en"
       className={`${geist.variable} ${geistMono.variable}`}
       suppressHydrationWarning
-    >      <body className="flex flex-col min-h-screen">
+    >
+      <body className="flex flex-col min-h-screen">
         <Provider>{children}</Provider>
       </body>
     </html>

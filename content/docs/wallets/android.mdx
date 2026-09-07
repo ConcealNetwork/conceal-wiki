@@ -1,22 +1,54 @@
 ---
-title: Android Wallet
-description: Verify the supported Conceal Android wallet package before installing it.
+title: Conceal Mobile
+description: Install Conceal Mobile from F-Droid for automatic updates, or verify a GitHub APK.
 ---
 
-This guide covers Android 6.0.4-f-droid. Check the Android releases page before installation, then choose the APK listed for that release.
+Conceal Mobile is the official Android wallet. Install it from [F-Droid](https://f-droid.org/en/packages/com.concealnetwork.concealmobile/) when you can: F-Droid builds the signed package from the project tag and delivers seamless upgrades through the F-Droid client.
 
-## Verify an APK before installation
+<div className="not-prose grid gap-5 sm:grid-cols-2">
+  <ProjectImage
+    src="/screenshots/android-send.png"
+    alt="Conceal Mobile send form with destination address, amount, payment ID and message fields."
+    caption="Send form. Review destination, amount and optional fields before continuing."
+    width={707}
+    height={1500}
+  />
+  <ProjectImage
+    src="/screenshots/android-receive.png"
+    alt="Conceal Mobile receive screen with the wallet address and QR code blurred."
+    caption="Receive screen. The published address and QR payload are blurred."
+    width={707}
+    height={1500}
+  />
+</div>
 
-1. Start at the official repository release page, then select the intended Android asset.
-2. Read the release notes and compare its version and published integrity information with the downloaded APK.
+## Install from F-Droid
+
+1. Open the [Conceal Mobile F-Droid page](https://f-droid.org/en/packages/com.concealnetwork.concealmobile/) from the F-Droid client or a trusted browser.
+2. Confirm the package name is `com.concealnetwork.concealmobile`.
+3. Install through the F-Droid client so later versions arrive as ordinary app updates.
+4. Complete a private recovery backup before moving funds or replacing a device.
+
+A direct APK from that F-Droid page works, but it will not notify you of upgrades. The client is the path that keeps the app current.
+
+Before any app upgrade or phone change, export the wallet to a file you keep privately. That file is the fastest way to restore Conceal Mobile and continue where you left off. Follow [Update or Move a Wallet](./update-and-move.mdx) when the device itself is changing.
+
+## Install a GitHub APK
+
+Use a GitHub APK when you cannot use F-Droid. The `-f-droid` suffix on a release tag is the build marker F-Droid consumes; it is not a product name.
+
+1. Start at the official [Android releases](https://github.com/ConcealNetwork/conceal-wallet-cordova/releases) page and select the intended asset.
+2. Read the release notes and compare the version and published integrity information with the downloaded APK.
 3. If a checksum or signature is published, verify it locally before installation.
-4. Confirm that the application package and its source match the official project, rather than trusting a re-upload, chat attachment, or ad.
+4. Confirm that the installation prompt names Conceal Mobile and that the package came from that official release, rather than a re-upload, chat attachment, or unofficial store.
 5. Complete a private recovery backup before moving funds or replacing a device.
 
 Android platform protections and installation prompts can differ by device and version. Keep the device updated, lock it appropriately, and do not disable security protections merely to install a wallet from an unverified source.
 
 ## Resources
 
+- [Update or Move a Wallet](./update-and-move.mdx)
+- [Conceal Mobile on F-Droid](https://f-droid.org/en/packages/com.concealnetwork.concealmobile/)
 - [Conceal Android wallet releases](https://github.com/ConcealNetwork/conceal-wallet-cordova/releases)
 - [Conceal Android wallet source](https://github.com/ConcealNetwork/conceal-wallet-cordova)
 - [Official Conceal support](https://conceal.network/support/)

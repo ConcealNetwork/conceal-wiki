@@ -69,33 +69,85 @@ test('adds comparison tables and task diagrams to the documentation', async () =
   assert.match(releases, /\| Component \| Documented version \|/);
   assert.match(network, /\| Parameter \| Value \|/);
   assert.match(node, /\| Interface \| Default port \|/);
-  assert.match(await read('content/docs/backup-and-security.mdx'), /wallet-recovery\.svg/);
+  const backup = await read('content/docs/backup-and-security.mdx');
+  assert.match(backup, /wallet-recovery\.svg/);
+  assert.match(backup, /mywallet\.wallet/);
+  assert.match(backup, /wallet\.json/);
+  assert.match(backup, /not interchangeable/i);
   assert.match(node, /node-rpc-boundary\.svg/);
   assert.equal(await exists('public/diagrams/wallet-recovery.svg'), true);
   assert.equal(await exists('public/diagrams/node-rpc-boundary.svg'), true);
 });
 
-test('publishes only sanitized, source-recorded product screenshots', async () => {
-  const [createOrRestore, sendAndReceive, mediaNotes] = await Promise.all([
-    read('content/docs/wallets/create-or-restore.mdx'),
-    read('content/docs/wallets/send-and-receive.mdx'),
-    read('public/screenshots/README.md'),
+test('explains how to contribute with an issue or a pull request', async () => {
+  const [contributing, readme] = await Promise.all([
+    read('CONTRIBUTING.md'),
+    read('README.md'),
   ]);
+
+  assert.match(readme, /CONTRIBUTING\.md/);
+  assert.match(contributing, /open an issue/i);
+  assert.match(contributing, /pull request/i);
+  assert.match(contributing, /public\/screenshots/);
+  assert.match(contributing, /kebab-case/);
+  assert.match(contributing, /next-wallet-account\.png/);
+  assert.match(contributing, /npm run verify/);
+});
+
+test('publishes sanitized product screenshots and folder how-tos', async () => {
+  const [createOrRestore, sendAndReceive, desktop, nextWallet, screenshotsReadme, brand, contributing] =
+    await Promise.all([
+      read('content/docs/wallets/create-or-restore.mdx'),
+      read('content/docs/wallets/send-and-receive.mdx'),
+      read('content/docs/wallets/desktop.mdx'),
+      read('content/docs/wallets/next-wallet.mdx'),
+      read('public/screenshots/README.md'),
+      read('public/brand/README.md'),
+      read('CONTRIBUTING.md'),
+    ]);
 
   for (const screenshot of [
     'public/screenshots/web-wallet-create-or-import.png',
     'public/screenshots/android-send.png',
     'public/screenshots/android-receive.png',
+    'public/screenshots/desktop-wallet-dashboard.png',
+    'public/screenshots/next-wallet-landing.png',
+    'public/screenshots/next-wallet-account.png',
+    'public/screenshots/conceal-mobile-create-pwa.png',
+    'public/screenshots/conceal-mobile-add-pwa.png',
   ]) {
     assert.equal(await exists(screenshot), true, screenshot);
   }
 
+  assert.equal(await exists('public/brand/desktop-wallet-dashboard.png'), false);
+  assert.doesNotMatch(brand, /desktop-wallet-dashboard\.png/);
   assert.match(createOrRestore, /web-wallet-create-or-import\.png/);
   assert.match(sendAndReceive, /android-send\.png/);
   assert.match(sendAndReceive, /android-receive\.png/);
-  assert.match(mediaNotes, /547b789c1facf80002c7928e9e2b33f50388219a/);
-  assert.match(mediaNotes, /wallet\.conceal\.network/);
-  assert.doesNotMatch(mediaNotes, /seed phrase|private spend key/i);
+  assert.match(desktop, /desktop-wallet-dashboard\.png/);
+  const android = await read('content/docs/wallets/android.mdx');
+  assert.match(android, /android-send\.png/);
+  assert.match(android, /android-receive\.png/);
+  assert.match(android, /f-droid\.org\/en\/packages\/com\.concealnetwork\.concealmobile/);
+  assert.match(android, /Conceal Mobile/);
+  assert.doesNotMatch(android, /6\.0\.4-f-droid/);
+  assert.match(nextWallet, /next-wallet-landing\.png/);
+  assert.match(nextWallet, /next-wallet-account\.png/);
+  const iosPwa = await read('content/docs/wallets/ios-pwa.mdx');
+  assert.match(iosPwa, /conceal-mobile-create-pwa\.png/);
+  assert.match(iosPwa, /conceal-mobile-add-pwa\.png/);
+  assert.match(iosPwa, /Add to Home Screen/);
+  assert.doesNotMatch(iosPwa, /(?:native|official) iOS wallet/i);
+  assert.doesNotMatch(contributing, /Next Wallet still needs a capture/);
+  assert.match(screenshotsReadme, /CONTRIBUTING\.md/);
+  assert.match(screenshotsReadme, /How to add a file/);
+  assert.match(screenshotsReadme, /Width \*\*1280 px\*\*/);
+  assert.match(brand, /CONTRIBUTING\.md/);
+  assert.match(brand, /How to add a file/);
+  assert.match(contributing, /public\/screenshots\/README\.md/);
+  assert.doesNotMatch(screenshotsReadme, /SHA-256/);
+  assert.doesNotMatch(brand, /SHA-256|sourced 6 September/i);
+  assert.doesNotMatch(screenshotsReadme, /seed phrase|private spend key/i);
 });
 
 test('provides an executable local-RPC developer quickstart and accurate package channels', async () => {

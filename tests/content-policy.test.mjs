@@ -35,6 +35,7 @@ const taskTwoSources = [
   'content/docs/wallets/core-cli.mdx',
   'content/docs/wallets/web.mdx',
   'content/docs/wallets/android.mdx',
+  'content/docs/wallets/ios-pwa.mdx',
   'content/docs/wallets/next-wallet.mdx',
   'content/docs/wallets/paper-wallet.mdx',
   'content/docs/backup-and-security.mdx',
@@ -206,7 +207,7 @@ test('describes fixed consensus issuance separately from dated explorer figures'
 test('links wallet choices to current internal guides in present tense', async () => {
   const chooseWallet = await readFile(path.resolve('content/docs/start-here/choose-a-wallet.mdx'), 'utf8');
 
-  for (const route of ['desktop', 'core-cli', 'web', 'android', 'next-wallet']) {
+  for (const route of ['desktop', 'core-cli', 'web', 'android', 'ios-pwa', 'next-wallet']) {
     assert.match(chooseWallet, new RegExp(`\\.\\.\\/wallets\\/${route}\\.mdx`));
   }
   assert.doesNotMatch(chooseWallet, /Dedicated pages will cover/i);
@@ -270,12 +271,17 @@ test('operator safety policy rejects stale or unsafe example mutations', () => {
   }
 });
 
-test('warns that Next Wallet is experimental', async () => {
+test('describes Next Wallet as the redesigned Web Wallet with a Desktop fallback', async () => {
   const nextWallet = path.resolve('content/docs/wallets/next-wallet.mdx');
   assert.equal(await fileExists(nextWallet), true, 'Next Wallet guide');
   if (!(await fileExists(nextWallet))) return;
   const source = await readFile(nextWallet, 'utf8');
-  assert.match(source, /experimental and unaudited/i);
+  assert.match(source, /redesigned successor to the Web Wallet/i);
+  assert.match(source, /wallet-sdk/i);
+  assert.match(source, /prefer the Desktop wallet/i);
+  assert.match(source, /same device exposure/i);
+  assert.match(source, /## Browser setup/);
+  assert.doesNotMatch(source, /experimental and unaudited/i);
 });
 
 test('does not publish unsafe wallet recovery or platform claims', async () => {

@@ -3,22 +3,27 @@ title: Web Wallet
 description: Understand browser-specific trade-offs before using the Conceal Web Wallet.
 ---
 
-The Web Wallet runs in a browser. This guide covers Web Wallet 2.1.4. Your browser profile, extensions, and device all affect its security and access to local wallet data.
+The Web Wallet runs in a browser. This guide covers Web Wallet 2.1.4. Treat the browser profile as part of the wallet: other tabs, extensions, and shared use of that profile increase device exposure.
 
-## Browser risks to plan for
+As of summer 2026 it is moving to [Next Wallet](./next-wallet.mdx). The legacy Web Wallet stays at [wws.conceal.network](https://wws.conceal.network/) for existing users and the transition period. After that, it will be deprecated and support will cease. Export `wallet.json` before you switch; Next Wallet and Conceal Mobile can restore that file. See [Backup & Security](../backup-and-security.mdx).
 
-- Clearing browser data, changing profiles, replacing a device, or using a compromised extension can interrupt access to locally held wallet data.
-- Shared computers, untrusted extensions, and phishing pages increase the risk of exposing sensitive information.
-- A browser session is not a recovery plan. Complete and protect your wallet recovery process before relying on browser storage.
+## Browser setup
+
+- Use a **dedicated browser or browser profile** only for the wallet. Do not open other sites in that same window.
+- Leave extensions off in that profile. A password manager is the one type that can look relevant; it still injects into pages, so prefer none.
+- Private (incognito) browsing reduces leftover data on the machine, but the wallet will not stay after you close that window. Use it only if you will [restore from an export](./create-or-restore.mdx) each time. For everyday use, a dedicated profile that you keep is simpler.
+- Clearing that profile, replacing the device, or losing the export interrupts access. A browser session is not a recovery plan.
 
 ## Safer routine
 
-Open the Web Wallet release page directly and check the URL. Verify any checksum or signature published with a downloadable file. Keep your browser, operating system, and extensions updated. Test the address with a small transfer before sending a larger amount.
+Open the Web Wallet at [wws.conceal.network](https://wws.conceal.network/) and check the URL. Keep the dedicated browser and operating system updated. Test the address with a small transfer before sending a larger amount.
 
 Do not send recovery material to a website, support contact, or person who claims they can restore the wallet for you.
 
 ## Resources
 
+- [Web Wallet (legacy)](https://wws.conceal.network/)
+- [Next Wallet](./next-wallet.mdx)
 - [Conceal Web Wallet releases](https://github.com/ConcealNetwork/conceal-web-wallet/releases)
 - [Conceal Web Wallet source](https://github.com/ConcealNetwork/conceal-web-wallet)
 - [Official Conceal support](https://conceal.network/support/)

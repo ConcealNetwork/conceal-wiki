@@ -116,6 +116,7 @@ test('exports every user guide without editorial status stamps', async () => {
     'docs/wallets/core-cli',
     'docs/wallets/web',
     'docs/wallets/android',
+    'docs/wallets/ios-pwa',
     'docs/wallets/paper-wallet',
     'docs/backup-and-security',
     'docs/earn-and-deposits',

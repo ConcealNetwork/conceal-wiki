@@ -1,18 +1,57 @@
 ---
 title: Next Wallet
-description: Review the risks before testing the experimental Conceal Next Wallet.
+description: Redesigned browser wallet built on Conceal’s wallet-sdk; choose Desktop if you want the most established option.
 ---
 
-Next Wallet is experimental and unaudited. Do not use it as a replacement for an established wallet or move funds into it because someone describes it as ready.
+Next Wallet is the redesigned successor to the Web Wallet, built on Conceal’s wallet-sdk. It runs in a browser, with the same device exposure as the [Web Wallet](./web.mdx). If you are unsure which to use, prefer the Desktop wallet.
+
+<ProjectImage
+  src="/screenshots/next-wallet-landing.png"
+  alt="Conceal Next Wallet landing page with Open your wallet and Create a new one actions."
+  caption="Next Wallet landing page."
+  width={1200}
+  height={645}
+/>
+
+## Browser setup
+
+Use the same browser setup as the Web Wallet:
+
+- Use a **dedicated browser or browser profile** only for the wallet. Do not open other sites in that same window.
+- Leave extensions off in that profile. A password manager is the one type that can look relevant; it still injects into pages, so prefer none.
+- Private (incognito) browsing reduces leftover data on the machine, but the wallet will not stay after you close that window. Use it only if you will [restore from an export](./create-or-restore.mdx) each time. For everyday use, a dedicated profile that you keep is simpler.
+- Clearing that profile, replacing the device, or losing the export interrupts access. A browser session is not a recovery plan.
+
+## Messages and Pulse
+
+After two wallets exchange a **payment ID**, Next Wallet treats that as an established relationship:
+
+- **Threaded messages** — their messages appear as a conversation thread instead of a flat list.
+- **Pulse** — either side can send a Pulse for a period of time to signal availability, for example radio silence, sick, or do not disturb.
+
+These features do not replace [messaging](../messaging.mdx) habits: confirm important payment details out of band, and keep recovery information out of messages.
 
 ## Evaluate before use
 
-Read the repository, release information, and security policy yourself. Confirm the maintenance status, understand the recovery workflow, and assume that experimental software can change or fail in ways that production software should not.
+Read the repository, release notes, and security policy, and keep a verified backup before you change wallets. Report security concerns through the repository's documented security process rather than posting sensitive details publicly.
 
-If you choose to evaluate it, isolate that activity from funds you cannot afford to risk and retain a verified backup before any wallet or device change. Report security concerns through the repository's documented security process rather than posting sensitive details publicly.
+## Interface preview
+
+The account overview is the signed-in home after you open a wallet. Layout and labels can change without notice.
+
+<ProjectImage
+  src="/screenshots/next-wallet-account.png"
+  alt="Next Wallet account overview with available, locked and pending balances and a market panel."
+  caption="Account overview capture. Use a demo wallet for screenshots; do not publish recovery material or full receiving addresses."
+  width={1200}
+  height={682}
+/>
 
 ## Resources
 
+- [Next Wallet](https://wallet.conceal.network/)
+- [Web Wallet](./web.mdx)
+- [Messaging](../messaging.mdx)
 - [Conceal Next Wallet repository](https://github.com/ConcealNetwork/conceal-next-wallet)
 - [Conceal Next Wallet security policy](https://github.com/ConcealNetwork/conceal-next-wallet/security/policy)
 - [Official Conceal support](https://conceal.network/support/)
