@@ -42,7 +42,7 @@ test('matches the release monitor map to the wallet and node documentation snaps
     ['Core', '../content/docs/wallets/core-cli.mdx', /Core (\d+\.\d+\.\d+)/],
     ['Desktop', '../content/docs/wallets/desktop.mdx', /Desktop (\d+\.\d+\.\d+)/],
     ['Web Wallet', '../content/docs/wallets/web.mdx', /Web Wallet (\d+\.\d+\.\d+)/, 'v'],
-    ['Android', '../content/docs/wallets/android.mdx', /Android (\d+\.\d+\.\d+-f-droid)/, 'v'],
+    ['Android', '../content/docs/releases-and-verification.mdx', /Android \| v(\d+\.\d+\.\d+-f-droid)/, 'v'],
     ['Guardian', '../content/docs/run-a-node.mdx', /Guardian (\d+\.\d+\.\d+)/, 'v'],
     ['Conceal API', '../content/docs/developer-and-api.mdx', /conceal-api[^\n]+\| (\d+\.\d+\.\d+) \|/],
     ['JS Library', '../content/docs/developer-and-api.mdx', /conceal-lib-js[^\n]+\| (\d+\.\d+\.\d+) \|/, 'v'],

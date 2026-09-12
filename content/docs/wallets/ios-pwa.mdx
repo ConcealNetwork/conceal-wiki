@@ -1,0 +1,44 @@
+---
+title: iOS Home Screen
+description: Add the Conceal wallet to an iPhone home screen as a PWA. There is no native iOS app.
+---
+
+Conceal does not ship an App Store app. On iPhone, open the official wallet in Safari and add it to the Home Screen. That creates a Progressive Web App (PWA): a home-screen icon that still runs in the browser, with the same backup needs and device exposure as the [Web Wallet](./web.mdx) and [Next Wallet](./next-wallet.mdx).
+
+Use Safari. Confirm the address is [wallet.conceal.network](https://wallet.conceal.network/) before you continue. If you want a dedicated application instead, use [Desktop](./desktop.mdx) or [Conceal Mobile](./android.mdx) on Android.
+
+<div className="not-prose grid gap-5 sm:grid-cols-2">
+  <ProjectImage
+    src="/screenshots/conceal-mobile-create-pwa.png"
+    alt="Safari on iPhone showing the page menu with Share selected over the Conceal wallet landing page."
+    caption="Open the Safari page menu and tap Share."
+    width={680}
+    height={1472}
+  />
+  <ProjectImage
+    src="/screenshots/conceal-mobile-add-pwa.png"
+    alt="iOS share sheet with Add to Home Screen highlighted for wallet.conceal.network."
+    caption="In the share sheet, tap Add to Home Screen."
+    width={680}
+    height={940}
+  />
+</div>
+
+## Add to Home Screen
+
+1. Open [wallet.conceal.network](https://wallet.conceal.network/) in Safari. Check the URL.
+2. Tap the page menu, then tap **Share**.
+3. Tap **Add to Home Screen**, then confirm the name and tap **Add**.
+4. Open the new icon from the Home Screen and complete [create or restore](./create-or-restore.mdx) with a private backup before you receive funds.
+
+You do not install upgrades for this shortcut. The PWA is a web view of [wallet.conceal.network](https://wallet.conceal.network/), so it already loads the current site.
+
+Clearing Safari data, changing phones, or deleting the icon can still interrupt access to locally held wallet data. The Home Screen shortcut is not a backup. Before a new device or a Safari reset, export the wallet to a file you keep privately: that is the fastest way to continue where you left off.
+
+## Resources
+
+- [Update or Move a Wallet](./update-and-move.mdx)
+- [Next Wallet](https://wallet.conceal.network/)
+- [Next Wallet guide](./next-wallet.mdx)
+- [Conceal Mobile on Android](./android.mdx)
+- [Official Conceal support](https://conceal.network/support/)
