@@ -2,7 +2,10 @@ import assert from 'node:assert/strict';
 import { access, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
-import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
+import {
+  operatorSafetyChecks,
+  operatorSafetyMutations,
+} from './operator-safety.mjs';
 import { EXPECTED_DOCS } from './expected-docs.mjs';
 
 const docsDirectory = path.resolve('content/docs');
@@ -79,7 +82,12 @@ async function collectMdxFiles(directory = docsDirectory) {
 }
 
 async function readMdxSources() {
-  return Promise.all((await collectMdxFiles()).map(async (file) => [file, await readFile(file, 'utf8')]));
+  return Promise.all(
+    (await collectMdxFiles()).map(async (file) => [
+      file,
+      await readFile(file, 'utf8'),
+    ]),
+  );
 }
 
 async function fileExists(file) {
@@ -92,20 +100,30 @@ async function fileExists(file) {
 }
 
 test('orders the task-oriented root navigation', async () => {
-  const meta = JSON.parse(await readFile(path.join(docsDirectory, 'meta.json'), 'utf8'));
+  const meta = JSON.parse(
+    await readFile(path.join(docsDirectory, 'meta.json'), 'utf8'),
+  );
   assert.deepEqual(meta.pages, expectedNavigation);
 });
 
 test('keeps the canonical expected source manifest present', async () => {
   for (const { source } of EXPECTED_DOCS) {
-    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected documentation source`);
+    assert.equal(
+      await fileExists(path.resolve(source)),
+      true,
+      `${source}: expected documentation source`,
+    );
   }
 });
 
 test('presents Conceal documentation without migration-era editorial copy', async () => {
   const home = await readFile(path.resolve('app/(home)/page.tsx'), 'utf8');
   const readme = await readFile(path.resolve('README.md'), 'utf8');
-  const sources = [...(await readMdxSources()).map(([, source]) => source), home, readme];
+  const sources = [
+    ...(await readMdxSources()).map(([, source]) => source),
+    home,
+    readme,
+  ];
   const prohibitedCopy = [
     /source[- ]backed/i,
     /legacy(?:[ -]wiki| production wiki| documentation| page| roadmap| media)/i,
@@ -137,11 +155,22 @@ test('links every published guide to useful project resources', async () => {
 
 test('includes research and historical archive pages with explicit retirement boundaries', async () => {
   for (const source of taskFourSources) {
-    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected Task 4 page`);
+    assert.equal(
+      await fileExists(path.resolve(source)),
+      true,
+      `${source}: expected Task 4 page`,
+    );
   }
-  assert.equal(await fileExists(path.resolve('content/docs/historical/meta.json')), true, 'historical navigation');
+  assert.equal(
+    await fileExists(path.resolve('content/docs/historical/meta.json')),
+    true,
+    'historical navigation',
+  );
 
-  const research = await readFile(path.resolve('content/docs/research.mdx'), 'utf8');
+  const research = await readFile(
+    path.resolve('content/docs/research.mdx'),
+    'utf8',
+  );
   assert.match(research, /experimental/i);
   assert.match(research, /unaudited/i);
   assert.match(research, /not a consensus decision/i);
@@ -157,7 +186,10 @@ test('includes research and historical archive pages with explicit retirement bo
 });
 
 test('keeps retired-product notices direct and non-operational', async () => {
-  const concealLive = await readFile(path.resolve('content/docs/historical/conceal-live.mdx'), 'utf8');
+  const concealLive = await readFile(
+    path.resolve('content/docs/historical/conceal-live.mdx'),
+    'utf8',
+  );
   assert.match(concealLive, /discontinued/i);
   assert.match(concealLive, /do not use old setup/i);
 
@@ -183,8 +215,14 @@ test('publishes safe troubleshooting for sync, output, and platform-startup fail
   const troubleshooting = await readFile(sourcePath, 'utf8');
 
   assert.match(troubleshooting, /synchroniz/i);
-  assert.match(troubleshooting, /(?:output|transaction)[^\n]{0,100}optimiz|optimiz[^\n]{0,100}(?:output|transaction)/i);
-  assert.match(troubleshooting, /(?:start|launch)[^\n]{0,100}(?:fail|error)|(?:fail|error)[^\n]{0,100}(?:start|launch)/i);
+  assert.match(
+    troubleshooting,
+    /(?:output|transaction)[^\n]{0,100}optimiz|optimiz[^\n]{0,100}(?:output|transaction)/i,
+  );
+  assert.match(
+    troubleshooting,
+    /(?:start|launch)[^\n]{0,100}(?:fail|error)|(?:fail|error)[^\n]{0,100}(?:start|launch)/i,
+  );
   assert.doesNotMatch(
     troubleshooting,
     /(?:^|\n)\s*(?:[-*]\s*)?`?(?:reset\b|rm\s+-rf|(?:delete|remove)\s+(?:the\s+)?(?:blockchain|chain data|data directory))/im,
@@ -192,7 +230,10 @@ test('publishes safe troubleshooting for sync, output, and platform-startup fail
 });
 
 test('describes fixed consensus issuance separately from dated explorer figures', async () => {
-  const network = await readFile(path.resolve('content/docs/network-and-ccx.mdx'), 'utf8');
+  const network = await readFile(
+    path.resolve('content/docs/network-and-ccx.mdx'),
+    'utf8',
+  );
 
   assert.match(network, /fixed consensus/i);
   assert.match(network, /200,000,000 CCX/);
@@ -201,13 +242,26 @@ test('describes fixed consensus issuance separately from dated explorer figures'
   assert.match(network, /At \*\*2026-09-05[^\n]+the explorer reported/i);
   assert.match(network, /33,712,033\.757459 CCX/);
   assert.match(network, /2026-09-05/);
-  assert.doesNotMatch(network, /^\|[^\n]*(?:current height|issued supply|circulating|deposits)[^\n]*\|/im);
+  assert.doesNotMatch(
+    network,
+    /^\|[^\n]*(?:current height|issued supply|circulating|deposits)[^\n]*\|/im,
+  );
 });
 
 test('links wallet choices to current internal guides in present tense', async () => {
-  const chooseWallet = await readFile(path.resolve('content/docs/start-here/choose-a-wallet.mdx'), 'utf8');
+  const chooseWallet = await readFile(
+    path.resolve('content/docs/start-here/choose-a-wallet.mdx'),
+    'utf8',
+  );
 
-  for (const route of ['desktop', 'core-cli', 'web', 'android', 'ios-pwa', 'next-wallet']) {
+  for (const route of [
+    'desktop',
+    'core-cli',
+    'web',
+    'android',
+    'ios-pwa',
+    'next-wallet',
+  ]) {
     assert.match(chooseWallet, new RegExp(`\\.\\.\\/wallets\\/${route}\\.mdx`));
   }
   assert.doesNotMatch(chooseWallet, /Dedicated pages will cover/i);
@@ -222,19 +276,35 @@ test('does not retain migration-preview copy in published MDX', async () => {
 
 test('includes every Task 2 user guide', async () => {
   for (const source of taskTwoSources) {
-    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected user guide`);
+    assert.equal(
+      await fileExists(path.resolve(source)),
+      true,
+      `${source}: expected user guide`,
+    );
   }
-  assert.equal(await fileExists(path.resolve('content/docs/wallets/meta.json')), true, 'wallet navigation');
+  assert.equal(
+    await fileExists(path.resolve('content/docs/wallets/meta.json')),
+    true,
+    'wallet navigation',
+  );
 });
 
 test('includes every Task 3 operator and developer guide', async () => {
   for (const source of taskThreeSources) {
-    assert.equal(await fileExists(path.resolve(source)), true, `${source}: expected operator guide`);
+    assert.equal(
+      await fileExists(path.resolve(source)),
+      true,
+      `${source}: expected operator guide`,
+    );
   }
 });
 
 test('links Task 3 guides to canonical operator and bridge sources', async () => {
-  const sources = (await Promise.all(taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')))).join('\n');
+  const sources = (
+    await Promise.all(
+      taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')),
+    )
+  ).join('\n');
   for (const source of [
     'https://github.com/ConcealNetwork/conceal-core/blob/master/docs/rpc/openapi/json_methods.yaml',
     'https://github.com/ConcealNetwork/conceal-core/releases',
@@ -242,13 +312,22 @@ test('links Task 3 guides to canonical operator and bridge sources', async () =>
     'https://explorer.conceal.network/',
     'https://github.com/ConcealNetwork/wCCX',
   ]) {
-    assert.match(sources, new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+    assert.match(
+      sources,
+      new RegExp(source.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')),
+    );
   }
 });
 
 test('explains CN-GPU mining mechanics from the Core implementation', async () => {
-  const mining = await readFile(path.resolve('content/docs/mining.mdx'), 'utf8');
-  assert.match(mining, /https:\/\/github\.com\/ConcealNetwork\/conceal-core\/blob\/master\/src\/CryptoNoteCore\/Miner\.cpp/);
+  const mining = await readFile(
+    path.resolve('content/docs/mining.mdx'),
+    'utf8',
+  );
+  assert.match(
+    mining,
+    /https:\/\/github\.com\/ConcealNetwork\/conceal-core\/blob\/master\/src\/CryptoNoteCore\/Miner\.cpp/,
+  );
   assert.match(mining, /miner[^.\n]{0,120}(?:proof-of-work|candidate block)/i);
   assert.match(mining, /submit[^.\n]{0,120}(?:candidate|work|block)/i);
   assert.match(mining, /reward[^.\n]{0,120}(?:accepted|block|valid)/i);
@@ -257,7 +336,11 @@ test('explains CN-GPU mining mechanics from the Core implementation', async () =
 });
 
 test('does not publish stale or unsafe operator guidance', async () => {
-  const sources = (await Promise.all(taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')))).join('\n');
+  const sources = (
+    await Promise.all(
+      taskThreeSources.map((file) => readFile(path.resolve(file), 'utf8')),
+    )
+  ).join('\n');
   for (const [name, isUnsafe] of Object.entries(operatorSafetyChecks)) {
     assert.equal(isUnsafe(sources), false, name);
   }
@@ -285,7 +368,9 @@ test('describes Next Wallet as the redesigned Web Wallet with a Desktop fallback
 });
 
 test('does not publish unsafe wallet recovery or platform claims', async () => {
-  const sources = (await readMdxSources()).map(([, source]) => source).join('\n');
+  const sources = (await readMdxSources())
+    .map(([, source]) => source)
+    .join('\n');
   for (const prohibitedContent of walletSafetyPatterns) {
     assert.doesNotMatch(sources, prohibitedContent);
   }
@@ -294,5 +379,7 @@ test('does not publish unsafe wallet recovery or platform claims', async () => {
 test('source safety policy rejects a private view key example mutation', () => {
   const privateKeyPattern = walletSafetyPatterns[1];
   assert.match(privateViewKeyMutation, privateKeyPattern);
-  assert.throws(() => assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern));
+  assert.throws(() =>
+    assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern),
+  );
 });

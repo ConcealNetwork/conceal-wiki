@@ -1,6 +1,6 @@
-@import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
-@import 'fumadocs-ui/css/preset.css';
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
 
 /*
   Palette tokens mirror the Conceal Wallet design (wallet.conceal.network):
@@ -62,7 +62,9 @@ code,
 pre,
 kbd,
 samp {
-  font-family: var(--font-conceal-mono), ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
+  font-family:
+    var(--font-conceal-mono), ui-monospace, "Cascadia Mono", Menlo, Consolas,
+    monospace;
 }
 
 ::selection {
@@ -102,7 +104,7 @@ samp {
   left: 1.25rem;
   width: 2.5rem;
   border-top: 2px solid var(--conceal-signal);
-  content: '';
+  content: "";
 }
 
 .conceal-task-card:focus-visible {
@@ -140,7 +142,7 @@ samp {
     color-mix(in srgb, var(--conceal-signal) 1%, transparent) 78%,
     transparent 92%
   );
-  content: '';
+  content: "";
   transform: translate(-50%, -50%);
 }
 
@@ -149,8 +151,18 @@ samp {
   width: 100%;
   height: auto;
   opacity: 0.55;
-  -webkit-mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
-  mask-image: radial-gradient(circle at 50% 49%, #000 40%, rgb(0 0 0 / 0.45) 58%, transparent 70%);
+  -webkit-mask-image: radial-gradient(
+    circle at 50% 49%,
+    #000 40%,
+    rgb(0 0 0 / 0.45) 58%,
+    transparent 70%
+  );
+  mask-image: radial-gradient(
+    circle at 50% 49%,
+    #000 40%,
+    rgb(0 0 0 / 0.45) 58%,
+    transparent 70%
+  );
 }
 
 /* On narrow screens the coin would sit directly under the copy, so it drops
@@ -174,7 +186,7 @@ samp {
   border-top: 2px solid var(--conceal-signal);
 }
 
-.prose img[src*='/diagrams/'] {
+.prose img[src*="/diagrams/"] {
   width: 100%;
   border: 1px solid var(--color-fd-border);
   border-radius: 0.75rem;

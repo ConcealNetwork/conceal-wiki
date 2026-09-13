@@ -8,23 +8,23 @@ type BrandMarkProps = {
 export function BrandMark({ compact = false }: BrandMarkProps) {
   const size = compact ? 28 : 34;
   return (
-    <span className="conceal-brand" aria-label="Conceal Docs">
+    <span className='conceal-brand'>
       {/* The silvery official mark reads on dark backgrounds; the warm-charcoal
           variant reads on light ones. CSS switches on the resolved theme class,
           so both render server-side and neither flashes on hydration. */}
       <Image
         src={toPublicProjectPath('/brand/conceal-mark.svg')}
-        alt=""
+        alt=''
         width={size}
         height={size}
-        className="hidden dark:block"
+        className='hidden dark:block'
       />
       <Image
         src={toPublicProjectPath('/brand/conceal-mark-on-light.svg')}
-        alt=""
+        alt=''
         width={size}
         height={size}
-        className="dark:hidden"
+        className='dark:hidden'
       />
       <span>Conceal Docs</span>
     </span>

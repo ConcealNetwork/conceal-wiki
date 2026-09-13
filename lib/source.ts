@@ -24,12 +24,20 @@ export const source = loader({
   plugins: [],
 });
 
+function toRouteUrl(
+  locale: string | undefined,
+  route: string,
+  segments: string[],
+) {
+  return `/${[locale, ...route.split('/'), ...segments].filter(Boolean).join('/')}`;
+}
+
 export function getPageImageUrl(page: (typeof source)['$inferPage']) {
   const segments = [...page.slugs, 'image.png'];
 
   return {
     segments,
-    url: '/' + [page.locale, ...docsImageRoute.split('/'), ...segments].filter(Boolean).join('/'),
+    url: toRouteUrl(page.locale, docsImageRoute, segments),
   };
 }
 
@@ -39,7 +47,7 @@ export function getPageMarkdownUrl(page: (typeof source)['$inferPage']) {
   return {
     segments,
     url: toPublicProjectPath(
-      '/' + [page.locale, ...docsContentRoute.split('/'), ...segments].filter(Boolean).join('/'),
+      toRouteUrl(page.locale, docsContentRoute, segments),
     ),
   };
 }

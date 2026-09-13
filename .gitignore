@@ -11,6 +11,7 @@
 /coverage
 /.next/
 /out/
+/dist/
 /build
 *.tsbuildinfo
 
@@ -31,5 +32,12 @@ yarn-error.log*
 .vercel
 next-env.d.ts
 
+# Hosting-only Apache rules. Keep a local copy at public/.htaccess so
+# build:prod copies it into dist/; do not commit it.
+.htaccess
+
 # AI
+.cursor/
+.continue/
 .forge/
+.repo-kit/

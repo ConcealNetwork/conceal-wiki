@@ -14,8 +14,8 @@ export function CopyMarkdownButton({ markdownUrl }: { markdownUrl: string }) {
 
   return (
     <button
-      type="button"
-      className="inline-flex h-8 items-center rounded-md border border-fd-border bg-fd-secondary px-3 text-sm font-medium text-fd-secondary-foreground hover:bg-fd-accent"
+      type='button'
+      className='inline-flex h-8 items-center rounded-md border border-fd-border bg-fd-secondary px-3 text-sm font-medium text-fd-secondary-foreground hover:bg-fd-accent'
       onClick={copyMarkdown}
     >
       {copied ? 'Copied' : 'Copy Markdown'}

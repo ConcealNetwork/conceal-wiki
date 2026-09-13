@@ -3,7 +3,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const REDIRECT_STATUSES = new Set([301, 302, 303, 307, 308]);
-const NOT_FOUND_PAGE = /<(?:title|h1)[^>]*>\s*(?:404(?:\s*[-:|])?|page\s+not\s+found|not\s+found)\b/i;
+const NOT_FOUND_PAGE =
+  /<(?:title|h1)[^>]*>\s*(?:404(?:\s*[-:|])?|page\s+not\s+found|not\s+found)\b/i;
 
 function maskCode(source) {
   return source
@@ -18,7 +19,9 @@ function sourceLocation(source, index, sourcePath) {
 export function extractExternalLinks(source, sourcePath) {
   const searchable = maskCode(source);
   const matches = [
-    ...searchable.matchAll(/\[[^\]]*\]\((https?:\/\/[^\s)]+)(?:\s+['"][^)]*['"])?\)/g),
+    ...searchable.matchAll(
+      /\[[^\]]*\]\((https?:\/\/[^\s)]+)(?:\s+['"][^)]*['"])?\)/g,
+    ),
     ...searchable.matchAll(/<(https?:\/\/[^>\s]+)>/g),
   ];
   const links = new Map();
@@ -38,7 +41,9 @@ export function extractExternalLinks(source, sourcePath) {
 async function collectMdxFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+  for (const entry of entries.sort((left, right) =>
+    left.name.localeCompare(right.name),
+  )) {
     const entryPath = path.join(directory, entry.name);
     if (entry.isDirectory()) files.push(...(await collectMdxFiles(entryPath)));
     if (entry.isFile() && entry.name.endsWith('.mdx')) files.push(entryPath);
@@ -46,11 +51,16 @@ async function collectMdxFiles(directory) {
   return files;
 }
 
-export async function collectDocumentationLinks(directory = path.resolve('content/docs')) {
+export async function collectDocumentationLinks(
+  directory = path.resolve('content/docs'),
+) {
   const links = new Map();
   for (const file of await collectMdxFiles(directory)) {
     const sourcePath = path.relative(process.cwd(), file);
-    for (const link of extractExternalLinks(await readFile(file, 'utf8'), sourcePath)) {
+    for (const link of extractExternalLinks(
+      await readFile(file, 'utf8'),
+      sourcePath,
+    )) {
       const sources = links.get(link.url) ?? new Set();
       for (const source of link.sources) sources.add(source);
       links.set(link.url, sources);
@@ -72,17 +82,22 @@ async function fetchWithTimeout(url, fetchImplementation, timeoutMs) {
   try {
     const response = await fetchImplementation(url, {
       headers: {
-        Accept: 'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
+        Accept:
+          'text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8',
         'User-Agent': 'conceal-wiki-link-checker/1.0',
       },
       redirect: 'manual',
       signal: controller.signal,
     });
-    const body = REDIRECT_STATUSES.has(response.status) ? '' : await response.text();
+    const body = REDIRECT_STATUSES.has(response.status)
+      ? ''
+      : await response.text();
     return { body, response };
   } catch (error) {
     if (controller.signal.aborted) {
-      throw new Error(`request timed out after ${timeoutMs}ms`, { cause: error });
+      throw new Error(`request timed out after ${timeoutMs}ms`, {
+        cause: error,
+      });
     }
     throw error;
   } finally {
@@ -95,7 +110,11 @@ async function fetchFollowingRedirects(url, options) {
   const visited = new Set([url]);
   let currentUrl = url;
 
-  for (let redirectCount = 0; redirectCount <= options.maxRedirects; redirectCount += 1) {
+  for (
+    let redirectCount = 0;
+    redirectCount <= options.maxRedirects;
+    redirectCount += 1
+  ) {
     const { body, response } = await fetchWithTimeout(
       currentUrl,
       options.fetchImplementation,
@@ -158,10 +177,12 @@ function looksLikeRootFallback(originalUrl, finalUrl, redirects) {
   if (redirects.length === 0) return false;
   const original = new URL(originalUrl);
   const final = new URL(finalUrl);
-  return original.origin === final.origin
-    && original.pathname !== '/'
-    && final.pathname === '/'
-    && final.search === '';
+  return (
+    original.origin === final.origin &&
+    original.pathname !== '/' &&
+    final.pathname === '/' &&
+    final.search === ''
+  );
 }
 
 async function checkOneExternalLink(link, options) {
@@ -180,19 +201,34 @@ async function checkOneExternalLink(link, options) {
       if (result.redirectError) {
         return { ...base, ok: false, reason: result.redirectError };
       }
-      if ((result.response.status === 429 || result.response.status >= 500) && attempt < options.retries) {
-        lastFailure = { ...base, ok: false, reason: `HTTP ${result.response.status}` };
-        await options.sleep(options.retryDelayMs * (2 ** attempt));
+      if (
+        (result.response.status === 429 || result.response.status >= 500) &&
+        attempt < options.retries
+      ) {
+        lastFailure = {
+          ...base,
+          ok: false,
+          reason: `HTTP ${result.response.status}`,
+        };
+        await options.sleep(options.retryDelayMs * 2 ** attempt);
         continue;
       }
       if (!result.response.ok) {
         return { ...base, ok: false, reason: `HTTP ${result.response.status}` };
       }
       if (looksLikeRootFallback(link.url, result.finalUrl, result.redirects)) {
-        return { ...base, ok: false, reason: 'redirected to the site root fallback' };
+        return {
+          ...base,
+          ok: false,
+          reason: 'redirected to the site root fallback',
+        };
       }
       if (NOT_FOUND_PAGE.test(result.body)) {
-        return { ...base, ok: false, reason: 'response resembles a not-found fallback page' };
+        return {
+          ...base,
+          ok: false,
+          reason: 'response resembles a not-found fallback page',
+        };
       }
 
       return result.redirects.length > 0
@@ -206,8 +242,7 @@ async function checkOneExternalLink(link, options) {
         url: link.url,
       };
       if (attempt < options.retries) {
-        await options.sleep(options.retryDelayMs * (2 ** attempt));
-        continue;
+        await options.sleep(options.retryDelayMs * 2 ** attempt);
       }
     }
   }
@@ -215,15 +250,19 @@ async function checkOneExternalLink(link, options) {
   return lastFailure;
 }
 
-export async function checkExternalLinks(links, {
-  concurrency = 6,
-  fetchImplementation = fetch,
-  maxRedirects = 5,
-  retries = 2,
-  retryDelayMs = 250,
-  sleep = (duration) => new Promise((resolve) => setTimeout(resolve, duration)),
-  timeoutMs = 10_000,
-} = {}) {
+export async function checkExternalLinks(
+  links,
+  {
+    concurrency = 6,
+    fetchImplementation = fetch,
+    maxRedirects = 5,
+    retries = 2,
+    retryDelayMs = 250,
+    sleep = (duration) =>
+      new Promise((resolve) => setTimeout(resolve, duration)),
+    timeoutMs = 10_000,
+  } = {},
+) {
   if (!Number.isInteger(concurrency) || concurrency < 1) {
     throw new RangeError('concurrency must be a positive integer');
   }
@@ -250,27 +289,35 @@ export async function checkExternalLinks(links, {
     }
   }
 
-  await Promise.all(Array.from(
-    { length: Math.min(concurrency, sortedLinks.length) },
-    () => worker(),
-  ));
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, sortedLinks.length) }, () =>
+      worker(),
+    ),
+  );
   return results;
 }
 
 export function formatExternalLinkReport(results) {
-  return results.map((result) => {
-    if (result.ok) {
-      const destination = result.finalUrl !== result.url ? ` -> ${result.finalUrl}` : '';
-      return `OK ${result.url}${destination}`;
-    }
-    return `FAIL ${result.url} (${result.reason}) [${result.sources.join(', ')}]`;
-  }).join('\n') + (results.length > 0 ? '\n' : '');
+  return (
+    results
+      .map((result) => {
+        if (result.ok) {
+          const destination =
+            result.finalUrl !== result.url ? ` -> ${result.finalUrl}` : '';
+          return `OK ${result.url}${destination}`;
+        }
+        return `FAIL ${result.url} (${result.reason}) [${result.sources.join(', ')}]`;
+      })
+      .join('\n') + (results.length > 0 ? '\n' : '')
+  );
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
   const links = await collectDocumentationLinks();
   const results = await checkExternalLinks(links);
   process.stdout.write(formatExternalLinkReport(results));
   if (results.some((result) => !result.ok)) process.exitCode = 1;
 }
-

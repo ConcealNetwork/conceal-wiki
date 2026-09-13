@@ -2,12 +2,11 @@ import assert from 'node:assert/strict';
 import { access, readFile } from 'node:fs/promises';
 import test from 'node:test';
 
-const externalLinks = await import('../scripts/check-external-links.mjs').catch(() => ({}));
-const {
-  checkExternalLinks,
-  extractExternalLinks,
-  formatExternalLinkReport,
-} = externalLinks;
+const externalLinks = await import('../scripts/check-external-links.mjs').catch(
+  () => ({}),
+);
+const { checkExternalLinks, extractExternalLinks, formatExternalLinkReport } =
+  externalLinks;
 
 function response(status, url, body = '', headers = {}) {
   return {
@@ -24,16 +23,25 @@ test('extracts and de-duplicates actual external Markdown and autolinks', () => 
   if (typeof extractExternalLinks !== 'function') return;
 
   assert.deepEqual(
-    extractExternalLinks(`
+    extractExternalLinks(
+      `
 [Guide](https://example.test/guide)
 <https://example.test/reference>
 [Duplicate](https://example.test/guide)
 [Internal](../guide.mdx)
 \`https://example.test/not-a-link\`
-`, 'content/docs/example.mdx'),
+`,
+      'content/docs/example.mdx',
+    ),
     [
-      { url: 'https://example.test/guide', sources: ['content/docs/example.mdx:2', 'content/docs/example.mdx:4'] },
-      { url: 'https://example.test/reference', sources: ['content/docs/example.mdx:3'] },
+      {
+        url: 'https://example.test/guide',
+        sources: ['content/docs/example.mdx:2', 'content/docs/example.mdx:4'],
+      },
+      {
+        url: 'https://example.test/reference',
+        sources: ['content/docs/example.mdx:3'],
+      },
     ],
   );
 });
@@ -60,18 +68,25 @@ test('checks redirects, retries transient failures, and rejects a SPA fallback p
     if (url === 'https://example.test/retry') {
       return response(200, url, '<h1>Recovered</h1>');
     }
-    return response(200, url, '<title>404 Not Found</title><div id="app"></div>');
+    return response(
+      200,
+      url,
+      '<title>404 Not Found</title><div id="app"></div>',
+    );
   };
 
-  const results = await checkExternalLinks([
-    { url: 'https://example.test/fallback', sources: ['fallback.mdx:1'] },
-    { url: 'https://example.test/retry', sources: ['retry.mdx:1'] },
-    { url: 'https://example.test/redirect', sources: ['redirect.mdx:1'] },
-  ], {
-    fetchImplementation,
-    retries: 1,
-    sleep: async () => {},
-  });
+  const results = await checkExternalLinks(
+    [
+      { url: 'https://example.test/fallback', sources: ['fallback.mdx:1'] },
+      { url: 'https://example.test/retry', sources: ['retry.mdx:1'] },
+      { url: 'https://example.test/redirect', sources: ['redirect.mdx:1'] },
+    ],
+    {
+      fetchImplementation,
+      retries: 1,
+      sleep: async () => {},
+    },
+  );
 
   assert.deepEqual(results, [
     {
@@ -104,12 +119,19 @@ test('checks redirects, retries transient failures, and rejects a SPA fallback p
 test('bounds request concurrency and formats results deterministically', async () => {
   assert.equal(typeof checkExternalLinks, 'function');
   assert.equal(typeof formatExternalLinkReport, 'function');
-  if (typeof checkExternalLinks !== 'function' || typeof formatExternalLinkReport !== 'function') return;
+  if (
+    typeof checkExternalLinks !== 'function' ||
+    typeof formatExternalLinkReport !== 'function'
+  )
+    return;
 
   let active = 0;
   let peak = 0;
   const results = await checkExternalLinks(
-    ['c', 'a', 'b'].map((name) => ({ url: `https://example.test/${name}`, sources: [`${name}.mdx:1`] })),
+    ['c', 'a', 'b'].map((name) => ({
+      url: `https://example.test/${name}`,
+      sources: [`${name}.mdx:1`],
+    })),
     {
       concurrency: 2,
       fetchImplementation: async (url) => {
@@ -123,11 +145,14 @@ test('bounds request concurrency and formats results deterministically', async (
   );
 
   assert.equal(peak, 2);
-  assert.deepEqual(results.map(({ url }) => url), [
-    'https://example.test/a',
-    'https://example.test/b',
-    'https://example.test/c',
-  ]);
+  assert.deepEqual(
+    results.map(({ url }) => url),
+    [
+      'https://example.test/a',
+      'https://example.test/b',
+      'https://example.test/c',
+    ],
+  );
   assert.equal(
     formatExternalLinkReport(results),
     'OK https://example.test/a\nOK https://example.test/b\nOK https://example.test/c\n',
@@ -141,9 +166,12 @@ test('times out a request through AbortSignal', async () => {
   const results = await checkExternalLinks(
     [{ url: 'https://example.test/hangs', sources: ['hangs.mdx:1'] }],
     {
-      fetchImplementation: async (_url, { signal }) => new Promise((_resolve, reject) => {
-        signal.addEventListener('abort', () => reject(signal.reason), { once: true });
-      }),
+      fetchImplementation: async (_url, { signal }) =>
+        new Promise((_resolve, reject) => {
+          signal.addEventListener('abort', () => reject(signal.reason), {
+            once: true,
+          });
+        }),
       retries: 0,
       timeoutMs: 5,
     },
@@ -154,8 +182,14 @@ test('times out a request through AbortSignal', async () => {
 });
 
 test('external-link workflow is separate, scheduled/manual, pinned, read-only, and non-deploying', async () => {
-  const workflowUrl = new URL('../.github/workflows/external-links.yml', import.meta.url);
-  const exists = await access(workflowUrl).then(() => true, () => false);
+  const workflowUrl = new URL(
+    '../.github/workflows/external-links.yml',
+    import.meta.url,
+  );
+  const exists = await access(workflowUrl).then(
+    () => true,
+    () => false,
+  );
   assert.equal(exists, true, 'expected separate external-link workflow');
   if (!exists) return;
 
@@ -163,9 +197,21 @@ test('external-link workflow is separate, scheduled/manual, pinned, read-only, a
   assert.match(workflow, /^on:\n(?:[\s\S]*\n)?\s*schedule:/m);
   assert.match(workflow, /workflow_dispatch:/);
   assert.match(workflow, /permissions:\n\s+contents: read/);
-  assert.match(workflow, /actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1/);
-  assert.match(workflow, /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7\.0\.0/);
+  assert.match(
+    workflow,
+    /actions\/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7\.0\.1/,
+  );
+  assert.match(
+    workflow,
+    /actions\/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7\.0\.0/,
+  );
   assert.match(workflow, /node scripts\/check-external-links\.mjs/);
-  assert.doesNotMatch(workflow, /npm run (?:build|verify)|next build|deploy|configure-pages|upload-pages-artifact/i);
-  assert.doesNotMatch(workflow, /issues: write|pages: write|id-token: write|secrets\./i);
+  assert.doesNotMatch(
+    workflow,
+    /npm run (?:build|verify)|next build|deploy|configure-pages|upload-pages-artifact/i,
+  );
+  assert.doesNotMatch(
+    workflow,
+    /issues: write|pages: write|id-token: write|secrets\./i,
+  );
 });

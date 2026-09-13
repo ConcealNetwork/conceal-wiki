@@ -1,12 +1,18 @@
-const projectPath = process.env.GITHUB_PAGES === 'true' ? '/conceal-wiki' : '';
+import { resolveBasePath, resolveSiteUrl } from './base-path.mjs';
+
+const projectPath = resolveBasePath();
+
+/** Absolute deployment URL used as the metadata base for the current build. */
+export const siteUrl = resolveSiteUrl();
 
 /**
- * Maps a root-relative application route to its public GitHub Pages route.
+ * Maps a root-relative application route to its published route.
  * Local development intentionally keeps the application at the domain root.
  */
 export function toPublicProjectPath(pathname: string) {
   if (!pathname.startsWith('/') || pathname.startsWith('//')) return pathname;
-  if (pathname === projectPath || pathname.startsWith(`${projectPath}/`)) return pathname;
+  if (pathname === projectPath || pathname.startsWith(`${projectPath}/`))
+    return pathname;
 
   return `${projectPath}${pathname}`;
 }

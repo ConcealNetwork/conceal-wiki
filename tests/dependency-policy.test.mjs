@@ -26,18 +26,89 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
   });
 
   assert.deepEqual(manifest.devDependencies, {
+    '@biomejs/biome': '2.5.12',
     '@tailwindcss/postcss': '^4.3.3',
     '@types/mdx': '^2.0.14',
     '@types/node': '^26.4.1',
     '@types/react': '^19.2.18',
     '@types/react-dom': '^19.2.7',
     '@typescript/native': 'npm:typescript@^7.0.2',
-    eslint: '^9.39.5',
-    'eslint-config-next': '^16.3.4',
     postcss: '^8.5.28',
     serve: '^14.2.6',
     tailwindcss: '^4.3.3',
     typescript: 'npm:@typescript/typescript6@^6.0.2',
+  });
+
+  assert.equal(
+    manifest.scripts['build:prod'],
+    'SITE_BASE_PATH=/wiki SITE_ORIGIN=https://conceal.network next build && rm -rf dist && mv out dist',
+  );
+  assert.equal(manifest.scripts.lint, 'biome lint .');
+  assert.equal(manifest.scripts['lint:fix'], 'biome lint --write .');
+  assert.equal(manifest.scripts.format, 'biome format .');
+  assert.equal(manifest.scripts['format:fix'], 'biome format --write .');
+});
+
+test('Biome config matches the repo-kit typescript module at 2.5.12 with single quotes', async () => {
+  const biome = await readJson('../biome.json');
+
+  assert.deepEqual(biome, {
+    $schema: 'https://biomejs.dev/schemas/2.5.12/schema.json',
+    vcs: {
+      enabled: true,
+      clientKind: 'git',
+      useIgnoreFile: true,
+    },
+    files: {
+      ignoreUnknown: false,
+    },
+    formatter: {
+      enabled: true,
+      indentStyle: 'space',
+      indentWidth: 2,
+    },
+    linter: {
+      enabled: true,
+      rules: {
+        preset: 'recommended',
+        a11y: {
+          useButtonType: 'off',
+          noAutofocus: 'off',
+          noRedundantRoles: 'off',
+          noStaticElementInteractions: 'off',
+          useKeyWithClickEvents: 'off',
+          noSvgWithoutTitle: 'off',
+        },
+        complexity: {
+          noImportantStyles: 'off',
+          noUselessFragments: 'off',
+        },
+        correctness: {
+          useExhaustiveDependencies: 'off',
+        },
+        style: {
+          noNonNullAssertion: 'off',
+        },
+        suspicious: {
+          noArrayIndexKey: 'off',
+          useIterableCallbackReturn: 'off',
+        },
+      },
+    },
+    javascript: {
+      formatter: {
+        quoteStyle: 'single',
+        jsxQuoteStyle: 'single',
+      },
+    },
+    assist: {
+      enabled: true,
+      actions: {
+        source: {
+          organizeImports: 'on',
+        },
+      },
+    },
   });
 });
 
@@ -46,41 +117,38 @@ test('verify runs the complete dependency policy suite after the Pages build', a
 
   assert.equal(manifest.scripts.test, 'node --test tests/*.test.mjs');
   assert.equal(
+    manifest.scripts['test:prod'],
+    'EXPORT_DIR=dist SITE_BASE_PATH=/wiki SITE_ORIGIN=https://conceal.network node --test tests/static-export.test.mjs',
+  );
+  assert.equal(
     manifest.scripts.verify,
     'npm run lint && npm run types:check && GITHUB_PAGES=true npm run build && npm run test',
   );
 });
 
-test('Dependabot has exactly the approved ESLint semver-major exception', async () => {
-  const dependabot = await readFile(new URL('../.github/dependabot.yml', import.meta.url), 'utf8');
-  const npmUpdate = dependabot.match(/- package-ecosystem: npm([\s\S]*?)(?=\n  - package-ecosystem:|$)/)?.[1];
+test('Dependabot has no npm ignore exceptions', async () => {
+  const dependabot = await readFile(
+    new URL('../.github/dependabot.yml', import.meta.url),
+    'utf8',
+  );
+  const npmUpdate = dependabot.match(
+    /- package-ecosystem: npm([\s\S]*?)(?=\n {2}- package-ecosystem:|$)/,
+  )?.[1];
 
   assert.ok(npmUpdate, 'expected an npm Dependabot update configuration');
-  const ignores = [...npmUpdate.matchAll(/^\s*- dependency-name:\s*(\S+)([\s\S]*?)(?=^\s*- dependency-name:|(?![\s\S]))/gm)]
-    .map(([, dependencyName, body]) => {
-      const properties = Object.fromEntries(
-        [...body.matchAll(/^\s+([a-z-]+):\s*(.+?)\s*$/gm)]
-          .map(([, key, value]) => [key, value]),
-      );
-
-      return {
-        dependencyName,
-        properties,
-      };
-    });
-
-  assert.deepEqual(ignores, [{
-    dependencyName: 'eslint',
-    properties: {
-      'update-types': '[version-update:semver-major]',
-    },
-  }]);
+  assert.equal(/^\s*ignore:/m.test(npmUpdate), false);
 });
 
 test('Pages workflow permits only the approved full action pins', async () => {
-  const workflow = await readFile(new URL('../.github/workflows/pages.yml', import.meta.url), 'utf8');
-  const actionReferences = [...workflow.matchAll(/^\s*(?:-\s+)?uses:\s*([^\s#]+)(?:\s+#\s*([^\r\n]+))?$/gm)]
-    .map(([, reference, tag]) => `${reference} # ${tag}`);
+  const workflow = await readFile(
+    new URL('../.github/workflows/pages.yml', import.meta.url),
+    'utf8',
+  );
+  const actionReferences = [
+    ...workflow.matchAll(
+      /^\s*(?:-\s+)?uses:\s*([^\s#]+)(?:\s+#\s*([^\r\n]+))?$/gm,
+    ),
+  ].map(([, reference, tag]) => `${reference} # ${tag}`);
 
   assert.deepEqual(actionReferences, [
     'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1',
@@ -93,7 +161,10 @@ test('Pages workflow permits only the approved full action pins', async () => {
 
 test('TypeScript transition exposes the native CLI and TypeScript 6 API offline', async () => {
   const executable = process.platform === 'win32' ? 'tsc.cmd' : 'tsc';
-  const tscPath = new URL(`../node_modules/.bin/${executable}`, import.meta.url);
+  const tscPath = new URL(
+    `../node_modules/.bin/${executable}`,
+    import.meta.url,
+  );
   const { stdout } = await execFileAsync(fileURLToPath(tscPath), ['--version']);
   const typescript = await import('typescript');
 

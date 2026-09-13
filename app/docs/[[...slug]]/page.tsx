@@ -16,26 +16,31 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const markdownUrl = getPageMarkdownUrl(page).url;
 
   return (
-    <main className="grid [grid-area:main] justify-items-center" data-layout-main="">
+    <main
+      className='grid [grid-area:main] justify-items-center'
+      data-layout-main=''
+    >
       <article
-        id="nd-page"
-        className="flex min-w-0 w-full max-w-[900px] flex-col gap-4 px-4 py-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14"
+        id='nd-page'
+        className='flex min-w-0 w-full max-w-[900px] flex-col gap-4 px-4 py-6 md:px-6 md:pt-8 xl:px-8 xl:pt-14'
       >
-        <h1 className="text-[1.75em] font-semibold">{page.data.title}</h1>
-        <p className="mb-0 text-lg text-fd-muted-foreground">{page.data.description}</p>
-        <div className="flex flex-row items-center gap-2 border-b pb-6">
+        <h1 className='text-[1.75em] font-semibold'>{page.data.title}</h1>
+        <p className='mb-0 text-lg text-fd-muted-foreground'>
+          {page.data.description}
+        </p>
+        <div className='flex flex-row items-center gap-2 border-b pb-6'>
           <CopyMarkdownButton markdownUrl={markdownUrl} />
           <a
-            className="inline-flex h-8 items-center rounded-md border border-fd-border bg-fd-secondary px-3 text-sm font-medium text-fd-secondary-foreground hover:bg-fd-accent"
+            className='inline-flex h-8 items-center rounded-md border border-fd-border bg-fd-secondary px-3 text-sm font-medium text-fd-secondary-foreground hover:bg-fd-accent'
             href={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-            rel="noreferrer noopener"
-            target="_blank"
+            rel='noreferrer noopener'
+            target='_blank'
           >
             Edit on GitHub
           </a>
         </div>
         <InlineTOC items={page.data.toc} defaultOpen />
-        <div className="prose flex-1">
+        <div className='prose flex-1'>
           <MDX
             components={getMDXComponents({
               // this allows you to link to other pages with relative file paths
@@ -52,7 +57,9 @@ export async function generateStaticParams() {
   return source.generateParams();
 }
 
-export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): Promise<Metadata> {
+export async function generateMetadata(
+  props: PageProps<'/docs/[[...slug]]'>,
+): Promise<Metadata> {
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();

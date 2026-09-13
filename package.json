@@ -4,12 +4,17 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:prod": "SITE_BASE_PATH=/wiki SITE_ORIGIN=https://conceal.network next build && rm -rf dist && mv out dist",
     "dev": "next dev",
     "start": "serve out",
     "types:check": "next typegen && tsc --noEmit",
-    "lint": "eslint",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format .",
+    "format:fix": "biome format --write .",
     "test": "node --test tests/*.test.mjs",
     "test:static": "node --test tests/static-export.test.mjs",
+    "test:prod": "EXPORT_DIR=dist SITE_BASE_PATH=/wiki SITE_ORIGIN=https://conceal.network node --test tests/static-export.test.mjs",
     "verify": "npm run lint && npm run types:check && GITHUB_PAGES=true npm run build && npm run test"
   },
   "dependencies": {
@@ -23,14 +28,13 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@biomejs/biome": "2.5.12",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/mdx": "^2.0.14",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@typescript/native": "npm:typescript@^7.0.2",
-    "eslint": "^9.39.5",
-    "eslint-config-next": "^16.3.4",
     "postcss": "^8.5.28",
     "serve": "^14.2.6",
     "tailwindcss": "^4.3.3",

@@ -2,10 +2,20 @@ import assert from 'node:assert/strict';
 import { readdir, readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import test from 'node:test';
-import { operatorSafetyChecks, operatorSafetyMutations } from './operator-safety.mjs';
+import { resolveBasePath, resolveSiteUrl } from '../lib/base-path.mjs';
+import {
+  operatorSafetyChecks,
+  operatorSafetyMutations,
+} from './operator-safety.mjs';
 import { EXPECTED_DOCS } from './expected-docs.mjs';
 
-const outputDirectory = path.resolve('out');
+// Defaults describe the GitHub Pages artifact in `out/`. Setting `EXPORT_DIR`
+// alongside the build's own `SITE_BASE_PATH` and `SITE_ORIGIN` runs this same
+// contract against another deployment, such as the production `dist/` tree.
+const exportEnvironment = { GITHUB_PAGES: 'true', ...process.env };
+const basePath = resolveBasePath(exportEnvironment);
+const siteUrl = resolveSiteUrl(exportEnvironment);
+const outputDirectory = path.resolve(process.env.EXPORT_DIR ?? 'out');
 const walletSafetyPatterns = [
   /(?:seed phrase|mnemonic)\s*(?:example|:|\[)/i,
   /private(?:[\s-]+[a-z]+){0,2}[\s-]+key\s*(?:example|:|\[)/i,
@@ -15,12 +25,46 @@ const walletSafetyPatterns = [
 ];
 const privateViewKeyMutation = 'private view key: test-only-sensitive-material';
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+const publicPrefix = escapeRegExp(basePath);
+
+function missingExport(target) {
+  const location = path.relative(process.cwd(), outputDirectory) || '.';
+
+  return assert.fail(
+    `${target} is missing from ${location}/. Build the export first: "GITHUB_PAGES=true npm run build" for out/, or "npm run build:prod" for dist/.`,
+  );
+}
+
+/** Strips the deployment prefix from a published, root-relative URL. */
+function stripBasePath(publicPath) {
+  return publicPath.replace(new RegExp(`^${publicPrefix}/`), '');
+}
+
+async function readExport(relativePath) {
+  try {
+    return await readFile(path.join(outputDirectory, relativePath), 'utf8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    return missingExport(relativePath);
+  }
+}
+
 async function collectFiles(directory, extension) {
-  const entries = await readdir(directory, { withFileTypes: true });
+  const entries = await readdir(directory, { withFileTypes: true }).catch(
+    (error) => {
+      if (error.code !== 'ENOENT') throw error;
+      return missingExport(path.relative(outputDirectory, directory) || 'HTML');
+    },
+  );
   const files = [];
   for (const entry of entries) {
     const entryPath = path.join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...(await collectFiles(entryPath, extension)));
+    if (entry.isDirectory())
+      files.push(...(await collectFiles(entryPath, extension)));
     if (entry.isFile() && entry.name.endsWith(extension)) files.push(entryPath);
   }
   return files;
@@ -36,14 +80,20 @@ async function collectCss(directory) {
 
 async function collectReachableJavaScript() {
   const htmlFiles = await collectHtml(outputDirectory);
-  const html = await Promise.all(htmlFiles.map((file) => readFile(file, 'utf8')));
-  const urls = new Set(html.flatMap((page) =>
-    [...page.matchAll(/(?:src|href)="(\/conceal-wiki\/[^\"]+\.js)"/g)].map((match) => match[1]),
-  ));
-
-  return Promise.all(
-    [...urls].map((url) => readFile(path.join(outputDirectory, url.replace(/^\/conceal-wiki\//, '')), 'utf8')),
+  const html = await Promise.all(
+    htmlFiles.map((file) => readFile(file, 'utf8')),
   );
+  const urls = new Set(
+    html.flatMap((page) =>
+      [
+        ...page.matchAll(
+          new RegExp(`(?:src|href)="(${publicPrefix}/[^"]+\\.js)"`, 'g'),
+        ),
+      ].map((match) => match[1]),
+    ),
+  );
+
+  return Promise.all([...urls].map((url) => readExport(stripBasePath(url))));
 }
 
 function metaContent(html, attribute, value) {
@@ -58,19 +108,20 @@ function metaContent(html, attribute, value) {
 }
 
 function publicTargetPath(publicPath) {
-  const relativePath = publicPath.replace(/^\/conceal-wiki\//, '');
-  return path.join(outputDirectory, relativePath, 'index.html');
+  return path.join(outputDirectory, stripBasePath(publicPath), 'index.html');
 }
 
-test('exports links and assets beneath the GitHub project path', async () => {
-  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
-  assert.match(home, /href="\/conceal-wiki\/docs\//);
-  assert.match(home, /(?:src|href)="\/conceal-wiki\/_next\//);
+test('exports links and assets beneath the deployment base path', async () => {
+  const home = await readExport('index.html');
+  assert.match(home, new RegExp(`href="${publicPrefix}/docs/`));
+  assert.match(home, new RegExp(`(?:src|href)="${publicPrefix}/_next/`));
 });
 
 test('anchors the desktop sidebar to the viewport edge on wide screens', async () => {
   const cssFiles = await collectCss(outputDirectory);
-  const css = (await Promise.all(cssFiles.map((file) => readFile(file, 'utf8')))).join('\n');
+  const css = (
+    await Promise.all(cssFiles.map((file) => readFile(file, 'utf8')))
+  ).join('\n');
 
   assert.match(
     css,
@@ -79,27 +130,32 @@ test('anchors the desktop sidebar to the viewport edge on wide screens', async (
 });
 
 test('exports the official documentation landing pages', async () => {
-  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
-  const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
-  const startHere = await readFile(path.join(outputDirectory, 'docs/start-here/index.html'), 'utf8');
-  const walletChoice = await readFile(
-    path.join(outputDirectory, 'docs/start-here/choose-a-wallet/index.html'),
-    'utf8',
+  const home = await readExport('index.html');
+  const docs = await readExport('docs/index.html');
+  const startHere = await readExport('docs/start-here/index.html');
+  const walletChoice = await readExport(
+    'docs/start-here/choose-a-wallet/index.html',
   );
-  const network = await readFile(path.join(outputDirectory, 'docs/network-and-ccx/index.html'), 'utf8');
+  const network = await readExport('docs/network-and-ccx/index.html');
 
   assert.match(home, /Use Conceal with confidence/);
   assert.match(home, /What do you need to do/);
   assert.match(docs, /Learn how to use Conceal Network/);
   for (const page of [home, docs, startHere, walletChoice, network]) {
-    assert.doesNotMatch(page, /source-backed|migration|legacy (?:production )?wiki|Last verified:|Status: Current/i);
+    assert.doesNotMatch(
+      page,
+      /source-backed|migration|legacy (?:production )?wiki|Last verified:|Status: Current/i,
+    );
   }
 });
 
 test('exports every source in the canonical expected-source manifest', async () => {
   for (const { route } of EXPECTED_DOCS) {
     const pagePath = path.join(outputDirectory, route, 'index.html');
-    const exists = await stat(pagePath).then(() => true, () => false);
+    const exists = await stat(pagePath).then(
+      () => true,
+      () => false,
+    );
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
   }
@@ -127,7 +183,10 @@ test('exports every user guide without editorial status stamps', async () => {
 
   for (const route of routes) {
     const pagePath = path.join(outputDirectory, route, 'index.html');
-    const exists = await stat(pagePath).then(() => true, () => false);
+    const exists = await stat(pagePath).then(
+      () => true,
+      () => false,
+    );
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
     const page = await readFile(pagePath, 'utf8');
@@ -146,7 +205,10 @@ test('exports every operator and developer guide without editorial status stamps
 
   for (const route of routes) {
     const pagePath = path.join(outputDirectory, route, 'index.html');
-    const exists = await stat(pagePath).then(() => true, () => false);
+    const exists = await stat(pagePath).then(
+      () => true,
+      () => false,
+    );
     assert.equal(exists, true, `${route}: expected exported route`);
     if (!exists) continue;
     const page = await readFile(pagePath, 'utf8');
@@ -165,17 +227,23 @@ test('exports research and retired-product notices with direct warnings', async 
   ];
 
   for (const route of routes) {
-    const page = await readFile(path.join(outputDirectory, route, 'index.html'), 'utf8');
+    const page = await readExport(path.join(route, 'index.html'));
     assert.doesNotMatch(page, /Last verified:|Status:/i);
   }
-  assert.match(await readFile(path.join(outputDirectory, 'docs/research/index.html'), 'utf8'), /experimental/i);
-  assert.match(await readFile(path.join(outputDirectory, 'docs/historical/conceal-id/index.html'), 'utf8'), /unavailable/i);
-  assert.match(await readFile(path.join(outputDirectory, 'docs/historical/conceal-pay/index.html'), 'utf8'), /unavailable/i);
+  assert.match(await readExport('docs/research/index.html'), /experimental/i);
+  assert.match(
+    await readExport('docs/historical/conceal-id/index.html'),
+    /unavailable/i,
+  );
+  assert.match(
+    await readExport('docs/historical/conceal-pay/index.html'),
+    /unavailable/i,
+  );
 });
 
 test('exports project-prefixed public social image URLs', async () => {
-  const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
-  const imageUrl = 'https://concealnetwork.github.io/conceal-wiki/og/docs/image.png';
+  const docs = await readExport('docs/index.html');
+  const imageUrl = `${siteUrl}og/docs/image.png`;
   assert.doesNotMatch(docs, /https?:\/\/localhost(?::\d+)?/);
   assert.equal(metaContent(docs, 'property', 'og:image'), imageUrl);
   assert.equal(metaContent(docs, 'name', 'twitter:image'), imageUrl);
@@ -183,25 +251,39 @@ test('exports project-prefixed public social image URLs', async () => {
 
 for (const file of ['llms.txt', 'llms-full.txt']) {
   test(`${file} advertises project-prefixed documentation URLs that exist`, async () => {
-    const llmText = await readFile(path.join(outputDirectory, file), 'utf8');
-    const paths = [...llmText.matchAll(/(?:\]\(|\()(\/conceal-wiki\/[^)]+)\)/g)].map((match) => match[1]);
+    const llmText = await readExport(file);
+    const paths = [
+      ...llmText.matchAll(
+        new RegExp(`(?:\\]\\(|\\()(${publicPrefix}/[^)]+)\\)`, 'g'),
+      ),
+    ].map((match) => match[1]);
 
-    assert.ok(paths.length > 0, `${file} should advertise a project-prefixed URL`);
+    assert.ok(
+      paths.length > 0,
+      `${file} should advertise a project-prefixed URL`,
+    );
     assert.doesNotMatch(llmText, /(?:\]\(|\()\/docs(?:[)/]|\))/);
     for (const publicPath of paths) {
-      assert.ok(publicPath.endsWith('/'), `${file}: ${publicPath} should be a canonical Pages URL`);
-      assert.equal((await stat(publicTargetPath(publicPath))).isFile(), true, `${file}: ${publicPath}`);
+      assert.ok(
+        publicPath.endsWith('/'),
+        `${file}: ${publicPath} should be a canonical Pages URL`,
+      );
+      assert.equal(
+        (await stat(publicTargetPath(publicPath))).isFile(),
+        true,
+        `${file}: ${publicPath}`,
+      );
     }
   });
 }
 
 test('exports one home main landmark', async () => {
-  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
+  const home = await readExport('index.html');
   assert.equal(home.match(/<main(?:\s|>)/g)?.length, 1);
 });
 
 test('exports one docs main landmark with the table of contents', async () => {
-  const docs = await readFile(path.join(outputDirectory, 'docs/index.html'), 'utf8');
+  const docs = await readExport('docs/index.html');
   assert.equal(docs.match(/<main(?:\s|>)/g)?.length, 1);
   assert.equal(docs.match(/href="#start-here"/g)?.length, 2);
 });
@@ -226,22 +308,26 @@ test('does not export prohibited AI integrations', async () => {
   }
 });
 
-test('exports a project-prefixed favicon whose target exists', async () => {
-  const home = await readFile(path.join(outputDirectory, 'index.html'), 'utf8');
+test('exports a prefixed favicon whose target exists', async () => {
+  const home = await readExport('index.html');
   const favicon = home.match(/<link rel="icon" href="([^"]+)"/);
   assert.ok(favicon, 'expected the exported home page to declare a favicon');
-  assert.match(favicon[1], /^\/conceal-wiki\//);
+  assert.match(favicon[1], new RegExp(`^${publicPrefix}/`));
 
-  const faviconPath = new URL(favicon[1], 'https://example.test').pathname.replace(
-    /^\/conceal-wiki\//,
-    '',
+  const faviconPath = stripBasePath(
+    new URL(favicon[1], 'https://example.test').pathname,
   );
-  assert.equal((await stat(path.join(outputDirectory, faviconPath))).isFile(), true);
+  assert.equal(
+    (await stat(path.join(outputDirectory, faviconPath))).isFile(),
+    true,
+  );
 });
 
 test('does not expose a local filesystem path', async () => {
   const files = await collectHtml(outputDirectory);
-  const html = (await Promise.all(files.map((file) => readFile(file, 'utf8')))).join('\n');
+  const html = (
+    await Promise.all(files.map((file) => readFile(file, 'utf8')))
+  ).join('\n');
   assert.doesNotMatch(html, /(?:file:\/\/)?\/Users\/travis\//);
   assert.doesNotMatch(html, /\/tmp\/conceal-wiki-/);
 });
@@ -281,5 +367,7 @@ test('export safety policy rejects unsafe operator mutations', () => {
 test('export safety policy rejects a private view key example mutation', () => {
   const privateKeyPattern = walletSafetyPatterns[1];
   assert.match(privateViewKeyMutation, privateKeyPattern);
-  assert.throws(() => assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern));
+  assert.throws(() =>
+    assert.doesNotMatch(privateViewKeyMutation, privateKeyPattern),
+  );
 });

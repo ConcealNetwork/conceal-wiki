@@ -42,8 +42,16 @@ test('presents the official Conceal visual identity', async () => {
 
 test('publishes the four essential wallet journeys', async () => {
   const journeys = [
-    ['content/docs/wallets/install.mdx', /Windows|macOS|Linux/, /official.*release/i],
-    ['content/docs/wallets/create-or-restore.mdx', /create.*wallet/i, /restore.*wallet/i],
+    [
+      'content/docs/wallets/install.mdx',
+      /Windows|macOS|Linux/,
+      /official.*release/i,
+    ],
+    [
+      'content/docs/wallets/create-or-restore.mdx',
+      /create.*wallet/i,
+      /restore.*wallet/i,
+    ],
     ['content/docs/wallets/send-and-receive.mdx', /receive CCX/i, /send CCX/i],
     ['content/docs/wallets/update-and-move.mdx', /update/i, /new device|move/i],
   ];
@@ -95,16 +103,23 @@ test('explains how to contribute with an issue or a pull request', async () => {
 });
 
 test('publishes sanitized product screenshots and folder how-tos', async () => {
-  const [createOrRestore, sendAndReceive, desktop, nextWallet, screenshotsReadme, brand, contributing] =
-    await Promise.all([
-      read('content/docs/wallets/create-or-restore.mdx'),
-      read('content/docs/wallets/send-and-receive.mdx'),
-      read('content/docs/wallets/desktop.mdx'),
-      read('content/docs/wallets/next-wallet.mdx'),
-      read('public/screenshots/README.md'),
-      read('public/brand/README.md'),
-      read('CONTRIBUTING.md'),
-    ]);
+  const [
+    createOrRestore,
+    sendAndReceive,
+    desktop,
+    nextWallet,
+    screenshotsReadme,
+    brand,
+    contributing,
+  ] = await Promise.all([
+    read('content/docs/wallets/create-or-restore.mdx'),
+    read('content/docs/wallets/send-and-receive.mdx'),
+    read('content/docs/wallets/desktop.mdx'),
+    read('content/docs/wallets/next-wallet.mdx'),
+    read('public/screenshots/README.md'),
+    read('public/brand/README.md'),
+    read('CONTRIBUTING.md'),
+  ]);
 
   for (const screenshot of [
     'public/screenshots/web-wallet-create-or-import.png',
@@ -119,7 +134,10 @@ test('publishes sanitized product screenshots and folder how-tos', async () => {
     assert.equal(await exists(screenshot), true, screenshot);
   }
 
-  assert.equal(await exists('public/brand/desktop-wallet-dashboard.png'), false);
+  assert.equal(
+    await exists('public/brand/desktop-wallet-dashboard.png'),
+    false,
+  );
   assert.doesNotMatch(brand, /desktop-wallet-dashboard\.png/);
   assert.match(createOrRestore, /web-wallet-create-or-import\.png/);
   assert.match(sendAndReceive, /android-send\.png/);
@@ -128,7 +146,10 @@ test('publishes sanitized product screenshots and folder how-tos', async () => {
   const android = await read('content/docs/wallets/android.mdx');
   assert.match(android, /android-send\.png/);
   assert.match(android, /android-receive\.png/);
-  assert.match(android, /f-droid\.org\/en\/packages\/com\.concealnetwork\.concealmobile/);
+  assert.match(
+    android,
+    /f-droid\.org\/en\/packages\/com\.concealnetwork\.concealmobile/,
+  );
   assert.match(android, /Conceal Mobile/);
   assert.doesNotMatch(android, /6\.0\.4-f-droid/);
   assert.match(nextWallet, /next-wallet-landing\.png/);
@@ -156,9 +177,13 @@ test('provides an executable local-RPC developer quickstart and accurate package
   assert.match(developer, /curl[^\n]+127\.0\.0\.1:16000\/getinfo/);
   assert.match(developer, /\| Project \| Current version \| Distribution \|/);
   assert.match(developer, /conceal-api[^\n]+0\.8\.8[^\n]+npm/i);
-  assert.match(developer, /conceal-lib-js[^\n]+0\.3\.1[^\n]+GitHub Release/i);
-  assert.match(developer, /conceal-wallet-sdk[^\n]+0\.2\.14[^\n]+GitHub Release/i);
-  const rpcExamples = developer.match(/https?:\/\/[^\s)`]+:16000\/getinfo/g) ?? [];
+  assert.match(developer, /conceal-lib-js[^\n]+0\.3\.3[^\n]+GitHub Release/i);
+  assert.match(
+    developer,
+    /conceal-wallet-sdk[^\n]+0\.2\.16[^\n]+GitHub Release/i,
+  );
+  const rpcExamples =
+    developer.match(/https?:\/\/[^\s)`]+:16000\/getinfo/g) ?? [];
   assert.deepEqual(rpcExamples, ['http://127.0.0.1:16000/getinfo']);
 });
 
@@ -195,7 +220,10 @@ test('explains the transaction lifecycle and core terminology', async () => {
 test('offers a symptom-first troubleshooting index', async () => {
   const troubleshooting = await read('content/docs/troubleshooting.mdx');
 
-  assert.match(troubleshooting, /\| Symptom \| Check first \| Continue with \|/);
+  assert.match(
+    troubleshooting,
+    /\| Symptom \| Check first \| Continue with \|/,
+  );
   assert.match(troubleshooting, /balance looks wrong/i);
   assert.match(troubleshooting, /transaction is pending/i);
   assert.match(troubleshooting, /node keeps stopping/i);

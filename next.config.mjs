@@ -1,14 +1,14 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { resolveBasePath } from './lib/base-path.mjs';
 
 const withMDX = createMDX();
-const isGitHubPages = process.env.GITHUB_PAGES === 'true';
 
 /** @type {import('next').NextConfig} */
 const config = {
   output: 'export',
   reactStrictMode: true,
   trailingSlash: true,
-  basePath: isGitHubPages ? '/conceal-wiki' : '',
+  basePath: resolveBasePath(),
   images: { unoptimized: true },
 };
 

@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from 'next/font/google';
 import type { Viewport } from 'next';
 import { Provider } from '@/components/provider';
+import { siteUrl } from '@/lib/project-path';
 import './global.css';
 
 export const viewport: Viewport = {
@@ -11,7 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata = {
-  metadataBase: new URL('https://concealnetwork.github.io/conceal-wiki/'),
+  metadataBase: new URL(siteUrl),
   title: { default: 'Conceal Docs', template: '%s | Conceal Docs' },
   description: 'Documentation for Conceal Network.',
 };
@@ -29,11 +30,11 @@ const geistMono = Geist_Mono({
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html
-      lang="en"
+      lang='en'
       className={`${geist.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="flex flex-col min-h-screen">
+      <body className='flex flex-col min-h-screen'>
         <Provider>{children}</Provider>
       </body>
     </html>
