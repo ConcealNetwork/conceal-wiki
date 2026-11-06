@@ -34,7 +34,6 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
     '@types/react-dom': '^19.2.7',
     '@typescript/native': 'npm:typescript@^7.0.2',
     postcss: '^8.5.28',
-    serve: '^14.2.6',
     tailwindcss: '^4.3.3',
     typescript: 'npm:@typescript/typescript6@^6.0.2',
   });

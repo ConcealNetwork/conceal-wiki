@@ -190,8 +190,9 @@ test('provides an executable local-RPC developer quickstart and accurate package
 test('turns node guidance into an operations handbook', async () => {
   const node = await read('content/docs/run-a-node.mdx');
 
-  assert.match(node, /ccx-cli-macOS-v6\.7\.5\.zip/);
-  assert.match(node, /ccx-cli-ubuntu-2204-v6\.7\.5\.tar\.gz/);
+  assert.match(node, /ccx-cli-macOS-v6\.7\.6\.zip/);
+  assert.match(node, /ccx-cli-ubuntu-2204-v6\.7\.6\.tar\.gz/);
+  assert.match(node, /ccx-cli-ubuntu-2604-v6\.7\.6\.tar\.gz/);
   assert.match(node, /## First start and synchronization/);
   assert.match(node, /## Routine operations/);
   assert.match(node, /Discord|email/);

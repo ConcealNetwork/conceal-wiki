@@ -7,7 +7,7 @@ Conceal Core exposes daemon RPC interfaces for reading network state and submitt
 
 ## Five-minute local RPC check
 
-Run this only on the same machine as a synchronized `conceald` instance. It reads daemon state and does not require a wallet:
+Run this only on the same machine as a synchronized `conceal-daemon` instance. It reads daemon state and does not require a wallet:
 
 ```bash
 curl --fail --silent --show-error http://127.0.0.1:16000/getinfo
@@ -15,7 +15,7 @@ curl --fail --silent --show-error http://127.0.0.1:16000/getinfo
 
 A successful response is JSON describing the daemon and network. Check its status, height, network, and version before using the node for an integration. Compare the height with the [Conceal explorer](https://explorer.conceal.network/) if you need an independent, time-sensitive reference.
 
-If the request fails, confirm that `conceald` is running, has finished starting, and is listening on the configured RPC address. Do not solve a local connection problem by publishing RPC to the internet.
+If the request fails, confirm that `conceal-daemon` is running, has finished starting, and is listening on the configured RPC address. Do not solve a local connection problem by publishing RPC to the internet.
 
 ## RPC references
 

@@ -33,24 +33,26 @@ npm run verify
 
 `lib/base-path.mjs` resolves the subdirectory each build is published under, and `next.config.mjs` applies it as `basePath`. `GITHUB_PAGES=true` selects the `/conceal-wiki` project path used by the Pages test deployment; an unset environment builds for the domain root. That prefix decides how the generated `out/` can be served.
 
-For a local preview, build without the flag and serve at the root:
+For a local preview, build without the flag and serve `out/` at the root:
 
 ```bash
 npm run build
-npm start
+python3 -m http.server -d out 3000
 ```
+
+Open http://localhost:3000/.
 
 To check the exact artifact CI deploys, build with the flag and serve it under the project path:
 
 ```bash
 GITHUB_PAGES=true npm run build
 mkdir -p /tmp/pages-preview && ln -sfn "$PWD/out" /tmp/pages-preview/conceal-wiki
-serve -S /tmp/pages-preview
+python3 -m http.server -d /tmp/pages-preview 3000
 ```
 
-Then open http://localhost:3000/conceal-wiki/. The `-S` flag is required because `serve` returns 404 for symlinks by default.
+Then open http://localhost:3000/conceal-wiki/.
 
-Serving a `GITHUB_PAGES=true` build with `npm start` instead renders an unstyled page with full-size icons: the HTML requests `/conceal-wiki/_next/...` while `serve` exposes those files at `/_next/...`, so every stylesheet and script returns 404. Because `npm run verify` finishes with a Pages build, run `npm run build` again before `npm start`.
+Serving a `GITHUB_PAGES=true` build from `out/` at the site root renders an unstyled page with full-size icons: the HTML requests `/conceal-wiki/_next/...` while those files are exposed at `/_next/...`, so every stylesheet and script returns 404. Because `npm run verify` finishes with a Pages build, run `npm run build` again before previewing at the root.
 
 ### Production build
 
@@ -74,12 +76,12 @@ Preview it locally with the prefix in place:
 
 ```bash
 mkdir -p /tmp/wiki-preview && ln -sfn "$PWD/dist" /tmp/wiki-preview/wiki
-serve -S /tmp/wiki-preview
+python3 -m http.server -d /tmp/wiki-preview 3000
 ```
 
 Then open http://localhost:3000/wiki/.
 
-`build:prod` moves `out/` to `dist/`, so run `npm run build` again before `npm start`.
+`build:prod` moves `out/` to `dist/`, so run `npm run build` again before a root preview.
 
 Two variables override the deployment target for any other host:
 

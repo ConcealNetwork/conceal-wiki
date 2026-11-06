@@ -16,7 +16,7 @@
     <path d="M288 298h108" stroke="#ffa500" stroke-width="4"/>
     <path d="m382 286 16 12-16 12" fill="none" stroke="#ffa500" stroke-width="4"/>
     <rect x="398" y="194" width="250" height="208" rx="18" fill="#151515" stroke="#ffa500" stroke-width="2"/>
-    <text x="430" y="250" fill="#fff" font-size="29" font-weight="600">conceald</text>
+    <text x="523" y="250" fill="#fff" font-size="20" font-weight="600" text-anchor="middle">conceal-daemon</text>
     <text x="430" y="286" fill="#b0b0b0" font-size="18">Validates and relays</text>
     <text x="430" y="313" fill="#b0b0b0" font-size="18">network data</text>
     <text x="430" y="360" fill="#ffa500" font-size="17" font-weight="600">Daemon RPC · 16000</text>

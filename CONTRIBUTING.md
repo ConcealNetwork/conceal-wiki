@@ -50,7 +50,7 @@ Full check used by CI:
 npm run verify
 ```
 
-`npm run verify` ends with a `GITHUB_PAGES=true` build, so it leaves `out/` using the `/conceal-wiki` base path. Serving that with `npm start` shows an unstyled page, which is expected rather than a broken layout. Run a plain `npm run build` first to preview at the root — see [Previewing the static build](./README.md#previewing-the-static-build).
+`npm run verify` ends with a `GITHUB_PAGES=true` build, so it leaves `out/` using the `/conceal-wiki` base path. Serving that directory at the site root shows an unstyled page, which is expected rather than a broken layout. Run a plain `npm run build` first to preview at the root — see [Previewing the static build](./README.md#previewing-the-static-build).
 
 ## Documentation rules
 

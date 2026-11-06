@@ -3,11 +3,11 @@ title: Run a Node
 description: Install, synchronize, monitor, and maintain Conceal Core without exposing private RPC.
 ---
 
-Run a Conceal node on a host where you control storage, network access, backups, and updates. This guide covers **Core 6.7.5** and **Guardian 0.7.9**. Check both release pages before installation.
+Run a Conceal node on a host where you control storage, network access, backups, and updates. This guide covers **Core 6.7.6** and **Guardian 0.7.9**. Check both release pages before installation.
 
 <ProjectImage
   src="/diagrams/node-rpc-boundary.svg"
-  alt="Public Conceal peer traffic reaches conceald while daemon and wallet RPC remain inside a private administration boundary."
+  alt="Public Conceal peer traffic reaches conceal-daemon while daemon and wallet RPC remain inside a private administration boundary."
   caption="Default mainnet ports from the current Core configuration. Confirm the release you operate before applying firewall rules."
   width={1200}
   height={560}
@@ -15,23 +15,76 @@ Run a Conceal node on a host where you control storage, network access, backups,
 
 ## Choose and verify a Core package
 
-Core 6.7.5 provides these platform archives on its [official release page](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.5):
+On Ubuntu, install the `conceal-core` package from the [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core):
+
+```bash
+sudo add-apt-repository ppa:concealnetwork/conceal-core
+sudo apt update
+sudo apt install conceal-core
+```
+
+That page publishes `conceal-core` 6.7.6 for Ubuntu 22.04 (jammy), 24.04 (noble), and 26.04 (resolute). Confirm the series list there before you install. Apt trust is the Launchpad archive.
+
+Remove the package with:
+
+```bash
+sudo apt remove conceal-core
+```
+
+That removal deletes only the packaged files. It does not delete `~/.conceal`. Wallet keys and the blockchain live there.
+
+Core 6.7.6 also provides these platform archives on its [official release page](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.6). Use an archive for Windows, macOS, or an Ubuntu install from a tarball.
 
 | Platform | Release asset |
 | --- | --- |
-| macOS | `ccx-cli-macOS-v6.7.5.zip` |
-| Ubuntu 22.04 | `ccx-cli-ubuntu-2204-v6.7.5.tar.gz` |
-| Ubuntu 24.04 | `ccx-cli-ubuntu-2404-v6.7.5.tar.gz` |
-| Windows 64-bit | `ccx-cli-win64-v6.7.5.zip` |
+| macOS | `ccx-cli-macOS-v6.7.6.zip` |
+| Ubuntu 22.04 | `ccx-cli-ubuntu-2204-v6.7.6.tar.gz` |
+| Ubuntu 24.04 | `ccx-cli-ubuntu-2404-v6.7.6.tar.gz` |
+| Ubuntu 26.04 | `ccx-cli-ubuntu-2604-v6.7.6.tar.gz` |
+| Windows 64-bit | `ccx-cli-win64-v6.7.6.zip` |
 
-Download only from the official release. Verify any checksum or signature the release publishes before executing the archive. If the release provides no integrity value you can independently validate, record that gap and assess the risk. Never run a binary received through chat, email, a mirror, or an unverified download link.
+Download an archive only from the official release. Verify any checksum or signature the release publishes before executing the archive. If the release provides no integrity value you can independently validate, record that gap and assess the risk. Never run a binary received through chat, email, a mirror, or an unverified download link.
 
 Keep a copy of your configuration and a tested wallet backup outside the node's data directory. A blockchain copy is replaceable; wallet recovery material is not.
 
+## Raspberry Pi
+
+Build Core 6.7.6 on the Pi. The [Core README](https://github.com/ConcealNetwork/conceal-core/blob/6.7.6/README.md#arm--raspberry-pi) records a successful build on a Raspberry Pi 4 running Raspberry Pi OS, 32-bit and 64-bit. Other ARM boards need a CPU with Neon and AES.
+
+Install the Linux build dependencies and compile:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential python3-dev git cmake libboost-all-dev
+git clone https://github.com/ConcealNetwork/conceal-core
+cd conceal-core
+mkdir build
+cd build
+cmake ..
+make
+```
+
+The binaries are in the `src` directory of that build tree: `conceal-daemon`, `conceal-wallet`, `conceal-walletd`, and `conceal-optimizer`.
+
+The Core README says this compile can use up to 13GB of memory. On Raspberry Pi OS, raise swap to 5120 MB before building. Those steps are in [Compiling Conceal from source](https://github.com/ConcealNetwork/conceal-core/blob/6.7.6/README.md#compiling-conceal-from-source).
+
+## Programs and logs
+
+Core 6.7.6 provides `conceal-daemon`, `conceal-wallet`, `conceal-walletd`, and `conceal-optimizer`. The Ubuntu package installs those names in `/usr/bin` and does not add the previous command names.
+
+The data directory is `~/.conceal`. With `--testnet`, it is `~/.conceal/testnet`.
+
+| Program | Default log |
+| --- | --- |
+| `conceal-daemon` | `conceal-daemon.log` in the data directory (`--log-file` overrides that path) |
+| `conceal-wallet` | `conceal-wallet.log` in the data directory |
+| `conceal-walletd` | `conceal-walletd.log` in the data directory |
+| `conceal-optimizer` | Console |
+
 ## First start and synchronization
 
-1. Read the [Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs) for the release and platform you selected.
-2. Run the daemon as a dedicated, unprivileged operating-system account. Keep its data and logs out of publicly served directories.
+1. Read the [Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.6/docs) for the release and platform you selected.
+2. Run `conceal-daemon` as a dedicated, unprivileged operating-system account. Keep its data and logs out of publicly served directories.
 3. Start with the default network unless you intentionally need another network. Record the binary version and configuration path.
 4. Allow the daemon to discover peers and synchronize. Watch the local height, peer count, disk space, and logs.
 5. Compare the local height with the [live explorer](https://explorer.conceal.network/). Small differences can occur while a block propagates; a persistent or growing gap needs investigation.
@@ -68,7 +121,7 @@ Before an upgrade, read the release notes, capture the current version and heigh
 
 ## Guardian monitoring
 
-[Conceal Guardian](https://github.com/ConcealNetwork/conceal-guardian) monitors `conceald`, checks block progress, can restart the daemon, and can send Discord or email notifications. This guide covers **Guardian 0.7.9**.
+[Conceal Guardian](https://github.com/ConcealNetwork/conceal-guardian) monitors `conceal-daemon`, checks block progress, can restart the daemon, and can send Discord or email notifications. This guide covers **Guardian 0.7.9**.
 
 Treat Guardian as a separate privileged service:
 
@@ -93,9 +146,11 @@ If the daemon falls behind or becomes unavailable:
 
 ## Resources
 
-- [Conceal Core 6.7.5 release](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.5)
-- [Conceal Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs)
-- [Conceal Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.5/docs/rpc)
+- [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core)
+- [Conceal Core 6.7.6 release](https://github.com/ConcealNetwork/conceal-core/releases/tag/6.7.6)
+- [Conceal Core documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.6/docs)
+- [Conceal Core compile instructions](https://github.com/ConcealNetwork/conceal-core/blob/6.7.6/README.md#compiling-conceal-from-source)
+- [Conceal Core RPC documentation](https://github.com/ConcealNetwork/conceal-core/tree/6.7.6/docs/rpc)
 - [Conceal Guardian repository](https://github.com/ConcealNetwork/conceal-guardian)
 - [Conceal Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases)
 - [Conceal Network block explorer](https://explorer.conceal.network/)

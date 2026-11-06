@@ -21,15 +21,15 @@ test('reports only official release tags that differ from the documented snapsho
   assert.deepEqual(
     compareReleaseTags(DOCUMENTED_RELEASES, {
       ...DOCUMENTED_RELEASES,
-      Core: '6.7.6',
+      Core: '6.7.7',
     }),
-    [{ component: 'Core', documentedTag: '6.7.5', latestTag: '6.7.6' }],
+    [{ component: 'Core', documentedTag: '6.7.6', latestTag: '6.7.7' }],
   );
 });
 
 test('uses the exact Task 2 release-tag snapshot', () => {
   assert.deepEqual(DOCUMENTED_RELEASES, {
-    Core: '6.7.5',
+    Core: '6.7.6',
     Desktop: '6.7.8',
     'Web Wallet': 'v2.1.4',
     Android: 'v6.0.5-f-droid',

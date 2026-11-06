@@ -3,13 +3,13 @@ title: Releases & Verification
 description: Verify official Conceal Core and Guardian releases before installation or upgrade.
 ---
 
-This guide covers **Core 6.7.5** and **Guardian 0.7.9**. Before installation, check the releases page and confirm the tag, asset, release notes, checksum, and signature information for the file you plan to run.
+This guide covers **Core 6.7.6** and **Guardian 0.7.9**. Before installation, check the releases page and confirm the tag, asset, release notes, checksum, and signature information for the file you plan to run.
 
 ## Documented release set
 
 | Component | Documented version | Official release record |
 | --- | --- | --- |
-| Core | 6.7.5 | [Core releases](https://github.com/ConcealNetwork/conceal-core/releases) |
+| Core | 6.7.6 | [Core releases](https://github.com/ConcealNetwork/conceal-core/releases) |
 | Desktop | 6.7.8 | [Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases) |
 | Web Wallet | v2.1.4 | [Web Wallet releases](https://github.com/ConcealNetwork/conceal-web-wallet/releases) |
 | Android | v6.0.5-f-droid | [Android releases](https://github.com/ConcealNetwork/conceal-wallet-cordova/releases) |
@@ -28,6 +28,10 @@ The documentation checks these versions against GitHub Releases and the npm regi
 4. Stop if the asset, integrity material, signing identity, or release notes do not match what you expected. Resolve the discrepancy from the official repository before running it.
 5. Back up relevant local data before an upgrade and keep the previous working state available until the new version has been checked.
 
+## Ubuntu package
+
+The [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core) is an official install channel for the `conceal-core` package. Apt trust is the Launchpad archive, not a tarball SHA-256. The checksum steps above still apply to GitHub Release files, including Ubuntu archives. Install and removal steps are in [Run a Node](./run-a-node.mdx).
+
 ## Guardian releases
 
 Guardian is distributed separately from Core. Verify it as a separate component, including its own version, platform asset, release notes, and checksum. Do not assume that matching version numbers, installation locations, or update schedules imply compatibility.
@@ -38,6 +42,7 @@ If you build from source, record the repository commit or tag, build environment
 
 ## Resources
 
+- [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core)
 - [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
 - [Conceal Guardian releases](https://github.com/ConcealNetwork/conceal-guardian/releases)
 - [Conceal Core build documentation](https://github.com/ConcealNetwork/conceal-core/tree/master/docs)
