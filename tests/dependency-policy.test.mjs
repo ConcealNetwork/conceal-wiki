@@ -20,7 +20,7 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
     'fumadocs-mdx': '^15.4.0',
     'fumadocs-ui': 'npm:@fumadocs/base-ui@^16.15.7',
     'lucide-react': '^1.41.0',
-    next: '^16.3.4',
+    next: '^16.4.3',
     react: '^19.2.8',
     'react-dom': '^19.2.8',
   });
@@ -168,5 +168,5 @@ test('TypeScript transition exposes the native CLI and TypeScript 6 API offline'
   const typescript = await import('typescript');
 
   assert.equal(stdout.trim(), 'Version 7.0.2');
-  assert.equal(typescript.version, '6.0.2');
+  assert.equal(typescript.version, '6.0.3');
 });
