@@ -17,7 +17,7 @@
     "verify": "npm run lint && npm run types:check && GITHUB_PAGES=true npm run build && npm run test"
   },
   "dependencies": {
-    "cn": "^0.2.5",
+    "cn": "^0.5.2",
     "fumadocs-core": "^16.15.7",
     "fumadocs-mdx": "^15.4.0",
     "fumadocs-ui": "npm:@fumadocs/base-ui@^16.15.7",
@@ -27,7 +27,7 @@
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.12",
+    "@biomejs/biome": "2.6.4",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/mdx": "^2.0.14",
     "@types/node": "^26.4.1",
