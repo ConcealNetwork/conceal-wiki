@@ -32,8 +32,8 @@ test('uses the exact Task 2 release-tag snapshot', () => {
     Core: '6.7.6',
     Desktop: '6.7.8',
     'Web Wallet': 'v2.1.4',
-    Android: 'v6.0.5-f-droid',
-    Guardian: 'v0.7.9',
+    Android: 'v6.0.8-f-droid',
+    Guardian: 'v0.7.11',
     'Conceal API': '0.8.8',
     'JS Library': 'v0.3.3',
     'Wallet SDK': 'v0.2.16',
@@ -156,14 +156,14 @@ test('compares the documented snapshot after reading official release tags', asy
           json: async () => ({
             tag_name:
               component === 'Guardian'
-                ? 'v0.7.10'
+                ? 'v0.7.12'
                 : DOCUMENTED_RELEASES[component],
           }),
         };
   });
 
   assert.deepEqual(mismatches, [
-    { component: 'Guardian', documentedTag: 'v0.7.9', latestTag: 'v0.7.10' },
+    { component: 'Guardian', documentedTag: 'v0.7.11', latestTag: 'v0.7.12' },
   ]);
 });
 
