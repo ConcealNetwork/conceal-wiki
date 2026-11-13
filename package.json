@@ -17,18 +17,18 @@
     "verify": "npm run lint && npm run types:check && GITHUB_PAGES=true npm run build && npm run test"
   },
   "dependencies": {
-    "cn": "^0.2.5",
-    "fumadocs-core": "^16.15.7",
-    "fumadocs-mdx": "^15.4.0",
+    "cn": "^0.5.2",
+    "fumadocs-core": "^16.18.4",
+    "fumadocs-mdx": "^15.5.3",
     "fumadocs-ui": "npm:@fumadocs/base-ui@^16.15.7",
-    "lucide-react": "^1.41.0",
-    "next": "^16.4.3",
+    "lucide-react": "^1.70.0",
+    "next": "^16.4.6",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.5.12",
-    "@tailwindcss/postcss": "^4.3.3",
+    "@biomejs/biome": "2.6.6",
+    "@tailwindcss/postcss": "^4.3.5",
     "@types/mdx": "^2.0.14",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
