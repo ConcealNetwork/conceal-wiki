@@ -1,0 +1,80 @@
+---
+title: FAQ
+description: Short answers to common Conceal wallet, sync, mining, and developer questions.
+---
+
+These answers cover the questions that appeared most often on the former Conceal FAQ. Prefer the linked guides when you need the full procedure. Never send recovery information, passwords, or private keys to support.
+
+## Quick index
+
+| Question | Start here |
+| --- | --- |
+| Transaction is too big / optimize wallet | [Outputs and optimization](#outputs-and-wallet-optimization) |
+| Send button does nothing / payment ID clears | [Wallet not synchronized](#wallet-not-synchronized) |
+| Wallet will not start (`MSVCP140.dll`) | [Windows runtime missing](#windows-runtime-missing) |
+| Create or back up a CLI wallet | [Create or restore](./wallets/create-or-restore.mdx), [Backup & Security](./backup-and-security.mdx) |
+| How to mine | [Mining](./mining.mdx) |
+| Build Desktop from source | [Compile Desktop on Unix-like systems](#compile-desktop-on-unix-like-systems) |
+| Sync looks stuck or incomplete | [Troubleshooting](./troubleshooting.mdx) |
+| Is Conceal like Bitcoin? | [Conceal and Bitcoin](#conceal-and-bitcoin) |
+
+## Outputs and wallet optimization
+
+Your balance is made of outputs from past receives. Spending combines some of them and returns change. Many small incoming payments can leave so many outputs that a large spend exceeds the transaction size limit. Wallets then ask you to **optimize** (also called fusion for RPC wallets).
+
+Before optimizing, confirm the wallet is synchronized and that you have a current backup. Optimization creates self-transactions; wait for confirmations before trying the original spend again.
+
+- Desktop: use the application's optimize action (commonly under Settings).
+- Core CLI: inspect with `outputs`, run one round with `optimize`, or repeated rounds with `optimize_all` when the installed release documents those commands.
+- Service providers using wallet RPC: use fusion helpers such as `estimateFusion` and `sendFusionTransaction`. Thresholds are in atomic units (for example, `1000000` for 1 CCX). Confirm method names and parameters against the [Core wallet RPC definitions](https://github.com/ConcealNetwork/conceal-core/blob/master/src/Wallet/WalletRpcServerCommandsDefinitions.h) for the release you run.
+
+Exchanges and other high-volume wallets should schedule regular optimization until unlocked outputs stay manageable (often well under a few hundred). See [Troubleshooting](./troubleshooting.mdx#a-transaction-is-too-large-or-asks-for-output-optimization) for the symptom-first path.
+
+## Wallet not synchronized
+
+If the payment ID clears and nothing happens after Send, the wallet is often still synchronizing. Check the sync status in the application. A wallet that still reports synchronizing, or a last block time far behind the [explorer](https://explorer.conceal.network/), is not ready for reliable sends. Wait for sync to finish, or follow [Troubleshooting](./troubleshooting.mdx#wallet-or-node-synchronization-is-incomplete).
+
+## Windows runtime missing
+
+If Desktop fails to start with `MSVCP140.dll` or `VCRUNTIME140.dll` missing, install Microsoft's current [Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170) for your architecture. Do not download individual DLL files from third-party sites. Then reopen the official Desktop build. More detail is in [Troubleshooting](./troubleshooting.mdx#the-application-does-not-start).
+
+## Create and back up a CLI wallet
+
+1. Download Core from the official [Core releases](https://github.com/ConcealNetwork/conceal-core/releases) page (or build from source) and verify the asset.
+2. Create or open a wallet only with the CLI tools that ship with that release.
+3. Choose a strong local password when prompted.
+4. Confirm you can reopen the wallet with that password before you fund it.
+5. Back up the wallet files and any recovery material the wallet presents. Store them offline. Without those files plus the password (or the documented recovery items), you cannot restore access.
+
+Use [Create or Restore](./wallets/create-or-restore.mdx) and [Backup & Security](./backup-and-security.mdx) for the full safety checklist. Binary and command names can differ by release; prefer the help built into the version you installed.
+
+## How to mine
+
+CN-GPU mining secures the network. Solo mining usually needs a synchronized `conceald` and a wallet or miner that submits work. Pools use their own software and payout rules. This FAQ does not estimate profit or endorse a miner or pool. Follow [Mining](./mining.mdx) and check live pool information on the [explorer](https://explorer.conceal.network/).
+
+## Compile Desktop on Unix-like systems
+
+Build steps change between releases. Start from the official repositories and the build notes for the tag you want:
+
+1. Clone [conceal-desktop](https://github.com/ConcealNetwork/conceal-desktop).
+2. Follow that repository's current build documentation for fetching Core sources and producing a release binary.
+3. Verify checksums or signatures when the project publishes them.
+
+Do not treat old one-line `make` recipes from archived pages as current.
+
+## Sync problems and local chain data
+
+If height stalls or balances look incomplete, start with observation: record versions, local height, explorer height, free disk space, and non-sensitive errors. Preserve a wallet backup before changing data directories or reinstalling. Do not begin recovery by deleting chain data. Use [Troubleshooting](./troubleshooting.mdx) and [Run a Node](./run-a-node.mdx) first; ask [Support](./support.mdx) if progress is still unclear.
+
+## Conceal and Bitcoin
+
+Conceal is a separate CryptoNote-based network with its own consensus rules, issuance, and privacy features. It is not Bitcoin and does not use Bitcoin's Lightning Network. For fixed supply and block parameters, see [Network & CCX](./network-and-ccx.mdx). Former payment-product claims from older FAQ text are not current; Conceal Pay is [unavailable](./historical/conceal-pay.mdx).
+
+## Resources
+
+- [Troubleshooting](./troubleshooting.mdx)
+- [Support](./support.mdx)
+- [Conceal Core releases](https://github.com/ConcealNetwork/conceal-core/releases)
+- [Conceal Desktop releases](https://github.com/ConcealNetwork/conceal-desktop/releases)
+- [Conceal Network block explorer](https://explorer.conceal.network/)
+- [Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170)

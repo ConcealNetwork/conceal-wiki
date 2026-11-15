@@ -26,6 +26,7 @@ const expectedNavigation = [
   'support',
   'glossary',
   'research',
+  'faq',
   'historical',
 ];
 const taskTwoSources = [
