@@ -2,7 +2,7 @@ name: Check documentation release drift
 
 on:
   schedule:
-    - cron: '17 4 * * 1'
+    - cron: "17 4 * * 1"
   workflow_dispatch:
 
 permissions:

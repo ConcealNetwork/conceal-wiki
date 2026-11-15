@@ -32,11 +32,11 @@ Not here:
 
 ## Spec
 
-| Surface | Format | Size | File budget |
-| --- | --- | --- | --- |
+| Surface                          | Format                 | Size                                                                                  | File budget                                     |
+| -------------------------------- | ---------------------- | ------------------------------------------------------------------------------------- | ----------------------------------------------- |
 | Desktop or browser wallet window | PNG, 8-bit RGB or RGBA | Width **1280 px** (longest edge ≤ 1280). Crop OS chrome that does not teach the step. | Aim **under 200 KB**; do not exceed **500 KB**. |
-| Phone | PNG | **707 × 1500** | Same budget |
-| Tight dialog crop | PNG | Natural cropped size is fine | Same budget |
+| Phone                            | PNG                    | **707 × 1500**                                                                        | Same budget                                     |
+| Tight dialog crop                | PNG                    | Natural cropped size is fine                                                          | Same budget                                     |
 
 Do not use JPEG for wallet UI. WebP belongs in `public/brand/` for photographic renders only.
 

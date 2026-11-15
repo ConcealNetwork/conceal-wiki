@@ -6,7 +6,9 @@ The operating principle is: use the cheapest tool that can finish the task relia
 ## Tool roles
 
 ### 1. Perplexity Ask via MCP
+
 Use for:
+
 - Internet search
 - Documentation lookup
 - API, release-note, and changelog lookup
@@ -16,7 +18,9 @@ Prefer Perplexity before Cursor when the task depends on current external inform
 If a URL is already known, terminal retrieval may be cheaper and faster than asking an LLM to search.
 
 ### 2. Terminal tools
+
 Use for direct retrieval and local inspection:
+
 - `curl`, `wget`
 - `grep`, `rg`, `sed`, `awk`
 - local docs search, file discovery, quick text extraction
@@ -24,7 +28,9 @@ Use for direct retrieval and local inspection:
 Prefer terminal tools over paid agent reasoning when the task is deterministic retrieval or filtering.
 
 ### 3. Continue + local Qwen 2.5 14B Q4
+
 Use first for low-cost local generation:
+
 - README drafts
 - small code snippets
 - boilerplate
@@ -38,7 +44,9 @@ Also usable as a **review sidekick** (`cn -p --silent`) with a tight pasted pack
 Escalate only if local output is weak, hallucinated, or needs broader repo context.
 
 ### 4. Cursor Agent
+
 Reserve for high-value repo-aware work:
+
 - multi-file edits
 - refactors
 - debugging across files
@@ -50,7 +58,9 @@ Cursor is not the default search engine and not the default README writer.
 Use it when codebase context materially matters.
 
 ### 5. Kilo
+
 Use as a second pass for:
+
 - code review
 - sanity checking
 - bug hunting
@@ -69,6 +79,7 @@ When possible, review diffs, changed files, or a commit rather than asking for a
 ## Cost policy
 
 To minimize Cursor token spending:
+
 - Do not use Cursor for broad research if Perplexity or terminal tools can handle it.
 - Do not use Cursor first for READMEs, summaries, or tiny snippets.
 - Ask for exact files before starting repo-aware work.
@@ -78,6 +89,7 @@ To minimize Cursor token spending:
 ## Execution pattern for agents
 
 When taking a task:
+
 1. Classify it as search, draft, code, or review.
 2. Choose the cheapest matching tool first.
 3. If the chosen tool is insufficient, escalate one step up.

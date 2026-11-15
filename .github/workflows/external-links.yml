@@ -2,7 +2,7 @@ name: Check external documentation links
 
 on:
   schedule:
-    - cron: '41 5 * * 3'
+    - cron: "41 5 * * 3"
   workflow_dispatch:
 
 permissions:
@@ -19,4 +19,3 @@ jobs:
           node-version: 24
       - name: Check documentation links
         run: node scripts/check-external-links.mjs
-

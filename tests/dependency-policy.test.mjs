@@ -15,7 +15,6 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
   const manifest = await readJson('../package.json');
 
   assert.deepEqual(manifest.dependencies, {
-    cn: '^0.2.5',
     'fumadocs-core': '^16.15.7',
     'fumadocs-mdx': '^15.4.0',
     'fumadocs-ui': 'npm:@fumadocs/base-ui@^16.15.7',
@@ -26,7 +25,7 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
   });
 
   assert.deepEqual(manifest.devDependencies, {
-    '@biomejs/biome': '2.5.12',
+    '@biomejs/biome': '2.6.7',
     '@tailwindcss/postcss': '^4.3.3',
     '@types/mdx': '^2.0.14',
     '@types/node': '^26.4.1',
@@ -48,11 +47,11 @@ test('direct dependencies use current compatible floating ranges and TypeScript 
   assert.equal(manifest.scripts['format:fix'], 'biome format --write .');
 });
 
-test('Biome config matches the repo-kit typescript module at 2.5.12 with single quotes', async () => {
+test('Biome config matches the repo-kit typescript module at 2.6.7 with single quotes', async () => {
   const biome = await readJson('../biome.json');
 
   assert.deepEqual(biome, {
-    $schema: 'https://biomejs.dev/schemas/2.5.12/schema.json',
+    $schema: 'https://biomejs.dev/schemas/2.6.7/schema.json',
     vcs: {
       enabled: true,
       clientKind: 'git',

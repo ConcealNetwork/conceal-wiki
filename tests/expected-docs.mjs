@@ -160,6 +160,7 @@ export const EXPECTED_DOCS = Object.freeze([
     route: 'docs/historical/conceal-pay',
     status: 'Unavailable',
   },
+  { source: 'content/docs/faq.mdx', route: 'docs/faq', status: 'Current' },
   {
     source: 'content/docs/historical/roadmap-and-media.mdx',
     route: 'docs/historical/roadmap-and-media',
