@@ -7,7 +7,7 @@ const rpcEndpoint =
 const rpcExposureAction =
   /\b(?:expose|publish|open|forward|share|make)\b[^\n]{0,120}\b(?:public(?:ly)?|internet|external(?:ly)?|remote(?:ly)?|everyone|anyone)\b|\b(?:public(?:ly)?|internet|external(?:ly)?|remote(?:ly)?|everyone|anyone)\b[^\n]{0,120}\b(?:access|accessible|exposure|available)\b/i;
 
-export function containsStaticPoolTable(content) {
+function containsStaticPoolTable(content) {
   const tablePattern =
     /^\|([^\n]+)\|\s*\n\|(?:\s*:?-+:?\s*\|)+\s*\n((?:\|[^\n]+\|\s*\n?)+)/gm;
   return [...content.matchAll(tablePattern)].some(
@@ -18,7 +18,7 @@ export function containsStaticPoolTable(content) {
   );
 }
 
-export function containsUnsafeRpcExposureAdvice(content) {
+function containsUnsafeRpcExposureAdvice(content) {
   const prose = content.replace(/<[^>]*>/g, ' ').replace(/\\[nrt]/g, ' ');
   return prose
     .split(/[.!?]\s+/)
