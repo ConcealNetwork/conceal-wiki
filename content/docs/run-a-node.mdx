@@ -15,7 +15,16 @@ Run a Conceal node on a host where you control storage, network access, backups,
 
 ## Choose and verify a Core package
 
-On Ubuntu, install the `conceal-core` package from the [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core):
+On Ubuntu, install the `conceal-core` package from the [Conceal Core PPA](https://launchpad.net/~concealnetwork/+archive/ubuntu/conceal-core).
+
+If `add-apt-repository` is missing, install it first:
+
+```bash
+sudo apt update
+sudo apt install software-properties-common
+```
+
+Then add the PPA and install Core:
 
 ```bash
 sudo add-apt-repository ppa:concealnetwork/conceal-core
